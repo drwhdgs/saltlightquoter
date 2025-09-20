@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { generateShareableLink, decodeQuoteFromUrl } from '@/lib/storage';
-import { Quote, Client, Package, InsurancePlan } from '@/lib/types';
+import { Quote, Client, Package } from '@/lib/types';
 
 export default function TestQuotePage() {
   const [testResult, setTestResult] = useState<string>('');
@@ -30,12 +30,10 @@ export default function TestQuotePage() {
             provider: 'ACA',
             monthlyPremium: 300,
             deductible: 5000,
-            primaryCareOutOfPocket: 30,
-            specialistOutOfPocket: 50,
-            genericDrugOutOfPocket: 10,
+            outOfPocket: 30, // updated from copay
             coverage: 'Basic health coverage',
             details: 'Basic ACA plan',
-          } as InsurancePlan,
+          },
         ],
         totalMonthlyPremium: 300,
       },
@@ -67,13 +65,14 @@ export default function TestQuotePage() {
 
       // Extract encoded data from the link
       const urlParts = shareableLink.split('/quote/');
-      if (urlParts.length < 2) throw new Error('Invalid shareable link format');
+      if (urlParts.length < 2) {
+        throw new Error('Invalid shareable link format');
+      }
       const encodedData = urlParts[1];
-
       setTestResult(prev => prev + `Encoded data length: ${encodedData.length} characters\n`);
       setTestResult(prev => prev + `Encoded data: ${encodedData}\n`);
 
-      // Decode data
+      // Try to decode the data
       const decodedData: Quote | null = decodeQuoteFromUrl(encodedData);
 
       if (decodedData?.client && decodedData?.packages) {
@@ -87,8 +86,9 @@ export default function TestQuotePage() {
       } else {
         setTestResult(prev => prev + '❌ Test FAILED - Decoded data is invalid\n');
       }
-    } catch (error: any) {
-      setTestResult(prev => prev + `❌ Test FAILED with error: ${error.message || error}\n`);
+
+    } catch (error: unknown) {
+      setTestResult(prev => prev + `❌ Test FAILED with error: ${error instanceof Error ? error.message : String(error)}\n`);
     }
   };
 
