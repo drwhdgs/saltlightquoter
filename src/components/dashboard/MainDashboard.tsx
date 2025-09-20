@@ -210,14 +210,6 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                     ))}
                   </div>
 
-                  <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold">Total Monthly Premium:</span>
-                      <span className="text-2xl font-bold text-blue-600">
-                        ${quote.packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0).toLocaleString()}/mo
-                      </span>
-                    </div>
-                  </div>
 
                   <div className="mt-6 p-4 bg-green-50 rounded-lg">
                     <label className="text-sm font-medium text-gray-600">Shareable Client Link:</label>
