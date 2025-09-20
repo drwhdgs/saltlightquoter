@@ -14,7 +14,7 @@ export default function TestQuotePage() {
       dateOfBirth: '1990-01-01',
       email: 'john@example.com',
       phone: '(555) 123-4567',
-      additionalInfo: 'Test client',
+      additionalInfo: 'Test client'
     };
 
     const testPackages: Package[] = [
@@ -30,13 +30,13 @@ export default function TestQuotePage() {
             provider: 'ACA',
             monthlyPremium: 300,
             deductible: 5000,
-            outOfPocket: 30, // updated from copay
+            outofpocket: 30, // updated field name
             coverage: 'Basic health coverage',
-            details: 'Basic ACA plan',
-          },
+            details: 'Basic ACA plan'
+          }
         ],
-        totalMonthlyPremium: 300,
-      },
+        totalMonthlyPremium: 300
+      }
     ];
 
     return {
@@ -46,7 +46,7 @@ export default function TestQuotePage() {
       packages: testPackages,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      status: 'completed',
+      status: 'completed'
     };
   };
 
@@ -72,23 +72,31 @@ export default function TestQuotePage() {
       setTestResult(prev => prev + `Encoded data length: ${encodedData.length} characters\n`);
       setTestResult(prev => prev + `Encoded data: ${encodedData}\n`);
 
-      // Try to decode the data
-      const decodedData: Quote | null = decodeQuoteFromUrl(encodedData);
+      // Decode and fill in missing Quote fields
+      const decodedRaw = decodeQuoteFromUrl(encodedData);
+      const decodedData: Quote | null = decodedRaw
+        ? {
+            id: decodedRaw.id ?? 'unknown-id',
+            agentId: decodedRaw.agentId ?? 'unknown-agent',
+            client: decodedRaw.client,
+            packages: decodedRaw.packages,
+            createdAt: decodedRaw.createdAt,
+            updatedAt: decodedRaw.updatedAt ?? new Date().toISOString(),
+            status: decodedRaw.status ?? 'completed'
+          }
+        : null;
 
       if (decodedData?.client && decodedData?.packages) {
-        setTestResult(prev =>
-          prev +
-          '✅ Test PASSED - Ultra-compressed quote works correctly!\n' +
-          `Client: ${decodedData.client.name}\n` +
-          `Packages: ${decodedData.packages.map(p => p.name).join(', ')}\n` +
-          `🎉 URL is now ${shareableLink.length} characters (much shorter!)\n`
-        );
+        setTestResult(prev => prev + '✅ Test PASSED - Ultra-compressed quote works correctly!\n');
+        setTestResult(prev => prev + `Client: ${decodedData.client.name}\n`);
+        setTestResult(prev => prev + `Packages: ${decodedData.packages.map(p => p.name).join(', ')}\n`);
+        setTestResult(prev => prev + `🎉 URL is now ${shareableLink.length} characters (much shorter!)\n`);
       } else {
         setTestResult(prev => prev + '❌ Test FAILED - Decoded data is invalid\n');
       }
 
-    } catch (error: unknown) {
-      setTestResult(prev => prev + `❌ Test FAILED with error: ${error instanceof Error ? error.message : String(error)}\n`);
+    } catch (error: any) {
+      setTestResult(prev => prev + `❌ Test FAILED with error: ${error.message ?? error}\n`);
     }
   };
 
