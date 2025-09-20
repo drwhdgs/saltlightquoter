@@ -65,18 +65,6 @@ export function Sidebar({
       {/* Navigation */}
       <div className="flex-1 p-4 space-y-2">
         <Button
-          variant={activeView === 'dashboard' ? 'default' : 'ghost'}
-          className="w-full justify-start"
-          onClick={() => {
-            onViewChange('dashboard');
-            setIsMobileOpen(false);
-          }}
-        >
-          <BarChart3 className="w-4 h-4 mr-2" />
-          Dashboard
-        </Button>
-
-        <Button
           variant={activeView === 'new-quote' ? 'default' : 'ghost'}
           className="w-full justify-start"
           onClick={() => {
@@ -92,6 +80,20 @@ export function Sidebar({
             </Badge>
           )}
         </Button>
+
+        
+        <Button
+          variant={activeView === 'dashboard' ? 'default' : 'ghost'}
+          className="w-full justify-start"
+          onClick={() => {
+            onViewChange('dashboard');
+            setIsMobileOpen(false);
+          }}
+        >
+          <BarChart3 className="w-4 h-4 mr-2" />
+          Dashboard
+        </Button>
+
 
         <Button
           variant={activeView === 'quotes' ? 'default' : 'ghost'}
