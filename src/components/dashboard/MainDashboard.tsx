@@ -146,7 +146,7 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                       onClick={() => handleEmailClient(quote)}
                       className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
                     >
-                      📧 Email Client
+                      Message Client
                     </button>
                     <button
                       onClick={() => {
