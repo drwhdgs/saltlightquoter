@@ -1,11 +1,18 @@
 import { Agent, Quote, Client, Package, InsurancePlan, PACKAGE_TEMPLATES } from './types';
 
-// Types for ultra-compressed quote data
+// Add optional out-of-pocket fields to InsurancePlan
+export interface InsurancePlanWithExtras extends InsurancePlan {
+  primaryCareOutOfPocket?: number;
+  specialistOutOfPocket?: number;
+  genericDrugOutOfPocket?: number;
+}
+
+// Ultra-compressed quote data
 interface UltraCompressedQuote {
   c: [string, string, string, string, string, string?]; // [name, zip, dob, email, phone, additionalInfo?]
-  p: number[]; // Package template indices (0=Bronze, 1=Silver, 2=Gold, 3=Healthy Bundle)
-  m?: { [key: string]: number }; // Modified premiums only (if different from template)
-  t: number; // Timestamp as number
+  p: number[]; // Package template indices
+  m?: { [key: string]: number }; // modified premiums
+  t: number; // timestamp
 }
 
 const STORAGE_KEYS = {
@@ -17,14 +24,9 @@ const STORAGE_KEYS = {
 // Agent Management
 export const saveAgent = (agent: Agent): void => {
   const agents = getAgents();
-  const existingIndex = agents.findIndex(a => a.id === agent.id);
-
-  if (existingIndex >= 0) {
-    agents[existingIndex] = agent;
-  } else {
-    agents.push(agent);
-  }
-
+  const index = agents.findIndex(a => a.id === agent.id);
+  if (index >= 0) agents[index] = agent;
+  else agents.push(agent);
   localStorage.setItem(STORAGE_KEYS.AGENTS, JSON.stringify(agents));
 };
 
@@ -34,8 +36,7 @@ export const getAgents = (): Agent[] => {
 };
 
 export const getAgentByEmail = (email: string): Agent | null => {
-  const agents = getAgents();
-  return agents.find(agent => agent.email === email) || null;
+  return getAgents().find(agent => agent.email === email) || null;
 };
 
 export const setCurrentAgent = (agent: Agent): void => {
@@ -54,285 +55,132 @@ export const clearCurrentAgent = (): void => {
 // Quote Management
 export const saveQuote = (quote: Quote): void => {
   const quotes = getQuotes();
-  const existingIndex = quotes.findIndex(q => q.id === quote.id);
-
-  if (existingIndex >= 0) {
-    quotes[existingIndex] = quote;
-  } else {
-    quotes.push(quote);
-  }
-
+  const index = quotes.findIndex(q => q.id === quote.id);
+  if (index >= 0) quotes[index] = quote;
+  else quotes.push(quote);
   localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify(quotes));
 };
 
 export const getQuotes = (agentId?: string): Quote[] => {
   const stored = localStorage.getItem(STORAGE_KEYS.QUOTES);
   const allQuotes: Quote[] = stored ? JSON.parse(stored) : [];
-
-  if (agentId) {
-    return allQuotes.filter(quote => quote.agentId === agentId);
-  }
-
-  return allQuotes;
+  return agentId ? allQuotes.filter(q => q.agentId === agentId) : allQuotes;
 };
 
 export const getQuoteById = (id: string): Quote | null => {
-  const quotes = getQuotes();
-  return quotes.find(quote => quote.id === id) || null;
+  return getQuotes().find(q => q.id === id) || null;
 };
 
 export const deleteQuote = (id: string): void => {
-  const quotes = getQuotes();
-  const filtered = quotes.filter(quote => quote.id !== id);
+  const filtered = getQuotes().filter(q => q.id !== id);
   localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify(filtered));
 };
 
-// Utility Functions
-export const generateId = (): string => {
-  return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-};
+// Utility
+export const generateId = (): string => Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
 
-// Ultra-compact compression - stores only template indices and modifications
+// Ultra-compression
 const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; createdAt: string }): string => {
-  try {
-    const packageMap: { [key: string]: number } = {
-      'Bronze': 0,
-      'Silver': 1,
-      'Gold': 2,
-      'Healthy Bundle': 3
-    };
+  const packageMap: { [key: string]: number } = {
+    Bronze: 0, Silver: 1, Gold: 2, 'Healthy Bundle': 3
+  };
+  const packageIndices = data.packages.map(p => packageMap[p.name]);
+  const modifications: { [key: string]: number } = {};
 
-    const packageIndices = data.packages.map(pkg => packageMap[pkg.name]);
-
-    const modifications: { [key: string]: number } = {};
-    data.packages.forEach((pkg, pkgIndex) => {
-      const template = PACKAGE_TEMPLATES.find(t => t.name === pkg.name);
-      if (template) {
-        pkg.plans.forEach((plan, planIndex) => {
-          const defaultPlan = template.defaultPlans[planIndex];
-          if (defaultPlan && plan.monthlyPremium !== defaultPlan.monthlyPremium) {
-            modifications[`${pkgIndex}_${planIndex}`] = plan.monthlyPremium;
-          }
-        });
+  data.packages.forEach((pkg, pkgIndex) => {
+    const template = PACKAGE_TEMPLATES.find(t => t.name === pkg.name);
+    if (!template) return;
+    pkg.plans.forEach((plan, planIndex) => {
+      const defaultPlan = template.defaultPlans[planIndex];
+      if (defaultPlan && plan.monthlyPremium !== defaultPlan.monthlyPremium) {
+        modifications[`${pkgIndex}_${planIndex}`] = plan.monthlyPremium;
       }
     });
+  });
 
-    const ultraCompressed: UltraCompressedQuote = {
-      c: [
-        data.client.name,
-        data.client.zipCode,
-        data.client.dateOfBirth,
-        data.client.email,
-        data.client.phone,
-        data.client.additionalInfo || undefined
-      ].filter(x => x !== undefined) as [string, string, string, string, string, string?],
-      p: packageIndices,
-      ...(Object.keys(modifications).length > 0 && { m: modifications }),
-      t: new Date(data.createdAt).getTime()
-    };
+  const ultraCompressed: UltraCompressedQuote = {
+    c: [
+      data.client.name,
+      data.client.zipCode,
+      data.client.dateOfBirth,
+      data.client.email,
+      data.client.phone,
+      data.client.additionalInfo || undefined
+    ].filter(x => x !== undefined) as [string, string, string, string, string, string?],
+    p: packageIndices,
+    ...(Object.keys(modifications).length ? { m: modifications } : {}),
+    t: new Date(data.createdAt).getTime()
+  };
 
-    const jsonString = JSON.stringify(ultraCompressed);
-    const encoded = btoa(unescape(encodeURIComponent(jsonString)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
-
-    return encoded;
-  } catch (error) {
-    console.error('Error in ultraCompressAndEncode:', error);
-    throw error;
-  }
+  const jsonString = JSON.stringify(ultraCompressed);
+  return btoa(unescape(encodeURIComponent(jsonString))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 };
 
 const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: Package[]; createdAt: string } => {
-  try {
-    let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) base64 += '=';
+  let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) base64 += '=';
+  const jsonString = decodeURIComponent(escape(atob(base64)));
+  const compressed: UltraCompressedQuote = JSON.parse(jsonString);
 
-    const jsonString = decodeURIComponent(escape(atob(base64)));
-    const compressed: UltraCompressedQuote = JSON.parse(jsonString);
+  const client: Client = {
+    name: compressed.c[0],
+    zipCode: compressed.c[1],
+    dateOfBirth: compressed.c[2],
+    email: compressed.c[3],
+    phone: compressed.c[4],
+    additionalInfo: compressed.c[5]
+  };
 
-    const client: Client = {
-      name: compressed.c[0],
-      zipCode: compressed.c[1],
-      dateOfBirth: compressed.c[2],
-      email: compressed.c[3],
-      phone: compressed.c[4],
-      additionalInfo: compressed.c[5]
-    };
+  const packageNames: Package['name'][] = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle'];
+  const packages: Package[] = compressed.p.map((index, pkgIndex) => {
+    const templateName = packageNames[index];
+    const template = PACKAGE_TEMPLATES.find(t => t.name === templateName);
+    if (!template) throw new Error(`Template not found: ${templateName}`);
 
-    const packageNames = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle'] as const;
-    const packages: Package[] = compressed.p.map((index, pkgIndex) => {
-      const templateName = packageNames[index];
-      const template = PACKAGE_TEMPLATES.find(t => t.name === templateName);
-
-      if (!template) throw new Error(`Template not found for index: ${index}`);
-
-      const plans = template.defaultPlans.map((defaultPlan, planIndex) => {
-        const modKey = `${pkgIndex}_${planIndex}`;
-        const customPremium = compressed.m?.[modKey];
-
-        return {
-          id: generateId(),
-          type: defaultPlan.type,
-          name: defaultPlan.name,
-          provider: defaultPlan.provider,
-          monthlyPremium: customPremium || defaultPlan.monthlyPremium,
-          deductible: defaultPlan.deductible,
-          copay: defaultPlan.copay,
-          coverage: defaultPlan.coverage,
-          details: defaultPlan.details,
-          primaryCareOutOfPocket: defaultPlan.primaryCareOutOfPocket,
-          specialistOutOfPocket: defaultPlan.specialistOutOfPocket,
-          genericDrugOutOfPocket: defaultPlan.genericDrugOutOfPocket
-        };
-      });
-
-      const totalMonthlyPremium = plans.reduce((sum, plan) => sum + plan.monthlyPremium, 0);
-
+    const plans: InsurancePlanWithExtras[] = template.defaultPlans.map((defaultPlan, planIndex) => {
+      const modKey = `${pkgIndex}_${planIndex}`;
+      const customPremium = compressed.m?.[modKey];
       return {
         id: generateId(),
-        name: templateName,
-        description: template.description,
-        plans,
-        totalMonthlyPremium
+        type: defaultPlan.type,
+        name: defaultPlan.name,
+        provider: defaultPlan.provider,
+        monthlyPremium: customPremium ?? defaultPlan.monthlyPremium,
+        deductible: defaultPlan.deductible,
+        copay: defaultPlan.copay,
+        coverage: defaultPlan.coverage,
+        details: defaultPlan.details,
+        primaryCareOutOfPocket: defaultPlan.primaryCareOutOfPocket,
+        specialistOutOfPocket: defaultPlan.specialistOutOfPocket,
+        genericDrugOutOfPocket: defaultPlan.genericDrugOutOfPocket
       };
     });
 
-    return {
-      client,
-      packages,
-      createdAt: new Date(compressed.t).toISOString()
-    };
-  } catch (error) {
-    console.error('Error in ultraDecodeAndDecompress:', error);
-    throw error;
-  }
+    const totalMonthlyPremium = plans.reduce((sum, p) => sum + p.monthlyPremium, 0);
+    return { id: generateId(), name: templateName, description: template.description, plans, totalMonthlyPremium };
+  });
+
+  return { client, packages, createdAt: new Date(compressed.t).toISOString() };
 };
 
-// Legacy decode for backward compatibility
-interface CompressedClient { n: string; z: string; d: string; e: string; p: string; a: string; }
-interface CompressedPlan { t: string; n: string; pr: string; mp: number; de: number; co: number; cv: string; dt: string; }
-interface CompressedPackage { n: string; d: string; t: number; pl: CompressedPlan[]; }
-interface CompressedQuote { c: CompressedClient; p: CompressedPackage[]; t: string; }
-
-const decodeAndDecompress = (encoded: string): { client: Client; packages: Package[]; createdAt: string } => {
-  try {
-    let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) base64 += '=';
-
-    const jsonString = decodeURIComponent(escape(atob(base64)));
-    const compressed: CompressedQuote = JSON.parse(jsonString);
-
-    const client: Client = {
-      name: compressed.c.n,
-      zipCode: compressed.c.z,
-      dateOfBirth: compressed.c.d,
-      email: compressed.c.e,
-      phone: compressed.c.p,
-      additionalInfo: compressed.c.a || undefined
-    };
-
-    const validPackageNames: Package['name'][] = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle'];
-
-    const packages: Package[] = compressed.p.map(compPkg => {
-      const pkgName: Package['name'] = validPackageNames.includes(compPkg.n as Package['name'])
-        ? (compPkg.n as Package['name'])
-        : 'Bronze';
-
-      const plans = compPkg.pl.map(compPlan => ({
-        id: generateId(),
-        type: compPlan.t as InsurancePlan['type'],
-        name: compPlan.n,
-        provider: compPlan.pr,
-        monthlyPremium: compPlan.mp,
-        deductible: compPlan.de || undefined,
-        copay: compPlan.co || undefined,
-        coverage: compPlan.cv || undefined,
-        details: compPlan.dt || undefined,
-        primaryCareOutOfPocket: undefined,
-        specialistOutOfPocket: undefined,
-        genericDrugOutOfPocket: undefined
-      }));
-
-      return {
-        id: generateId(),
-        name: pkgName,
-        description: compPkg.d,
-        plans,
-        totalMonthlyPremium: compPkg.t
-      };
-    });
-
-    return { client, packages, createdAt: compressed.t };
-  } catch (error) {
-    console.error('Error in decodeAndDecompress:', error);
-    throw error;
-  }
-};
-
-// Generate ultra-short shareable link
-export const generateShareableLink = (quote: Quote): string => {
+// Shareable link
+export const generateShareableLink = (quote: Quote) => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
   try {
-    const quoteData = { client: quote.client, packages: quote.packages, createdAt: quote.createdAt };
-    const encoded = ultraCompressAndEncode(quoteData);
+    const data = { client: quote.client, packages: quote.packages, createdAt: quote.createdAt };
+    const encoded = ultraCompressAndEncode(data);
     return `${baseUrl}/quote/${encoded}`;
   } catch {
     return `${baseUrl}/quote/error`;
   }
 };
 
-export const decodeQuoteFromUrl = (encodedData: string): { client: Client; packages: Package[]; createdAt: string } | null => {
-  try {
-    if (encodedData === 'error') return null;
-    try {
-      return ultraDecodeAndDecompress(encodedData);
-    } catch {
-      return decodeAndDecompress(encodedData);
-    }
-  } catch {
-    return null;
-  }
+export const decodeQuoteFromUrl = (encoded: string) => {
+  if (encoded === 'error') return null;
+  try { return ultraDecodeAndDecompress(encoded); } catch { return null; }
 };
 
-export const getQuoteDataByShortId = decodeQuoteFromUrl;
-
-export const generateEmailToClient = (quote: Quote): string => {
-  const subject = encodeURIComponent(`Your Insurance Quote - ${quote.client.name}`);
-  const shareableLink = generateShareableLink(quote);
-  const totalMonthly = quote.packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0);
-  const totalAnnual = totalMonthly * 12;
-
-  const emailBody = encodeURIComponent(`Dear ${quote.client.name},
-
-Thank you for your interest in our insurance services. I've prepared a personalized quote for you with ${quote.packages.length} coverage option${quote.packages.length > 1 ? 's' : ''}.
-
-Quote Summary:
-${quote.packages.map((pkg, index) => `
-Package ${index + 1}: ${pkg.name}
-Monthly Premium: $${pkg.totalMonthlyPremium.toLocaleString()}
-Plans Included: ${pkg.plans.map(plan => plan.name).join(', ')}
-`).join('')}
-
-Total Monthly Premium: $${totalMonthly.toLocaleString()}
-Total Annual Premium: $${totalAnnual.toLocaleString()}
-
-To view your complete quote with detailed plan information, please click the link below:
-${shareableLink}
-
-This link contains your personalized quote and can be accessed from any device. If you have any questions or would like to discuss your coverage options, please don't hesitate to contact me.
-
-Best regards,
-Your Insurance Agent
-Phone: (555) 123-INSURANCE
-Email: quotes@insurance.com
-
-This quote is valid for 30 days from the date generated.`);
-
-  return `mailto:${quote.client.email}?subject=${subject}&body=${emailBody}`;
-};
-
+// Initialize storage
 export const initializeStorage = (): void => {
   if (typeof window === 'undefined') return;
   if (!localStorage.getItem(STORAGE_KEYS.AGENTS)) localStorage.setItem(STORAGE_KEYS.AGENTS, JSON.stringify([]));
