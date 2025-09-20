@@ -113,12 +113,12 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       },
       {
         type: 'dental',
-        name: 'Ameritas PrimeStar Dental',
+        name: 'Ameritas PrimeStar Care Boost Dental',
         provider: 'Ameritas',
         monthlyPremium: 46.89,
         deductible: 50,
         coverage: 'Preventive and basic dental care',
-        details: 'The PrimeStar Care Lite plan is an affordable option for those with a healthy mouth. It offers basic coverage with an emphasis on preventive care such as exams and cleanings. The annual maximum benefit and coverage for Basic and Major procedures increase after the first year on the plan.'
+        details: 'The PrimeStar Care Boost plan is great for families who want robust coverage. Unique benefits include teeth whitening and coverage for child orthodontic care. You’ll enjoy additional services under Preventive care and coverage for implants. The dental maximum benefit and coverage for Basic and Major procedures increase after the first year on the plan.'
       },
       {
         type: 'vision',
