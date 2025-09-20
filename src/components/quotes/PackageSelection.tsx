@@ -199,23 +199,27 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                               <p className="font-medium">${plan.deductible.toLocaleString()}</p>
                             </div>
                           )}
-                          {plan.primaryCareOutOfPocket !== undefined && (
-                            <div>
-                              <p className="text-gray-600">Primary Care Out-of-Pocket</p>
-                              <p className="font-medium">${plan.primaryCareOutOfPocket}</p>
-                            </div>
-                          )}
-                          {plan.specialistOutOfPocket !== undefined && (
-                            <div>
-                              <p className="text-gray-600">Specialist Out-of-Pocket</p>
-                              <p className="font-medium">${plan.specialistOutOfPocket}</p>
-                            </div>
-                          )}
-                          {plan.genericDrugOutOfPocket !== undefined && (
-                            <div>
-                              <p className="text-gray-600">Generic Drug Out-of-Pocket</p>
-                              <p className="font-medium">${plan.genericDrugOutOfPocket}</p>
-                            </div>
+                          {plan.type === 'health' && (
+                            <>
+                              {plan.primaryCareOutOfPocket !== undefined && (
+                                <div>
+                                  <p className="text-gray-600">Primary Care Out-of-Pocket</p>
+                                  <p className="font-medium">${plan.primaryCareOutOfPocket}</p>
+                                </div>
+                              )}
+                              {plan.specialistOutOfPocket !== undefined && (
+                                <div>
+                                  <p className="text-gray-600">Specialist Out-of-Pocket</p>
+                                  <p className="font-medium">${plan.specialistOutOfPocket}</p>
+                                </div>
+                              )}
+                              {plan.genericDrugOutOfPocket !== undefined && (
+                                <div>
+                                  <p className="text-gray-600">Generic Drug Out-of-Pocket</p>
+                                  <p className="font-medium">${plan.genericDrugOutOfPocket}</p>
+                                </div>
+                              )}
+                            </>
                           )}
                           {plan.coverage && (
                             <div>
