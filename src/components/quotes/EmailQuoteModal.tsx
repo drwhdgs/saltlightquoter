@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { X, Mail, MessageSquare, Paperclip, Copy } from 'lucide-react';
 import { Quote } from '@/lib/types';
 import { generateShareableLink } from '@/lib/storage';
@@ -29,16 +29,13 @@ export function EmailQuoteModal({ isOpen, onClose, quote }: EmailQuoteModalProps
   const shareableLink = quote.shareableLink || generateShareableLink(quote);
 
   function generateEmailMessage(quote: Quote): string {
-    const totalMonthly = quote.packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0);
     const link = quote.shareableLink || generateShareableLink(quote);
 
-    return `${link}
+    return `Good afternoon ${quote.client.name}!
 
-This quote includes ${quote.packages.length} package option${quote.packages.length > 1 ? 's' : ''} for your review.
+This is Salt & Light Insurance Group. Thank you for filling out our quote form! We appreciate the opportunity to provide a quote for you. Here's your full health insurance quote with the three different packages that you can choose from. If you have any questions, please let me know. Thank you!
 
-Total Monthly Premium: $${totalMonthly.toLocaleString()}
-
-Best regards,`;
+Click this link to view your quote: ${link}`;
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,12 +45,9 @@ Best regards,`;
   };
 
   const handleSendEmail = () => {
-    // Create mailto link with all the data
     const subject = encodeURIComponent(emailData.subject);
     const body = encodeURIComponent(emailData.message);
     const mailtoLink = `mailto:${emailData.to}?subject=${subject}&body=${body}`;
-
-    // Open default email client
     window.open(mailtoLink, '_self');
     onClose();
   };
@@ -67,7 +61,7 @@ Best regards,`;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-2xl bg-white rounded-lg shadow-xl">
+      <Card className="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-y-auto max-h-[90vh]">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -114,7 +108,6 @@ Best regards,`;
           {/* Email Form */}
           {activeTab === 'email' && (
             <div className="space-y-4">
-              {/* To Field */}
               <div>
                 <Label htmlFor="to" className="text-sm font-medium text-gray-700">
                   To *
@@ -128,7 +121,6 @@ Best regards,`;
                 />
               </div>
 
-              {/* Subject Field */}
               <div>
                 <Label htmlFor="subject" className="text-sm font-medium text-gray-700">
                   Subject *
@@ -142,7 +134,6 @@ Best regards,`;
                 />
               </div>
 
-              {/* Message Field */}
               <div>
                 <Label htmlFor="message" className="text-sm font-medium text-gray-700">
                   Message *
@@ -151,12 +142,11 @@ Best regards,`;
                   id="message"
                   value={emailData.message}
                   onChange={(e) => setEmailData(prev => ({ ...prev, message: e.target.value }))}
-                  rows={6}
+                  rows={8}
                   className="mt-1"
                 />
               </div>
 
-              {/* Attachments */}
               <div>
                 <Label className="text-sm font-medium text-gray-700">Attachments</Label>
                 <div className="mt-1 flex items-center">
@@ -179,7 +169,6 @@ Best regards,`;
                 </div>
               </div>
 
-              {/* Send Button */}
               <Button
                 onClick={handleSendEmail}
                 className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg font-medium"
