@@ -30,8 +30,6 @@ export default function TestQuotePage() {
             provider: 'ACA',
             monthlyPremium: 300,
             deductible: 5000,
-            primaryCareCopay: 30, // <-- use correct field
-            specialistCopay: 50,  // optional
             coverage: 'Basic health coverage',
             details: 'Basic ACA plan',
           },
