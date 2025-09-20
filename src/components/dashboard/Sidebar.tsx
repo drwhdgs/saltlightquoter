@@ -104,7 +104,7 @@ export function Sidebar({
           }}
         >
           <FileText className="w-4 h-4 mr-2" />
-          All Quotes
+          My Quotes
           <Badge variant="outline" className="ml-auto">
             {quotes.length}
           </Badge>
