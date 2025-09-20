@@ -14,7 +14,7 @@ export default function TestQuotePage() {
       dateOfBirth: '1990-01-01',
       email: 'john@example.com',
       phone: '(555) 123-4567',
-      additionalInfo: 'Test client'
+      additionalInfo: 'Test client',
     };
 
     const testPackages: Package[] = [
@@ -30,13 +30,14 @@ export default function TestQuotePage() {
             provider: 'ACA',
             monthlyPremium: 300,
             deductible: 5000,
-            copay: 30,
+            primaryCareCopay: 30, // <-- use correct field
+            specialistCopay: 50,  // optional
             coverage: 'Basic health coverage',
-            details: 'Basic ACA plan'
-          }
+            details: 'Basic ACA plan',
+          },
         ],
-        totalMonthlyPremium: 300
-      }
+        totalMonthlyPremium: 300,
+      },
     ];
 
     return {
@@ -46,7 +47,7 @@ export default function TestQuotePage() {
       packages: testPackages,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      status: 'completed'
+      status: 'completed',
     };
   };
 
@@ -54,42 +55,33 @@ export default function TestQuotePage() {
     try {
       setTestResult('Starting ultra-compression test...\n');
 
-      // Create test quote
       const testQuote = createTestQuote();
       setTestResult(prev => prev + 'Created test quote\n');
 
-      // Generate ultra-short shareable link
       const shareableLink = generateShareableLink(testQuote);
       setTestResult(prev => prev + `Generated ultra-short link: ${shareableLink}\n`);
       setTestResult(prev => prev + `Total URL length: ${shareableLink.length} characters\n`);
 
-      // Extract encoded data from the link
       const urlParts = shareableLink.split('/quote/');
-      if (urlParts.length < 2) {
-        throw new Error('Invalid shareable link format');
-      }
+      if (urlParts.length < 2) throw new Error('Invalid shareable link format');
+
       const encodedData = urlParts[1];
       setTestResult(prev => prev + `Encoded data length: ${encodedData.length} characters\n`);
       setTestResult(prev => prev + `Encoded data: ${encodedData}\n`);
 
-      // Try to decode the data
       const decodedData = decodeQuoteFromUrl(encodedData);
 
-      if (decodedData && decodedData.client && decodedData.packages) {
-        setTestResult(prev => prev + '✅ Test PASSED - Ultra-compressed quote works correctly!\n');
-        setTestResult(prev => prev + `Client: ${decodedData.client.name}\n`);
-        setTestResult(prev => prev + `Packages: ${decodedData.packages.map(p => p.name).join(', ')}\n`);
-        setTestResult(prev => prev + `🎉 URL is now ${shareableLink.length} characters (much shorter!)\n`);
+      if (decodedData?.client && decodedData?.packages) {
+        setTestResult(prev =>
+          prev +
+          `✅ Test PASSED - Ultra-compressed quote works correctly!\nClient: ${decodedData.client.name}\nPackages: ${decodedData.packages.map(p => p.name).join(', ')}\n🎉 URL length: ${shareableLink.length}\n`
+        );
       } else {
         setTestResult(prev => prev + '❌ Test FAILED - Decoded data is invalid\n');
       }
-
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        setTestResult(prev => prev + `❌ Test FAILED with error: ${error.message}\n`);
-      } else {
-        setTestResult(prev => prev + `❌ Test FAILED with unknown error: ${String(error)}\n`);
-      }
+      if (error instanceof Error) setTestResult(prev => prev + `❌ Test FAILED: ${error.message}\n`);
+      else setTestResult(prev => prev + `❌ Test FAILED: ${String(error)}\n`);
     }
   };
 
