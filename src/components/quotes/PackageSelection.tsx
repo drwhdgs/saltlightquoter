@@ -199,22 +199,22 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                               <p className="font-medium">${plan.deductible.toLocaleString()}</p>
                             </div>
                           )}
-                          {plan.primaryCareCopay !== undefined && (
+                          {plan.primaryCareOutOfPocket !== undefined && (
                             <div>
-                              <p className="text-gray-600">Primary Care Copay</p>
-                              <p className="font-medium">${plan.primaryCareCopay}</p>
+                              <p className="text-gray-600">Primary Care Out-of-Pocket</p>
+                              <p className="font-medium">${plan.primaryCareOutOfPocket}</p>
                             </div>
                           )}
-                          {plan.specialistCopay !== undefined && (
+                          {plan.specialistOutOfPocket !== undefined && (
                             <div>
-                              <p className="text-gray-600">Specialist Copay</p>
-                              <p className="font-medium">${plan.specialistCopay}</p>
+                              <p className="text-gray-600">Specialist Out-of-Pocket</p>
+                              <p className="font-medium">${plan.specialistOutOfPocket}</p>
                             </div>
                           )}
-                          {plan.genericDrugCopay !== undefined && (
+                          {plan.genericDrugOutOfPocket !== undefined && (
                             <div>
-                              <p className="text-gray-600">Generic Drug Copay</p>
-                              <p className="font-medium">${plan.genericDrugCopay}</p>
+                              <p className="text-gray-600">Generic Drug Out-of-Pocket</p>
+                              <p className="font-medium">${plan.genericDrugOutOfPocket}</p>
                             </div>
                           )}
                           {plan.coverage && (
@@ -272,35 +272,35 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                 </div>
               )}
 
-              {editFormData.primaryCareCopay !== undefined && (
+              {editFormData.primaryCareOutOfPocket !== undefined && (
                 <div className="space-y-2">
-                  <Label>Primary Care Copay</Label>
+                  <Label>Primary Care Out-of-Pocket</Label>
                   <Input
                     type="number"
-                    value={editFormData.primaryCareCopay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, primaryCareCopay: Number(e.target.value) }))}
+                    value={editFormData.primaryCareOutOfPocket ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, primaryCareOutOfPocket: Number(e.target.value) }))}
                   />
                 </div>
               )}
 
-              {editFormData.specialistCopay !== undefined && (
+              {editFormData.specialistOutOfPocket !== undefined && (
                 <div className="space-y-2">
-                  <Label>Specialist Copay</Label>
+                  <Label>Specialist Out-of-Pocket</Label>
                   <Input
                     type="number"
-                    value={editFormData.specialistCopay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, specialistCopay: Number(e.target.value) }))}
+                    value={editFormData.specialistOutOfPocket ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, specialistOutOfPocket: Number(e.target.value) }))}
                   />
                 </div>
               )}
 
-              {editFormData.genericDrugCopay !== undefined && (
+              {editFormData.genericDrugOutOfPocket !== undefined && (
                 <div className="space-y-2">
-                  <Label>Generic Drug Copay</Label>
+                  <Label>Generic Drug Out-of-Pocket</Label>
                   <Input
                     type="number"
-                    value={editFormData.genericDrugCopay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, genericDrugCopay: Number(e.target.value) }))}
+                    value={editFormData.genericDrugOutOfPocket ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, genericDrugOutOfPocket: Number(e.target.value) }))}
                   />
                 </div>
               )}
