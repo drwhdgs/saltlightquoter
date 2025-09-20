@@ -94,27 +94,26 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
       const template = PACKAGE_TEMPLATES.find(t => t.name === pkg.name);
       if (template) {
         pkg.plans.forEach((plan, planIndex) => {
-  const defaultPlan = template.defaultPlans[planIndex];
-  if (!defaultPlan) return;
+          const defaultPlan = template.defaultPlans[planIndex];
+          if (!defaultPlan) return;
 
-  const modKey = `${pkgIndex}_${planIndex}`;
-  const planDiff: Partial<InsurancePlan> = {};
+          const modKey = `${pkgIndex}_${planIndex}`;
+          const planDiff: Partial<InsurancePlan> = {};
 
-  const fields: (keyof InsurancePlan)[] = [
-    'monthlyPremium', 'deductible', 'copay', 'primaryCareCopay',
-    'specialistCopay', 'genericDrugCopay', 'outOfPocketMax',
-    'coverage', 'details'
-  ];
+          const fields: (keyof InsurancePlan)[] = [
+            'monthlyPremium', 'deductible', 'copay', 'primaryCareCopay',
+            'specialistCopay', 'genericDrugCopay', 'outOfPocketMax',
+            'coverage', 'details', 'effectiveDate', 'brochureUrl'
+          ];
 
-  fields.forEach((key) => {
-    if ((plan as any)[key] !== (defaultPlan as any)[key]) {
-      planDiff[key] = (plan as any)[key];
-    }
-  });
+          fields.forEach((key) => {
+            if ((plan as any)[key] !== (defaultPlan as any)[key]) {
+              planDiff[key] = (plan as any)[key];
+            }
+          });
 
-  if (Object.keys(planDiff).length > 0) modifications[modKey] = planDiff;
-});
-
+          if (Object.keys(planDiff).length > 0) modifications[modKey] = planDiff;
+        });
       }
     });
 
@@ -166,6 +165,21 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
         const modKey = `${pkgIndex}_${planIndex}`;
         const customData = compressed.m?.[modKey] ?? {};
 
+        let effectiveDate: string;
+        if (customData.effectiveDate) {
+          effectiveDate = customData.effectiveDate;
+        } else {
+          const today = new Date();
+          if (defaultPlan.type === 'health') {
+            const firstOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+            effectiveDate = firstOfNextMonth.toISOString();
+          } else {
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            effectiveDate = tomorrow.toISOString();
+          }
+        }
+
         return {
           id: generateId(),
           type: defaultPlan.type,
@@ -180,6 +194,8 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
           outOfPocketMax: customData.outOfPocketMax ?? defaultPlan.outOfPocketMax,
           coverage: customData.coverage ?? defaultPlan.coverage,
           details: customData.details ?? defaultPlan.details,
+          effectiveDate,
+          brochureUrl: customData.brochureUrl ?? defaultPlan.brochureUrl,
         };
       });
 
@@ -201,9 +217,9 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
   }
 };
 
-// -------------------- Legacy Decoding (unchanged) --------------------
+// -------------------- Legacy Decoding --------------------
 interface CompressedClient { n: string; z: string; d: string; e: string; p: string; a: string; }
-interface CompressedPlan { t: string; n: string; pr: string; mp: number; de: number; co: number; cv: string; dt: string; }
+interface CompressedPlan { t: string; n: string; pr: string; mp: number; de: number; co: number; cv: string; dt: string; ed?: string; br?: string; }
 interface CompressedPackage { n: string; d: string; t: number; pl: CompressedPlan[]; }
 interface CompressedQuote { c: CompressedClient; p: CompressedPackage[]; t: string; }
 
@@ -240,6 +256,8 @@ const decodeAndDecompress = (encoded: string): { client: Client; packages: Packa
         copay: compPlan.co || undefined,
         coverage: compPlan.cv || undefined,
         details: compPlan.dt || undefined,
+        effectiveDate: compPlan.ed || undefined,
+        brochureUrl: compPlan.br || undefined,
       }));
 
       return {

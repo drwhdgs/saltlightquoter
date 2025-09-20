@@ -40,12 +40,11 @@ export function QuoteReview({
   const totalMonthlyPremium = packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0);
   const totalAnnualPremium = totalMonthlyPremium * 12;
 
-  // Carrier logos mapping (matches PackageSelection)
   const carrierLogos: Record<string, string> = {
     Ameritas: '/logos/ameritas.png',
     Transamerica: '/logos/transamerica.png',
     'Manhattan Life': '/logos/manhattan-life.png',
-    ACA: '/logos/aca.png', // ACA logo for health
+    ACA: '/logos/aca.png',
     KonnectMD: '/logos/konnect.png',
     Breeze: '/logos/breeze.png',
   };
@@ -232,10 +231,10 @@ export function QuoteReview({
                               <p className="font-medium">${plan.genericDrugCopay}</p>
                             </div>
                           )}
-                          {plan.outOfPocket !== undefined && (
+                          {plan.outOfPocketMax !== undefined && (
                             <div>
                               <p className="text-gray-600">Out-of-Pocket Max</p>
-                              <p className="font-medium">${plan.outOfPocket.toLocaleString()}</p>
+                              <p className="font-medium">${plan.outOfPocketMax.toLocaleString()}</p>
                             </div>
                           )}
                         </>
@@ -244,6 +243,12 @@ export function QuoteReview({
                         <div>
                           <p className="text-gray-600">Coverage</p>
                           <p className="font-medium">{plan.coverage}</p>
+                        </div>
+                      )}
+                      {plan.effectiveDate && (
+                        <div>
+                          <p className="text-gray-600">Effective Date</p>
+                          <p className="font-medium">{plan.effectiveDate}</p>
                         </div>
                       )}
                     </div>

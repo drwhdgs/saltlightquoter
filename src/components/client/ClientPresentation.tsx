@@ -5,15 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  Shield,
   Eye,
   Heart,
   Activity,
   Phone,
   Mail,
-  DollarSign,
-  CrossIcon,
-  ShieldCheck
+  DollarSign
 } from 'lucide-react';
 import { Quote, Package, InsurancePlan } from '@/lib/types';
 
@@ -24,27 +21,21 @@ interface ClientPresentationProps {
 }
 
 export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }: ClientPresentationProps) {
-  // Same carrier logos as PackageSelection
   const carrierLogos: Record<string, string> = {
     Ameritas: '/logos/ameritas.png',
     Transamerica: '/logos/transamerica.png',
     'Manhattan Life': '/logos/manhattan-life.png',
-    ACA: '/logos/aca.png',
     KonnectMD: '/logos/konnect.png',
     Breeze: '/logos/breeze.png',
   };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {
     switch (type) {
-      case 'health': return <Shield className="w-4 h-4 text-blue-600" />;
       case 'dental': return <Activity className="w-4 h-4 text-green-600" />;
       case 'vision': return <Eye className="w-4 h-4 text-purple-600" />;
       case 'life': return <Heart className="w-4 h-4 text-red-600" />;
-      case 'cancer': return <Shield className="w-4 h-4 text-orange-600" />;
       case 'heart': return <Heart className="w-4 h-4 text-pink-600" />;
       case 'outOfPocket': return <DollarSign className="w-4 h-4 text-indigo-600" />;
-      case 'disability': return <Shield className="w-4 h-4 text-gray-600" />;
-      default: return <Shield className="w-4 h-4 text-blue-600" />;
     }
   };
 
@@ -64,14 +55,19 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
     if (plan.deductible !== undefined) details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
 
     if (plan.type === 'health') {
-      details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay ?? 0}`);
-      details.push(`Specialist Co-Pay: $${plan.specialistCopay ?? 0}`);
-      details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay ?? 0}`);
-      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax ?? 0}`);
+      if (plan.primaryCareCopay !== undefined) details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
+      if (plan.specialistCopay !== undefined) details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
+      if (plan.genericDrugCopay !== undefined) details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
+      if (plan.outOfPocketMax !== undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
     }
 
     if (plan.coverage) details.push(`Coverage: ${plan.coverage}`);
     if (plan.details) details.push(plan.details);
+
+    if (plan.effectiveDate) {
+      const effectiveDate = new Date(plan.effectiveDate);
+      details.push(`Effective Date: ${effectiveDate.toLocaleDateString('en-US')}`);
+    }
 
     return details;
   };
@@ -159,6 +155,19 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                       <div className="text-blue-600 font-medium">
                         Monthly Premium: ${plan.monthlyPremium.toLocaleString()}
                       </div>
+                      {/* Brochure Link */}
+                      {plan.brochureUrl && (
+                        <div className="mt-1">
+                          <a
+                            href={plan.brochureUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-indigo-600 underline text-sm"
+                          >
+                            View Brochure
+                          </a>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -175,6 +184,7 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                 <Button
                   onClick={() => onPackageSelect && onPackageSelect(pkg.id)}
                   className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r ${getPackageColor(index)} hover:opacity-90 transition-opacity`}
+                  variant={selectedPackageId === pkg.id ? 'default' : 'outline'}
                 >
                   I want this package
                 </Button>

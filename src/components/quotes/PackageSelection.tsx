@@ -1,4 +1,3 @@
-// src/components/quotes/PackageSelection.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -254,6 +253,12 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                               <p className="font-medium">{plan.coverage}</p>
                             </div>
                           )}
+                          {plan.effectiveDate && (
+                            <div>
+                              <p className="text-gray-600">Effective Date</p>
+                              <p className="font-medium">{plan.effectiveDate}</p>
+                            </div>
+                          )}
                         </div>
 
                         {plan.details && <p className="text-sm text-gray-600 mt-2">{plan.details}</p>}
@@ -352,6 +357,15 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                 <Input
                   value={editFormData.coverage ?? ''}
                   onChange={e => setEditFormData(prev => ({ ...prev, coverage: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Effective Date</Label>
+                <Input
+                  type="date"
+                  value={editFormData.effectiveDate ?? ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, effectiveDate: e.target.value }))}
                 />
               </div>
 
