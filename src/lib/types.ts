@@ -72,8 +72,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: 'dental',
         name: 'Ameritas PrimeStar Dental',
         provider: 'Ameritas',
-        monthlyPremium: 0,
-        deductible: 0,
+        monthlyPremium: 25.95,
+        deductible: 50,
         coverage: 'Preventive and basic dental care',
         details: 'The PrimeStar Care Lite plan is an affordable option for those with a healthy mouth. It offers basic coverage with an emphasis on preventive care such as exams and cleanings. The annual maximum benefit and coverage for Basic and Major procedures increase after the first year on the plan.'
       },
@@ -81,7 +81,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: 'vision',
         name: 'Ameritas PrimeStar Select Vision',
         provider: 'Ameritas',
-        monthlyPremium: 0,
+        monthlyPremium: 13.07,
         deductible: 0,
         coverage: 'Preventive and basic vision care',
         details: 'Protecting your eyes starts with having routine eye exams!'
@@ -91,7 +91,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: 'Manhattan Life Out-of-Pocket Protection',
         provider: 'Manhattan Life',
         monthlyPremium: 0,
-        coverage: 'Out-of-pocket expense protection',
+        coverage: '$100/day Inpatient Hospital Confinement Benefit',
         details: 'Helps cover unexpected medical expenses'
       }
     ]
@@ -105,9 +105,9 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: 'health',
         name: 'ACA Silver Health Plan',
         provider: 'ACA Marketplace',
-        monthlyPremium: 450,
-        deductible: 4500,
-        copay: 30,
+        monthlyPremium: 0,
+        deductible: 0,
+        copay: 0,
         coverage: 'Enhanced health benefits',
         details: 'Silver level ACA compliant health insurance'
       },
@@ -115,8 +115,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: 'dental',
         name: 'Ameritas PrimeStar Dental',
         provider: 'Ameritas',
-        monthlyPremium: 0,
-        deductible: 0,
+        monthlyPremium: 46.89,
+        deductible: 50,
         coverage: 'Preventive and basic dental care',
         details: 'The PrimeStar Care Lite plan is an affordable option for those with a healthy mouth. It offers basic coverage with an emphasis on preventive care such as exams and cleanings. The annual maximum benefit and coverage for Basic and Major procedures increase after the first year on the plan.'
       },
@@ -124,7 +124,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: 'vision',
         name: 'Ameritas PrimeStar Select Vision',
         provider: 'Ameritas',
-        monthlyPremium: 0,
+        monthlyPremium: 13.07,
         deductible: 0,
         coverage: 'Preventive and basic vision care',
         details: 'Protecting your eyes starts with having routine eye exams!'
@@ -134,7 +134,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: 'Manhattan Life Out-of-Pocket Protection',
         provider: 'Manhattan Life',
         monthlyPremium: 0,
-        coverage: 'Out-of-pocket expense protection $100/day',       
+        coverage: '$200/day Inpatient Hospital Confinement Benefit',
         details: 'Helps cover unexpected medical expenses'
       },
       {
@@ -182,8 +182,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: 'dental',
         name: 'Ameritas PrimeStar Dental Complete',
         provider: 'Ameritas',
-        monthlyPremium: 0,
-        deductible: 0,
+        monthlyPremium: 53.85,
+        deductible: 50,
         coverage: 'Premium dental care',
         details: 'The PrimeStar Care Complete plan offers extensive dental care with a high annual maximum benefit. This comprehensive plan offers implant coverage as a Major procedure. Hearing benefits for exams and hearing aids are available to plan members of all ages. The annual maximum benefit and coverage for Basic and Major procedures increase after the first year on the plan.'
       },
@@ -191,7 +191,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: 'vision',
         name: 'Ameritas PrimeStar Choice Vision',
         provider: 'Ameritas',
-        monthlyPremium: 0,
+        monthlyPremium: 13.07,
         deductible: 0,
         coverage: 'Enhanced vision benefits',
         details: 'Eye exams, frames, lenses, contacts'
@@ -201,7 +201,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: 'Manhattan Life Out-of-Pocket Protection',
         provider: 'Manhattan Life',
         monthlyPremium: 0,
-        coverage: 'Out-of-pocket expense protection',
+        coverage: '$200/day Inpatient Hospital Confinement Benefit',
         details: 'Helps cover unexpected medical expenses'
       },
       {
@@ -229,12 +229,12 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         details: 'Receive a lump-sum cash benefit paid upon diagnosis of heart and stroke over and above any benefits you receive from any other plan!'
       },
       {
-        type: 'outOfPocket',
-        name: 'Manhattan Life Out-of-Pocket Premium',
-        provider: 'Manhattan Life',
+        type: 'disability',
+        name: 'Breeze Short-Term Disability',
+        provider: 'Breeze',
         monthlyPremium: 0,
-        coverage: 'Enhanced out-of-pocket protection at $200/day',
-        details: 'Higher coverage benefit for unexpected medical expenses'
+        coverage: 'Short-term disability income',
+        details: 'Income replacement for temporary disabilities'
       }
     ]
   },
@@ -250,74 +250,43 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         deductible: 0,
         copay: 0,
-        coverage: 'Platinum health benefits',
-        details: 'Highest level ACA compliant health insurance'
+        coverage: 'Unlimited virtual healthcare',
+        details: '24/7 access to doctors, therapists, and specialists with no copays, deductibles, or surprise bills.'
       },
       {
         type: 'dental',
-        name: 'Ameritas Dental Elite',
+        name: 'Ameritas PrimeStar Dental Complete',
         provider: 'Ameritas',
-        monthlyPremium: 95,
-        deductible: 25,
-        coverage: 'Elite dental care',
-        details: 'All dental procedures with minimal out-of-pocket'
+        monthlyPremium: 53.85,
+        deductible: 50,
+        coverage: 'Premium dental care',
+        details: 'The PrimeStar Care Complete plan offers extensive dental care with a high annual maximum benefit. This comprehensive plan offers implant coverage as a Major procedure. Hearing benefits for exams and hearing aids are available to plan members of all ages. The annual maximum benefit and coverage for Basic and Major procedures increase after the first year on the plan.'
       },
       {
         type: 'vision',
-        name: 'Ameritas Vision Elite',
+        name: 'Ameritas PrimeStar Choice Vision',
         provider: 'Ameritas',
-        monthlyPremium: 45,
-        coverage: 'Elite vision benefits',
-        details: 'Premium designer frames, all lens options'
+        monthlyPremium: 13.07,
+        deductible: 0,
+        coverage: 'Enhanced vision benefits',
+        details: 'Eye exams, frames, lenses, contacts'
       },
       {
         type: 'life',
-        name: 'Transamerica Term Life Elite',
+        name: 'Transamerica Trendsetter Super Prefered',
         provider: 'Transamerica',
-        monthlyPremium: 175,
-        coverage: '$1,000,000 term life insurance',
-        details: '30-year level term life insurance'
-      },
-      {
-        type: 'cancer',
-        name: 'Manhattan Life Cancer Elite',
-        provider: 'Manhattan Life',
-        monthlyPremium: 65,
-        coverage: 'Comprehensive cancer protection',
-        details: 'Multiple payments for cancer treatment'
-      },
-      {
-        type: 'heart',
-        name: 'Manhattan Life Heart Elite',
-        provider: 'Manhattan Life',
-        monthlyPremium: 60,
-        coverage: 'Comprehensive heart protection',
-        details: 'Multiple payments for heart conditions'
+        monthlyPremium: 0,
+        coverage: '$500,000 term life insurance',
+        details: '25-year level term life insurance'
       },
       {
         type: 'outOfPocket',
-        name: 'Manhattan Life Out-of-Pocket Elite',
+        name: 'Manhattan Life Out-of-Pocket Protection',
         provider: 'Manhattan Life',
-        monthlyPremium: 105,
-        coverage: 'Maximum out-of-pocket protection',
+        monthlyPremium: 0,
+        coverage: '$200/day Inpatient Hospital Confinement Benefit',
         details: 'Highest coverage for all medical expenses'
       },
-      {
-        type: 'breeze',
-        name: 'Manhattan Life Breeze',
-        provider: 'Manhattan Life',
-        monthlyPremium: 55,
-        coverage: 'Supplemental health benefits',
-        details: 'Additional health and wellness benefits'
-      },
-      {
-        type: 'disability',
-        name: 'Manhattan Life Short-Term Disability',
-        provider: 'Manhattan Life',
-        monthlyPremium: 85,
-        coverage: 'Short-term disability income',
-        details: 'Income replacement for temporary disabilities'
-      }
     ]
   }
 ];
