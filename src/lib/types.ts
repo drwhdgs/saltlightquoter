@@ -70,7 +70,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       },
       {
         type: 'dental',
-        name: 'Ameritas PrimeStar Dental',
+        name: 'Ameritas PrimeStar Care Lite Dental',
         provider: 'Ameritas',
         monthlyPremium: 25.95,
         deductible: 50,
@@ -180,7 +180,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       },
 {
         type: 'dental',
-        name: 'Ameritas PrimeStar Dental Complete',
+        name: 'Ameritas PrimeStar Care Complete Dental',
         provider: 'Ameritas',
         monthlyPremium: 53.85,
         deductible: 50,
