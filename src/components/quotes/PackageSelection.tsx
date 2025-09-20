@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Edit, DollarSign, Shield, Heart, Eye, Activity } from 'lucide-react';
+import { Edit, Shield, Heart, Eye, Activity } from 'lucide-react';
 import { Package, InsurancePlan, Client } from '@/lib/types';
 import { generateAllPackages } from '@/lib/packages';
 
@@ -32,7 +32,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       const initialIds = new Set(
         initialPackages.map(pkg => {
           const matchingPkg = availablePackages.find(ap => ap.name === pkg.name);
-          return matchingPkg?.id ?? pkg.id; // always string
+          return matchingPkg?.id ?? pkg.id;
         })
       );
       setSelectedPackageIds(initialIds);
@@ -124,43 +124,215 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      {/* ... UI remains the same as your code above ... */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-gray-900">Package Selection</h2>
+        <p className="text-gray-600 mt-2">Choose insurance packages for {client.name}</p>
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+          <p className="text-sm text-blue-800">
+            <strong>Instructions:</strong> Check the boxes to select which packages to include in your quote.
+            You can customize individual plans within each selected package.
+          </p>
+        </div>
+      </div>
 
-      {availablePackages.map((pkg) => {
-        const isSelected = selectedPackageIds.has(pkg.id);
-        const displayPackage = getPackageToDisplay(pkg.id);
+      <div className="grid gap-6">
+        {availablePackages.map(pkg => {
+          const isSelected = selectedPackageIds.has(pkg.id);
+          const displayPackage = getPackageToDisplay(pkg.id);
 
-        return (
-          <Card key={pkg.id} className={`transition-all duration-200 ${isSelected ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:shadow-md'}`}>
-            {/* ... card header ... */}
-            {isSelected && (
-              <CardContent className="pt-0">
-                {displayPackage.plans.map((plan) => (
-                  <div key={plan.id} className="border rounded-lg p-4 bg-gray-50">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center space-x-2">
-                        {getPlanIcon(plan.type)}
-                        <h5 className="font-medium">{plan.name}</h5>
-                        <Badge variant="outline">{plan.provider}</Badge>
-                      </div>
-                      {plan.id && pkg.id && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditPlan(pkg.id!, plan.id!)}
-                        >
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                      )}
+          return (
+            <Card key={pkg.id} className={`transition-all duration-200 ${isSelected ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:shadow-md'}`}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={checked => handlePackageToggle(pkg.id, !!checked)}
+                      className="scale-125"
+                    />
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        {pkg.name}
+                        {pkg.name === 'Silver' && <Badge variant="secondary">Recommended</Badge>}
+                      </CardTitle>
+                      <p className="text-sm text-gray-600 mt-1">{pkg.description}</p>
                     </div>
-                    {/* ... plan details ... */}
                   </div>
-                ))}
-              </CardContent>
-            )}
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-green-600">
+                      ${displayPackage.totalMonthlyPremium.toLocaleString()}/mo
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      ${(displayPackage.totalMonthlyPremium * 12).toLocaleString()}/year
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+
+              {isSelected && (
+                <CardContent className="pt-0">
+                  <Separator className="mb-4" />
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-gray-900 flex items-center gap-2">
+                      Included Plans:
+                      <Badge variant="outline">{displayPackage.plans.length} plans</Badge>
+                    </h4>
+                    {displayPackage.plans.map(plan => (
+                      <div key={plan.id} className="border rounded-lg p-4 bg-gray-50">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-2">
+                            {getPlanIcon(plan.type)}
+                            <h5 className="font-medium">{plan.name}</h5>
+                            <Badge variant="outline">{plan.provider}</Badge>
+                          </div>
+                          {plan.id && pkg.id && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditPlan(pkg.id!, plan.id!)}
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-600">Monthly Premium</p>
+                            <p className="font-medium">${plan.monthlyPremium}/mo</p>
+                          </div>
+                          {plan.deductible !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Deductible</p>
+                              <p className="font-medium">${plan.deductible.toLocaleString()}</p>
+                            </div>
+                          )}
+                          {plan.copay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Copay</p>
+                              <p className="font-medium">${plan.copay}</p>
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-gray-600">Coverage</p>
+                            <p className="font-medium">{plan.coverage}</p>
+                          </div>
+                        </div>
+
+                        {plan.details && <p className="text-sm text-gray-600 mt-2">{plan.details}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Edit Plan Modal */}
+      {editingPlan && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Edit Plan Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Plan Name</Label>
+                <Input
+                  value={editFormData.name || ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Monthly Premium</Label>
+                <Input
+                  type="number"
+                  value={editFormData.monthlyPremium ?? ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, monthlyPremium: Number(e.target.value) }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Deductible</Label>
+                <Input
+                  type="number"
+                  value={editFormData.deductible ?? ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, deductible: Number(e.target.value) }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Copay</Label>
+                <Input
+                  type="number"
+                  value={editFormData.copay ?? ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, copay: Number(e.target.value) }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Coverage Description</Label>
+                <Input
+                  value={editFormData.coverage || ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, coverage: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Additional Details</Label>
+                <Textarea
+                  value={editFormData.details || ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, details: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button variant="outline" onClick={() => { setEditingPlan(null); setEditFormData({}); }}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSavePlanEdit}>Save Changes</Button>
+              </div>
+            </CardContent>
           </Card>
-        );
-      })}
+        </div>
+      )}
+
+      {/* Summary */}
+      {selectedPackageIds.size > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Quote Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span>Selected Packages:</span>
+                <span>{selectedPackageIds.size}</span>
+              </div>
+              <div className="flex justify-between items-center font-medium">
+                <span>Total Monthly Premium:</span>
+                <span className="text-xl text-green-600">
+                  ${totalSelectedValue.toLocaleString()}/mo
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm text-gray-600">
+                <span>Total Annual Premium:</span>
+                <span>${(totalSelectedValue * 12).toLocaleString()}/year</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Actions */}
+      <div className="flex justify-between pt-6">
+        <Button variant="outline" onClick={onBack}>Back to Client Info</Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={selectedPackageIds.size === 0}
+          className={selectedPackageIds.size === 0 ? 'opacity-50 cursor-not-allowed' : ''}
+        >
+          Generate Quote ({selectedPackageIds.size} package{selectedPackageIds.size !== 1 ? 's' : ''})
+        </Button>
+      </div>
     </div>
   );
 }
