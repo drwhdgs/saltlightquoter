@@ -194,17 +194,39 @@ export function QuoteReview({
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mt-3">
-                      {plan.deductible && (
+                      {plan.deductible !== undefined && (
                         <div>
                           <p className="text-gray-600">Deductible</p>
                           <p className="font-medium">${plan.deductible.toLocaleString()}</p>
                         </div>
                       )}
-                      {plan.copay && (
+                      {plan.copay !== undefined && (
                         <div>
                           <p className="text-gray-600">Copay</p>
                           <p className="font-medium">${plan.copay}</p>
                         </div>
+                      )}
+                      {plan.type === 'health' && (
+                        <>
+                          {plan.primaryCareCopay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Primary Care</p>
+                              <p className="font-medium">${plan.primaryCareCopay}</p>
+                            </div>
+                          )}
+                          {plan.specialistCopay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Specialist</p>
+                              <p className="font-medium">${plan.specialistCopay}</p>
+                            </div>
+                          )}
+                          {plan.genericDrugCopay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Generic Drugs</p>
+                              <p className="font-medium">${plan.genericDrugCopay}</p>
+                            </div>
+                          )}
+                        </>
                       )}
                       <div>
                         <p className="text-gray-600">Coverage</p>
