@@ -17,7 +17,6 @@ import {
   DollarSign,
   Edit
 } from 'lucide-react';
-// The HealthInsurancePlan import is no longer needed
 import { Client, Package, InsurancePlan } from '@/lib/types';
 
 interface QuoteReviewProps {
@@ -95,7 +94,6 @@ export function QuoteReview({
                   <p className="font-medium">{client.name}</p>
                 </div>
               </div>
-
               <div className="flex items-center space-x-3">
                 <Calendar className="w-4 h-4 text-gray-500" />
                 <div>
@@ -103,7 +101,6 @@ export function QuoteReview({
                   <p className="font-medium">{calculateAge(client.dateOfBirth)} years old</p>
                 </div>
               </div>
-
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4 text-gray-500" />
                 <div>
@@ -121,7 +118,6 @@ export function QuoteReview({
                   <p className="font-medium">{client.email}</p>
                 </div>
               </div>
-
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-gray-500" />
                 <div>
@@ -129,7 +125,6 @@ export function QuoteReview({
                   <p className="font-medium">{client.phone}</p>
                 </div>
               </div>
-
               {client.additionalInfo && (
                 <div>
                   <p className="text-sm text-gray-600">Additional Information</p>
@@ -199,31 +194,32 @@ export function QuoteReview({
                       )}
                       {plan.type === 'health' && (
                         <>
-                          {/* The type assertion is no longer needed */}
-                          {plan.primaryCareOutOfPocket !== undefined && (
+                          {plan.primaryCareCopay !== undefined && (
                             <div>
-                              <p className="text-gray-600">Primary Care</p>
-                              <p className="font-medium">${plan.primaryCareOutOfPocket}</p>
+                              <p className="text-gray-600">Primary Care Copay</p>
+                              <p className="font-medium">${plan.primaryCareCopay}</p>
                             </div>
                           )}
-                          {plan.specialistOutOfPocket !== undefined && (
+                          {plan.specialistCopay !== undefined && (
                             <div>
-                              <p className="text-gray-600">Specialist</p>
-                              <p className="font-medium">${plan.specialistOutOfPocket}</p>
+                              <p className="text-gray-600">Specialist Copay</p>
+                              <p className="font-medium">${plan.specialistCopay}</p>
                             </div>
                           )}
-                          {plan.genericDrugOutOfPocket !== undefined && (
+                          {plan.genericDrugCopay !== undefined && (
                             <div>
-                              <p className="text-gray-600">Generic Drugs</p>
-                              <p className="font-medium">${plan.genericDrugOutOfPocket}</p>
+                              <p className="text-gray-600">Generic Drug Copay</p>
+                              <p className="font-medium">${plan.genericDrugCopay}</p>
                             </div>
                           )}
                         </>
                       )}
-                      <div>
-                        <p className="text-gray-600">Coverage</p>
-                        <p className="font-medium">{plan.coverage}</p>
-                      </div>
+                      {plan.coverage && (
+                        <div>
+                          <p className="text-gray-600">Coverage</p>
+                          <p className="font-medium">{plan.coverage}</p>
+                        </div>
+                      )}
                     </div>
 
                     {plan.details && (
