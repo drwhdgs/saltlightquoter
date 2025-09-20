@@ -199,12 +199,6 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                               <p className="font-medium">${plan.deductible.toLocaleString()}</p>
                             </div>
                           )}
-                          {plan.copay !== undefined && (
-                            <div>
-                              <p className="text-gray-600">Copay</p>
-                              <p className="font-medium">${plan.copay}</p>
-                            </div>
-                          )}
                           {plan.primaryCareCopay !== undefined && (
                             <div>
                               <p className="text-gray-600">Primary Care Copay</p>
@@ -274,17 +268,6 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                     type="number"
                     value={editFormData.deductible ?? ''}
                     onChange={e => setEditFormData(prev => ({ ...prev, deductible: Number(e.target.value) }))}
-                  />
-                </div>
-              )}
-
-              {editFormData.copay !== undefined && (
-                <div className="space-y-2">
-                  <Label>Copay</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.copay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, copay: Number(e.target.value) }))}
                   />
                 </div>
               )}
