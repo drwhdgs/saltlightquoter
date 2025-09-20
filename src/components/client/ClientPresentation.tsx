@@ -127,7 +127,7 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                         <span className="font-semibold text-gray-900 uppercase tracking-wide text-sm">
                           {plan.type === 'outOfPocket' ? 'OUT-OF-POCKET PROTECTION' :
                            plan.type === 'life' ? 'LIFE INSURANCE' :
-                           plan.type === 'health' ? 'ACA PLAN' :
+                           plan.type === 'health' ? 'HEALTH INSURANCE' :
                            plan.name.toUpperCase()}
                         </span>
                       </div>
