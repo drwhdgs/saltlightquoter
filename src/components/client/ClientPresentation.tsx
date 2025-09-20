@@ -11,10 +11,8 @@ import {
   Phone,
   Mail,
   DollarSign,
-  User,
-  CheckCircle
 } from 'lucide-react';
-import { Quote, Package, InsurancePlan } from '@/lib/types';
+import { Quote, InsurancePlan } from '@/lib/types';
 
 interface ClientPresentationProps {
   quote: Quote;
@@ -32,7 +30,6 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
       case 'cancer': return <Shield className="w-4 h-4 text-orange-600" />;
       case 'heart': return <Heart className="w-4 h-4 text-pink-600" />;
       case 'outOfPocket': return <DollarSign className="w-4 h-4 text-indigo-600" />;
-      case 'breeze': return <CheckCircle className="w-4 h-4 text-teal-600" />;
       case 'disability': return <Shield className="w-4 h-4 text-gray-600" />;
       default: return <Shield className="w-4 h-4 text-blue-600" />;
     }
@@ -79,7 +76,7 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
               {/* Logo */}
               <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
                 <img
-                  src="https://i.ibb.co/gbLRKXn3/662-815-0033-removebg-preview.png" // replace with your logo path
+                  src="https://i.ibb.co/gbLRKXn3/662-815-0033-removebg-preview.png"
                   alt="Company Logo"
                   className="w-full h-full object-cover"
                 />
@@ -110,7 +107,7 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className={`grid grid-cols-1 ${quote.packages.length === 2 ? 'lg:grid-cols-2' : quote.packages.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2 xl:grid-cols-4'} gap-6`}>
           {quote.packages.map((pkg, index) => (
-            <div key={pkg.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div key={pkg.id} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
               {/* Package Header */}
               <div className={`bg-gradient-to-r ${getPackageColor(index)} text-white p-4 text-center`}>
                 <h2 className="text-xl font-bold">Package #{index + 1}</h2>
@@ -118,79 +115,72 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
               </div>
 
               {/* Package Content */}
-              <div className="p-4">
-                <div className="space-y-4 mb-6">
-                  {pkg.plans.map((plan) => (
-                    <div key={plan.id} className="border-l-4 border-gray-200 pl-3">
-                      <div className="flex items-center gap-2 mb-1">
-                        {getPlanIcon(plan.type)}
-                        <span className="font-semibold text-gray-900 uppercase tracking-wide text-sm">
-                          {plan.type === 'outOfPocket' ? 'OUT-OF-POCKET PROTECTION' :
-                           plan.type === 'life' ? 'LIFE INSURANCE' :
-                           plan.type === 'health' ? 'HEALTH INSURANCE' :
-                           plan.name.toUpperCase()}
-                        </span>
+              <div className="p-4 flex-1 overflow-y-auto max-h-[400px] space-y-4">
+                {pkg.plans.map((plan) => (
+                  <div key={plan.id} className="border-l-4 border-gray-200 pl-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      {getPlanIcon(plan.type)}
+                      <span className="font-semibold text-gray-900 uppercase tracking-wide text-sm">
+                        {plan.type === 'outOfPocket' ? 'OUT-OF-POCKET PROTECTION' :
+                         plan.type === 'life' ? 'LIFE INSURANCE' :
+                         plan.type === 'health' ? 'HEALTH INSURANCE' :
+                         plan.name.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <div className="text-sm text-gray-800 mb-2">{plan.name}</div>
+
+                    <div className="text-xs text-gray-600 space-y-1">
+                      {formatPlanDetails(plan).map((detail, idx) => (
+                        <div key={idx}>{detail}</div>
+                      ))}
+                      <div className="text-blue-600 font-medium">
+                        Monthly Premium: ${plan.monthlyPremium}
                       </div>
+                    </div>
 
-                      <div className="text-sm text-gray-800 mb-2">{plan.name}</div>
-
-                      <div className="text-xs text-gray-600 space-y-1">
-                        {formatPlanDetails(plan).map((detail, idx) => (
-                          <div key={idx}>{detail}</div>
-                        ))}
-                        <div className="text-blue-600 font-medium">
-                          Monthly Premium: ${plan.monthlyPremium}
-                        </div>
+                    {plan.type === 'health' && (
+                      <div className="mt-2 text-xs">
+                        <div className="text-green-600">✓ ACA COMPLIANT PLAN</div>
+                        <div className="text-green-600">✓ 100% Coverage of ALL Preventative Care!</div>
                       </div>
-
-                      {plan.type === 'health' && (
-                        <div className="mt-2 text-xs">
-                          <div className="text-green-600">✓ ACA COMPLIANT PLAN</div>
-                          <div className="text-green-600">✓ 100% Coverage of ALL Preventative Care!</div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Monthly Payment */}
-                <div className="border-t-2 border-gray-200 pt-4 mb-4">
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-gray-700 mb-1">
-                      Your Monthly Payment:
-                    </div>
-                    <div className="text-3xl font-bold text-gray-900">
-                      ${pkg.totalMonthlyPremium.toLocaleString()}
-                    </div>
+                    )}
                   </div>
-                </div>
-
-                <Button
-  onClick={() => window.open(
-    'https://www.cognitoforms.com/SaltLightInsuranceGroup/ClientIntakeForm',
-    '_blank', // opens in new tab/window
-    'noopener,noreferrer' // security best practice
-  )}
-  className={`w-full py-3 text-lg font-semibold bg-gradient-to-r ${getPackageColor(index)} hover:opacity-90 transition-opacity`}
->
-  I want this package
-</Button>
-
-
-
-                {index === 1 && (
-                  <div className="text-center mt-2">
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      ⭐ Most Popular Choice
-                    </Badge>
-                  </div>
-                )}
+                ))}
               </div>
+
+              {/* Monthly Payment */}
+              <div className="border-t-2 border-gray-200 pt-4 mb-4 text-center">
+                <div className="text-lg font-semibold text-gray-700 mb-1">
+                  Your Monthly Payment:
+                </div>
+                <div className="text-3xl font-bold text-gray-900">
+                  ${pkg.totalMonthlyPremium.toLocaleString()}
+                </div>
+              </div>
+
+              <Button
+                onClick={() => window.open(
+                  'https://www.cognitoforms.com/SaltLightInsuranceGroup/ClientIntakeForm',
+                  '_blank',
+                  'noopener,noreferrer'
+                )}
+                className={`w-full py-3 text-lg font-semibold bg-gradient-to-r ${getPackageColor(index)} hover:opacity-90 transition-opacity`}
+              >
+                I want this package
+              </Button>
+
+              {index === 1 && (
+                <div className="text-center mt-2">
+                  <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    ⭐ Most Popular Choice
+                  </Badge>
+                </div>
+              )}
             </div>
           ))}
         </div>
 
-       
         {/* Contact Information */}
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">
