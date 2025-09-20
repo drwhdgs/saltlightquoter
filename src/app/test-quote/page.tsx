@@ -30,7 +30,7 @@ export default function TestQuotePage() {
             provider: 'ACA',
             monthlyPremium: 300,
             deductible: 5000,
-            outofpocket: 30, // updated field name
+            copay: 30,
             coverage: 'Basic health coverage',
             details: 'Basic ACA plan'
           }
@@ -72,21 +72,10 @@ export default function TestQuotePage() {
       setTestResult(prev => prev + `Encoded data length: ${encodedData.length} characters\n`);
       setTestResult(prev => prev + `Encoded data: ${encodedData}\n`);
 
-      // Decode and fill in missing Quote fields
-      const decodedRaw = decodeQuoteFromUrl(encodedData);
-      const decodedData: Quote | null = decodedRaw
-        ? {
-            id: decodedRaw.id ?? 'unknown-id',
-            agentId: decodedRaw.agentId ?? 'unknown-agent',
-            client: decodedRaw.client,
-            packages: decodedRaw.packages,
-            createdAt: decodedRaw.createdAt,
-            updatedAt: decodedRaw.updatedAt ?? new Date().toISOString(),
-            status: decodedRaw.status ?? 'completed'
-          }
-        : null;
+      // Try to decode the data
+      const decodedData = decodeQuoteFromUrl(encodedData);
 
-      if (decodedData?.client && decodedData?.packages) {
+      if (decodedData && decodedData.client && decodedData.packages) {
         setTestResult(prev => prev + '✅ Test PASSED - Ultra-compressed quote works correctly!\n');
         setTestResult(prev => prev + `Client: ${decodedData.client.name}\n`);
         setTestResult(prev => prev + `Packages: ${decodedData.packages.map(p => p.name).join(', ')}\n`);
@@ -95,8 +84,12 @@ export default function TestQuotePage() {
         setTestResult(prev => prev + '❌ Test FAILED - Decoded data is invalid\n');
       }
 
-    } catch (error: any) {
-      setTestResult(prev => prev + `❌ Test FAILED with error: ${error.message ?? error}\n`);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setTestResult(prev => prev + `❌ Test FAILED with error: ${error.message}\n`);
+      } else {
+        setTestResult(prev => prev + `❌ Test FAILED with unknown error: ${String(error)}\n`);
+      }
     }
   };
 
