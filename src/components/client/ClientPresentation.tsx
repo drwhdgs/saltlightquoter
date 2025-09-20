@@ -39,7 +39,7 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
       case 'disability': return <Shield className="w-4 h-4 text-gray-600" />;
       default: return <Shield className="w-4 h-4 text-blue-600" />;
     }
-};
+  };
 
   const getPackageColor = (index: number) => {
     const colors = [
@@ -54,7 +54,6 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
   const formatPlanDetails = (plan: InsurancePlan) => {
     const details = [];
     if (plan.deductible) details.push(`• Deductible: $${plan.deductible.toLocaleString()}`);
-    if (plan.copay) details.push(`• Copay: $${plan.copay}`);
     if (plan.coverage) details.push(`• ${plan.coverage}`);
     if (plan.details) details.push(`• ${plan.details}`);
     return details;
@@ -79,7 +78,6 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
 
             {/* Agent Information */}
             <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
-              {/* Logo */}
               <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
                 <img
                   src="https://i.ibb.co/gbLRKXn3/662-815-0033-removebg-preview.png"
@@ -87,12 +85,8 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              {/* Agent Details */}
               <div>
-                <div className="font-semibold text-gray-900">
-                  Salt & Light Insurance Group
-                </div>
+                <div className="font-semibold text-gray-900">Salt & Light Insurance Group</div>
                 <div className="text-sm text-gray-600">
                   <Phone className="w-3 h-3 inline mr-1" />
                   <a href="tel:6628828179" className="hover:underline">(662) 882-8179</a>
@@ -177,11 +171,6 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                   I want this package
                 </Button>
               </div>
-
-              {index === 1 && (
-                <div className="text-center mt-2">
-                </div>
-              )}
             </div>
           ))}
         </div>
