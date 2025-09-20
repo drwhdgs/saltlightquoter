@@ -175,9 +175,6 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
 
               {index === 1 && (
                 <div className="text-center mt-2">
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    ⭐ Most Popular Choice
-                  </Badge>
                 </div>
               )}
             </div>
