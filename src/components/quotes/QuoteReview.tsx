@@ -17,7 +17,8 @@ import {
   DollarSign,
   Edit
 } from 'lucide-react';
-import { Client, Package, InsurancePlan, HealthInsurancePlan } from '@/lib/types'; // Import HealthInsurancePlan
+// The HealthInsurancePlan import is no longer needed
+import { Client, Package, InsurancePlan } from '@/lib/types';
 
 interface QuoteReviewProps {
   client: Client;
@@ -198,23 +199,23 @@ export function QuoteReview({
                       )}
                       {plan.type === 'health' && (
                         <>
-                          {/* We now need to assert the type to access these properties */}
-                          {(plan as HealthInsurancePlan).primaryCareCopay !== undefined && (
+                          {/* The type assertion is no longer needed */}
+                          {plan.primaryCareCopay !== undefined && (
                             <div>
                               <p className="text-gray-600">Primary Care</p>
-                              <p className="font-medium">${(plan as HealthInsurancePlan).primaryCareCopay}</p>
+                              <p className="font-medium">${plan.primaryCareCopay}</p>
                             </div>
                           )}
-                          {(plan as HealthInsurancePlan).specialistCopay !== undefined && (
+                          {plan.specialistCopay !== undefined && (
                             <div>
                               <p className="text-gray-600">Specialist</p>
-                              <p className="font-medium">${(plan as HealthInsurancePlan).specialistCopay}</p>
+                              <p className="font-medium">${plan.specialistCopay}</p>
                             </div>
                           )}
-                          {(plan as HealthInsurancePlan).genericDrugCopay !== undefined && (
+                          {plan.genericDrugCopay !== undefined && (
                             <div>
                               <p className="text-gray-600">Generic Drugs</p>
-                              <p className="font-medium">${(plan as HealthInsurancePlan).genericDrugCopay}</p>
+                              <p className="font-medium">${plan.genericDrugCopay}</p>
                             </div>
                           )}
                         </>
