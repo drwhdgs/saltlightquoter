@@ -203,19 +203,19 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                             <>
                               {plan.primaryCareOutOfPocket !== undefined && (
                                 <div>
-                                  <p className="text-gray-600">Primary Care Out-of-Pocket</p>
+                                  <p className="text-gray-600">Primary Care Co-Pay</p>
                                   <p className="font-medium">${plan.primaryCareOutOfPocket}</p>
                                 </div>
                               )}
                               {plan.specialistOutOfPocket !== undefined && (
                                 <div>
-                                  <p className="text-gray-600">Specialist Out-of-Pocket</p>
+                                  <p className="text-gray-600">Specialist Co-Pay</p>
                                   <p className="font-medium">${plan.specialistOutOfPocket}</p>
                                 </div>
                               )}
                               {plan.genericDrugOutOfPocket !== undefined && (
                                 <div>
-                                  <p className="text-gray-600">Generic Drug Out-of-Pocket</p>
+                                  <p className="text-gray-600">Generic Drug Co-Pay</p>
                                   <p className="font-medium">${plan.genericDrugOutOfPocket}</p>
                                 </div>
                               )}
