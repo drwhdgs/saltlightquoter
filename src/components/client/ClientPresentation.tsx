@@ -147,7 +147,6 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
 
                     {plan.type === 'health' && (
                       <div className="mt-2 text-xs">
-                        <div className="text-green-600">✓ ACA COMPLIANT PLAN</div>
                         <div className="text-green-600">✓ 100% Coverage of ALL Preventative Care!</div>
                       </div>
                     )}
