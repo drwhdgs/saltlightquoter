@@ -16,7 +16,7 @@ export interface Client {
 
 export interface InsurancePlan {
   id: string;
-  type: 'health' | 'dental' | 'vision' | 'life' | 'cancer' | 'heart' | 'outOfPocket' | 'breeze' | 'disability';
+  type: 'health' | 'konnect' | 'dental' | 'vision' | 'life' | 'cancer' | 'heart' | 'outOfPocket' | 'breeze' | 'disability';
   name: string;
   provider: string;
   monthlyPremium: number;
@@ -244,7 +244,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     planTypes: ['health', 'dental', 'vision', 'life', 'cancer', 'heart', 'outOfPocket', 'breeze', 'disability'],
     defaultPlans: [
       {
-        type: 'health',
+        type: 'konnect',
         name: 'KonnectMD',
         provider: 'KonnectMD',
         monthlyPremium: 0,
