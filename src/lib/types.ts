@@ -37,10 +37,10 @@ export interface InsurancePlan {
   coverage?: string;
   details?: string;
 
-  // Change "OutOfPocket" to "Copay" to match component
-  primaryCareCopay?: number;
-  specialistCopay?: number;
-  genericDrugCopay?: number;
+  // Added missing health plan-specific properties
+  primaryCareOutOfPocket?: number;
+  specialistOutOfPocket?: number;
+  genericDrugOutOfPocket?: number;
 }
 
 export interface Package {
@@ -85,9 +85,9 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         outOfPocket: 0,
         coverage: "Essential health benefits",
         details: "Bronze level ACA compliant health insurance",
-        primaryCareCopay: 0, // Updated property name
-        specialistCopay: 0, // Updated property name
-        genericDrugCopay: 0, // Updated property name
+        primaryCareOutOfPocket: 0,
+        specialistOutOfPocket: 0,
+        genericDrugOutOfPocket: 0,
       },
       {
         type: "dental",
@@ -133,9 +133,9 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         outOfPocket: 0,
         coverage: "Enhanced health benefits",
         details: "Silver level ACA compliant health insurance",
-        primaryCareCopay: 0, // Updated property name
-        specialistCopay: 0, // Updated property name
-        genericDrugCopay: 0, // Updated property name
+        primaryCareOutOfPocket: 0,
+        specialistOutOfPocket: 0,
+        genericDrugOutOfPocket: 0,
       },
       {
         type: "dental",
@@ -215,9 +215,9 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         outOfPocket: 20,
         coverage: "Premium health benefits",
         details: "Gold level ACA compliant health insurance",
-        primaryCareCopay: 0, // Updated property name
-        specialistCopay: 0, // Updated property name
-        genericDrugCopay: 0, // Updated property name
+        primaryCareOutOfPocket: 0,
+        specialistOutOfPocket: 0,
+        genericDrugOutOfPocket: 0,
       },
       {
         type: "dental",
