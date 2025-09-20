@@ -18,13 +18,8 @@ const STORAGE_KEYS = {
 export const saveAgent = (agent: Agent): void => {
   const agents = getAgents();
   const existingIndex = agents.findIndex(a => a.id === agent.id);
-
-  if (existingIndex >= 0) {
-    agents[existingIndex] = agent;
-  } else {
-    agents.push(agent);
-  }
-
+  if (existingIndex >= 0) agents[existingIndex] = agent;
+  else agents.push(agent);
   localStorage.setItem(STORAGE_KEYS.AGENTS, JSON.stringify(agents));
 };
 
@@ -34,8 +29,7 @@ export const getAgents = (): Agent[] => {
 };
 
 export const getAgentByEmail = (email: string): Agent | null => {
-  const agents = getAgents();
-  return agents.find(agent => agent.email === email) || null;
+  return getAgents().find(agent => agent.email === email) || null;
 };
 
 export const setCurrentAgent = (agent: Agent): void => {
@@ -55,69 +49,52 @@ export const clearCurrentAgent = (): void => {
 export const saveQuote = (quote: Quote): void => {
   const quotes = getQuotes();
   const existingIndex = quotes.findIndex(q => q.id === quote.id);
-
-  if (existingIndex >= 0) {
-    quotes[existingIndex] = quote;
-  } else {
-    quotes.push(quote);
-  }
-
+  if (existingIndex >= 0) quotes[existingIndex] = quote;
+  else quotes.push(quote);
   localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify(quotes));
 };
 
 export const getQuotes = (agentId?: string): Quote[] => {
   const stored = localStorage.getItem(STORAGE_KEYS.QUOTES);
   const allQuotes: Quote[] = stored ? JSON.parse(stored) : [];
-
-  if (agentId) {
-    return allQuotes.filter(quote => quote.agentId === agentId);
-  }
-
-  return allQuotes;
+  return agentId ? allQuotes.filter(q => q.agentId === agentId) : allQuotes;
 };
 
 export const getQuoteById = (id: string): Quote | null => {
-  const quotes = getQuotes();
-  return quotes.find(quote => quote.id === id) || null;
+  return getQuotes().find(q => q.id === id) || null;
 };
 
 export const deleteQuote = (id: string): void => {
-  const quotes = getQuotes();
-  const filtered = quotes.filter(quote => quote.id !== id);
+  const filtered = getQuotes().filter(q => q.id !== id);
   localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify(filtered));
 };
 
-// Utility Functions
+// Utilities
 export const generateId = (): string => {
   return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
 }
 
-// Ultra-compact compression - stores only template indices and modifications
+// Ultra-compress quote
 const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; createdAt: string }): string => {
   try {
-    // Map package names to indices for ultra-compression
     const packageMap: { [key: string]: number } = {
       'Bronze': 0,
       'Silver': 1,
       'Gold': 2,
       'Healthy Bundle': 3
     };
-
-    // Get selected package indices
     const packageIndices = data.packages.map(pkg => packageMap[pkg.name]);
-
-    // Only store modifications from default templates
     const modifications: { [key: string]: number } = {};
+
     data.packages.forEach((pkg, pkgIndex) => {
       const template = PACKAGE_TEMPLATES.find(t => t.name === pkg.name);
-      if (template) {
-        pkg.plans.forEach((plan, planIndex) => {
-          const defaultPlan = template.defaultPlans[planIndex];
-          if (defaultPlan && plan.monthlyPremium !== defaultPlan.monthlyPremium) {
-            modifications[`${pkgIndex}_${planIndex}`] = plan.monthlyPremium;
-          }
-        });
-      }
+      if (!template) return;
+
+      pkg.plans.forEach((plan, planIndex) => {
+        const defaultPlan = template.defaultPlans[planIndex];
+        if (!defaultPlan) return;
+        if (plan.monthlyPremium !== defaultPlan.monthlyPremium) modifications[`${pkgIndex}_${planIndex}`] = plan.monthlyPremium;
+      });
     });
 
     const ultraCompressed: UltraCompressedQuote = {
@@ -134,35 +111,25 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
       t: new Date(data.createdAt).getTime()
     };
 
-    // Convert to JSON and use a more compact encoding
     const jsonString = JSON.stringify(ultraCompressed);
-
-    // Use URL-safe Base64 encoding for reliability
-    const encoded = btoa(unescape(encodeURIComponent(jsonString)))
+    return btoa(unescape(encodeURIComponent(jsonString)))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');
-
-    return encoded;
   } catch (error) {
     console.error('Error in ultraCompressAndEncode:', error);
     throw error;
   }
 };
 
-// Decode ultra-compressed data
+// Decode ultra-compressed quote
 const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: Package[]; createdAt: string } => {
   try {
-    // Add padding if needed and restore standard base64 characters
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) {
-      base64 += '=';
-    }
-
+    while (base64.length % 4) base64 += '=';
     const jsonString = decodeURIComponent(escape(atob(base64)));
     const compressed: UltraCompressedQuote = JSON.parse(jsonString);
 
-    // Reconstruct client
     const client: Client = {
       name: compressed.c[0],
       zipCode: compressed.c[1],
@@ -172,17 +139,12 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
       additionalInfo: compressed.c[5]
     };
 
-    // Reconstruct packages from template indices
     const packageNames = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle'] as const;
     const packages: Package[] = compressed.p.map((index, pkgIndex) => {
       const templateName = packageNames[index];
       const template = PACKAGE_TEMPLATES.find(t => t.name === templateName);
+      if (!template) throw new Error(`Template not found for index: ${index}`);
 
-      if (!template) {
-        throw new Error(`Template not found for index: ${index}`);
-      }
-
-      // Create plans from template
       const plans = template.defaultPlans.map((defaultPlan, planIndex) => {
         const modKey = `${pkgIndex}_${planIndex}`;
         const customPremium = compressed.m?.[modKey];
@@ -197,9 +159,9 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
           copay: defaultPlan.copay,
           coverage: defaultPlan.coverage,
           details: defaultPlan.details,
-          primaryCareOutOfPocket: defaultPlan.primaryCareOutOfPocket,
-          specialistOutOfPocket: defaultPlan.specialistOutOfPocket,
-          genericDrugOutOfPocket: defaultPlan.genericDrugOutOfPocket,
+          primaryCareCopay: defaultPlan.primaryCareCopay,
+          specialistCopay: defaultPlan.specialistCopay,
+          genericDrugCopay: defaultPlan.genericDrugCopay
         };
       });
 
@@ -214,113 +176,27 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
       };
     });
 
-    return {
-      client,
-      packages,
-      createdAt: new Date(compressed.t).toISOString()
-    };
+    return { client, packages, createdAt: new Date(compressed.t).toISOString() };
   } catch (error) {
     console.error('Error in ultraDecodeAndDecompress:', error);
     throw error;
   }
 };
 
-// Legacy decode for backward compatibility
-// Types for compressed quote data
-interface CompressedClient {
-  n: string;
-  z: string;
-  d: string;
-  e: string;
-  p: string;
-  a: string;
-}
+// Legacy encode/decode (backward compatibility)
+interface CompressedClient { n: string; z: string; d: string; e: string; p: string; a: string }
+interface CompressedPlan { t: string; n: string; pr: string; mp: number; de: number; co: number; cv: string; dt: string }
+interface CompressedPackage { n: string; d: string; t: number; pl: CompressedPlan[] }
+interface CompressedQuote { c: CompressedClient; p: CompressedPackage[]; t: string }
 
-interface CompressedPlan {
-  t: string;
-  n: string;
-  pr: string;
-  mp: number;
-  de: number;
-  co: number;
-  cv: string;
-  dt: string;
-}
-
-interface CompressedPackage {
-  n: string;
-  d: string;
-  t: number;
-  pl: CompressedPlan[];
-}
-
-interface CompressedQuote {
-  c: CompressedClient;
-  p: CompressedPackage[];
-  t: string;
-}
-
-// Improved URL-safe Base64 encoding with compression (legacy)
-const compressAndEncode = (data: { client: Client; packages: Package[]; createdAt: string }): string => {
-  try {
-    // Create minimal quote representation
-    const compressed = {
-      c: {
-        n: data.client.name,
-        z: data.client.zipCode,
-        d: data.client.dateOfBirth,
-        e: data.client.email,
-        p: data.client.phone,
-        a: data.client.additionalInfo || ''
-      },
-      p: data.packages.map((pkg: Package) => ({
-        n: pkg.name,
-        d: pkg.description,
-        t: pkg.totalMonthlyPremium,
-        pl: pkg.plans.map((plan) => ({
-          t: plan.type,
-          n: plan.name,
-          pr: plan.provider,
-          mp: plan.monthlyPremium,
-          de: plan.deductible || 0,
-          co: plan.copay || 0,
-          cv: plan.coverage || '',
-          dt: plan.details || ''
-        }))
-      })),
-      t: data.createdAt || new Date().toISOString()
-    };
-
-    const jsonString = JSON.stringify(compressed);
-
-    // Use URL-safe base64 encoding
-    const encoded = btoa(unescape(encodeURIComponent(jsonString)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
-
-    return encoded;
-  } catch (error) {
-    console.error('Error in compressAndEncode:', error);
-    throw error;
-  }
-};
-
-// Decode and decompress quote data (legacy)
 const decodeAndDecompress = (encoded: string): { client: Client; packages: Package[]; createdAt: string } => {
   try {
-    // Add padding if needed and restore standard base64 characters
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) {
-      base64 += '=';
-    }
-
+    while (base64.length % 4) base64 += '=';
     const jsonString = decodeURIComponent(escape(atob(base64)));
     const compressed: CompressedQuote = JSON.parse(jsonString);
 
-    // Reconstruct full quote data
-
-    const client = {
+    const client: Client = {
       name: compressed.c.n,
       zipCode: compressed.c.z,
       dateOfBirth: compressed.c.d,
@@ -329,8 +205,8 @@ const decodeAndDecompress = (encoded: string): { client: Client; packages: Packa
       additionalInfo: compressed.c.a || undefined
     };
 
-    const packages = compressed.p.map((compPkg: CompressedPackage) => {
-      const plans = compPkg.pl.map((compPlan: CompressedPlan) => ({
+    const packages: Package[] = compressed.p.map(compPkg => {
+      const plans = compPkg.pl.map(compPlan => ({
         id: generateId(),
         type: compPlan.t as InsurancePlan['type'],
         name: compPlan.n,
@@ -339,139 +215,50 @@ const decodeAndDecompress = (encoded: string): { client: Client; packages: Packa
         deductible: compPlan.de || undefined,
         copay: compPlan.co || undefined,
         coverage: compPlan.cv || undefined,
-        details: compPlan.dt || undefined
+        details: compPlan.dt || undefined,
+        primaryCareCopay: undefined,
+        specialistCopay: undefined,
+        genericDrugCopay: undefined
       }));
 
       return {
         id: generateId(),
-        name: compPkg.n as Package['name'],
+        name: compPkg.n,
         description: compPkg.d,
         plans,
         totalMonthlyPremium: compPkg.t
       };
     });
 
-    return {
-      client,
-      packages,
-      createdAt: compressed.t
-    };
+    return { client, packages, createdAt: compressed.t };
   } catch (error) {
     console.error('Error in decodeAndDecompress:', error);
     throw error;
   }
 };
 
-// Generate ultra-short shareable link
+// Generate shareable link
 export const generateShareableLink = (quote: Quote): string => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-
   try {
-    console.log('Generating ultra-short shareable link for quote:', quote.id);
-
-    // Create the data to encode
-    const quoteData = {
-      client: quote.client,
-      packages: quote.packages,
-      createdAt: quote.createdAt
-    };
-
-    // Ultra-compress and encode the data
-    const encoded = ultraCompressAndEncode(quoteData);
-    console.log('Ultra-compressed data length:', encoded.length);
-
-    // Create the shareable link
-    const shareableLink = `${baseUrl}/quote/${encoded}`;
-    console.log('Generated ultra-short shareable link:', shareableLink);
-
-    return shareableLink;
-  } catch (error) {
-    console.error('Error generating shareable link:', error);
+    const encoded = ultraCompressAndEncode({ client: quote.client, packages: quote.packages, createdAt: quote.createdAt });
+    return `${baseUrl}/quote/${encoded}`;
+  } catch {
     return `${baseUrl}/quote/error`;
   }
 };
 
-// Decode quote data from URL
 export const decodeQuoteFromUrl = (encodedData: string): { client: Client; packages: Package[]; createdAt: string } | null => {
-  try {
-    console.log('Attempting to decode quote from URL:', encodedData);
-
-    // Handle error case
-    if (encodedData === 'error') {
-      console.error('Error in encoded data');
-      return null;
-    }
-
-    // Try ultra-decode first (new format)
-    try {
-      const quoteData = ultraDecodeAndDecompress(encodedData);
-      console.log('Successfully decoded with ultra-compression');
-      return quoteData;
-    } catch (ultraError) {
-      console.log('Ultra-decode failed, trying legacy decode...');
-      // Fallback to old format for backward compatibility
-      const quoteData = decodeAndDecompress(encodedData);
-      console.log('Successfully decoded with legacy format');
-      return quoteData;
-    }
-  } catch (error) {
-    console.error('Error decoding quote from URL:', error);
-    return null;
-  }
+  if (encodedData === 'error') return null;
+  try { return ultraDecodeAndDecompress(encodedData); }
+  catch { return decodeAndDecompress(encodedData); }
 };
 
-// Legacy function aliases for backward compatibility
-export const getQuoteDataByShortId = (encodedData: string) => {
-  return decodeQuoteFromUrl(encodedData);
-};
+export const getQuoteDataByShortId = (encodedData: string) => decodeQuoteFromUrl(encodedData);
 
-// Email functionality
-export const generateEmailToClient = (quote: Quote): string => {
-  const subject = encodeURIComponent(`Your Insurance Quote - ${quote.client.name}`);
-
-  const shareableLink = generateShareableLink(quote);
-
-  const totalMonthly = quote.packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0);
-  const totalAnnual = totalMonthly * 12;
-
-  const emailBody = encodeURIComponent(`Dear ${quote.client.name},
-
-Thank you for your interest in our insurance services. I've prepared a personalized quote for you with ${quote.packages.length} coverage option${quote.packages.length > 1 ? 's' : ''}.
-
-Quote Summary:
-${quote.packages.map((pkg, index) => `
-Package ${index + 1}: ${pkg.name}
-Monthly Premium: $${pkg.totalMonthlyPremium.toLocaleString()}
-Plans Included: ${pkg.plans.map(plan => plan.name).join(', ')}
-`).join('')}
-
-Total Monthly Premium: $${totalMonthly.toLocaleString()}
-Total Annual Premium: $${totalAnnual.toLocaleString()}
-
-To view your complete quote with detailed plan information, please click the link below:
-${shareableLink}
-
-This link contains your personalized quote and can be accessed from any device. If you have any questions or would like to discuss your coverage options, please don't hesitate to contact me.
-
-Best regards,
-Your Insurance Agent
-Phone: (555) 123-INSURANCE
-Email: quotes@insurance.com
-
-This quote is valid for 30 days from the date generated.`);
-
-  return `mailto:${quote.client.email}?subject=${subject}&body=${emailBody}`;
-};
-
-// Initialize storage if needed
+// Initialize storage
 export const initializeStorage = (): void => {
   if (typeof window === 'undefined') return;
-
-  if (!localStorage.getItem(STORAGE_KEYS.AGENTS)) {
-    localStorage.setItem(STORAGE_KEYS.AGENTS, JSON.stringify([]));
-  }
-
-  if (!localStorage.getItem(STORAGE_KEYS.QUOTES)) {
-    localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify([]));
-  }
+  if (!localStorage.getItem(STORAGE_KEYS.AGENTS)) localStorage.setItem(STORAGE_KEYS.AGENTS, JSON.stringify([]));
+  if (!localStorage.getItem(STORAGE_KEYS.QUOTES)) localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify([]));
 };
