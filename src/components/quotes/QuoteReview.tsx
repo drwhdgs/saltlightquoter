@@ -200,22 +200,22 @@ export function QuoteReview({
                       {plan.type === 'health' && (
                         <>
                           {/* The type assertion is no longer needed */}
-                          {plan.primaryCareCopay !== undefined && (
+                          {plan.primaryCareOutOfPocket !== undefined && (
                             <div>
                               <p className="text-gray-600">Primary Care</p>
-                              <p className="font-medium">${plan.primaryCareCopay}</p>
+                              <p className="font-medium">${plan.primaryCareOutOfPocket}</p>
                             </div>
                           )}
-                          {plan.specialistCopay !== undefined && (
+                          {plan.specialistOutOfPocket !== undefined && (
                             <div>
                               <p className="text-gray-600">Specialist</p>
-                              <p className="font-medium">${plan.specialistCopay}</p>
+                              <p className="font-medium">${plan.specialistOutOfPocket}</p>
                             </div>
                           )}
-                          {plan.genericDrugCopay !== undefined && (
+                          {plan.genericDrugOutOfPocket !== undefined && (
                             <div>
                               <p className="text-gray-600">Generic Drugs</p>
-                              <p className="font-medium">${plan.genericDrugCopay}</p>
+                              <p className="font-medium">${plan.genericDrugOutOfPocket}</p>
                             </div>
                           )}
                         </>
