@@ -33,15 +33,15 @@ export interface InsurancePlan {
   provider: string;
   monthlyPremium: number;
   deductible?: number;
-  outOfPocket?: number;
-  copay?: number; // Added missing copay property
+  outOfPocket?: number; // general out-of-pocket
+  copay?: number;       // general copay
   coverage?: string;
   details?: string;
 
-  // Health plan–specific fields
-  primaryCareOutOfPocket?: number;
-  specialistOutOfPocket?: number;
-  genericDrugOutOfPocket?: number;
+  // Health plan–specific copays
+  primaryCareCopay?: number;
+  specialistCopay?: number;
+  genericDrugCopay?: number;
 }
 
 export interface Package {
@@ -83,13 +83,12 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "ACA Marketplace",
         monthlyPremium: 0,
         deductible: 0,
-        outOfPocket: 0,
         copay: 0,
         coverage: "Essential health benefits",
         details: "Bronze level ACA compliant health insurance",
-        primaryCareOutOfPocket: 0,
-        specialistOutOfPocket: 0,
-        genericDrugOutOfPocket: 0,
+        primaryCareCopay: 0,
+        specialistCopay: 0,
+        genericDrugCopay: 0,
       },
       {
         type: "dental",
@@ -134,13 +133,12 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "ACA Marketplace",
         monthlyPremium: 0,
         deductible: 0,
-        outOfPocket: 0,
         copay: 0,
         coverage: "Enhanced health benefits",
         details: "Silver level ACA compliant health insurance",
-        primaryCareOutOfPocket: 0,
-        specialistOutOfPocket: 0,
-        genericDrugOutOfPocket: 0,
+        primaryCareCopay: 0,
+        specialistCopay: 0,
+        genericDrugCopay: 0,
       },
       {
         type: "dental",
@@ -201,8 +199,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
   },
   {
     name: "Gold",
-    description:
-      "Premium coverage with all health plans plus supplemental protection",
+    description: "Premium coverage with all health plans plus supplemental protection",
     planTypes: [
       "health",
       "dental",
@@ -211,6 +208,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       "cancer",
       "heart",
       "outOfPocket",
+      "disability",
     ],
     defaultPlans: [
       {
@@ -219,13 +217,12 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "ACA Marketplace",
         monthlyPremium: 550,
         deductible: 2500,
-        outOfPocket: 20,
         copay: 20,
         coverage: "Premium health benefits",
         details: "Gold level ACA compliant health insurance",
-        primaryCareOutOfPocket: 0,
-        specialistOutOfPocket: 0,
-        genericDrugOutOfPocket: 0,
+        primaryCareCopay: 0,
+        specialistCopay: 0,
+        genericDrugCopay: 0,
       },
       {
         type: "dental",
@@ -278,8 +275,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Manhattan Life",
         monthlyPremium: 0,
         coverage: "$10,000 Benefit",
-        details:
-          "Lump-sum cash benefit paid upon diagnosis of heart attack or stroke.",
+        details: "Lump-sum cash benefit paid upon diagnosis of heart attack or stroke.",
       },
       {
         type: "disability",
@@ -297,6 +293,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       "Complete protection package with all available plans including disability",
     planTypes: [
       "health",
+      "konnect",
       "dental",
       "vision",
       "life",
@@ -313,7 +310,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "KonnectMD",
         monthlyPremium: 0,
         deductible: 0,
-        outOfPocket: 0,
         copay: 0,
         coverage: "Unlimited virtual healthcare",
         details:
