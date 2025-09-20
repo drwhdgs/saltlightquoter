@@ -80,7 +80,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       {
         type: "health",
         name: "ACA Bronze Health Plan",
-        provider: "ACA Marketplace",
+        provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
         copay: 0,
@@ -130,7 +130,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       {
         type: "health",
         name: "ACA Silver Health Plan",
-        provider: "ACA Marketplace",
+        provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
         copay: 0,
@@ -214,7 +214,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       {
         type: "health",
         name: "ACA Gold Health Plan",
-        provider: "ACA Marketplace",
+        provider: "ACA",
         monthlyPremium: 550,
         deductible: 2500,
         copay: 20,
