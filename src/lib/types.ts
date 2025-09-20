@@ -34,10 +34,11 @@ export interface InsurancePlan {
   monthlyPremium: number;
   deductible?: number;
   outOfPocket?: number;
+  copay?: number; // Added missing copay property
   coverage?: string;
   details?: string;
 
-  // Added missing health plan-specific properties
+  // Health plan–specific fields
   primaryCareOutOfPocket?: number;
   specialistOutOfPocket?: number;
   genericDrugOutOfPocket?: number;
@@ -83,6 +84,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         deductible: 0,
         outOfPocket: 0,
+        copay: 0,
         coverage: "Essential health benefits",
         details: "Bronze level ACA compliant health insurance",
         primaryCareOutOfPocket: 0,
@@ -95,6 +97,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 25.95,
         deductible: 50,
+        copay: 0,
         coverage: "Preventive and basic dental care",
         details:
           "Affordable plan for those with a healthy mouth. Preventive care such as exams and cleanings, with increasing coverage after the first year.",
@@ -105,6 +108,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
+        copay: 0,
         coverage: "Preventive and basic vision care",
         details: "Protecting your eyes starts with routine eye exams!",
       },
@@ -131,6 +135,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         deductible: 0,
         outOfPocket: 0,
+        copay: 0,
         coverage: "Enhanced health benefits",
         details: "Silver level ACA compliant health insurance",
         primaryCareOutOfPocket: 0,
@@ -143,6 +148,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 46.89,
         deductible: 50,
+        copay: 0,
         coverage: "Preventive and family-focused dental care",
         details:
           "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
@@ -153,6 +159,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
+        copay: 0,
         coverage: "Preventive and basic vision care",
         details: "Protecting your eyes starts with routine eye exams!",
       },
@@ -213,6 +220,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 550,
         deductible: 2500,
         outOfPocket: 20,
+        copay: 20,
         coverage: "Premium health benefits",
         details: "Gold level ACA compliant health insurance",
         primaryCareOutOfPocket: 0,
@@ -225,6 +233,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 53.85,
         deductible: 50,
+        copay: 20,
         coverage: "Premium dental care",
         details:
           "Extensive dental plan with high annual maximum, implant coverage, and hearing benefits. Expands after first year.",
@@ -235,6 +244,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
+        copay: 20,
         coverage: "Enhanced vision benefits",
         details: "Eye exams, frames, lenses, contacts",
       },
@@ -304,6 +314,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         deductible: 0,
         outOfPocket: 0,
+        copay: 0,
         coverage: "Unlimited virtual healthcare",
         details:
           "24/7 access to doctors, therapists, and specialists with no copays, deductibles, or surprise bills.",
@@ -314,6 +325,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 53.85,
         deductible: 50,
+        copay: 20,
         coverage: "Premium dental care",
         details:
           "Extensive dental plan with high annual maximum and implant coverage. Expands after first year.",
@@ -324,6 +336,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
+        copay: 20,
         coverage: "Enhanced vision benefits",
         details: "Eye exams, frames, lenses, contacts",
       },
