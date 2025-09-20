@@ -3,8 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ClientPresentation } from '@/components/client/ClientPresentation';
-import { Quote } from '@/lib/types';
+import { Quote, Package, InsurancePlan } from '@/lib/types';
 import { getQuoteDataByShortId, initializeStorage } from '@/lib/storage';
+
+function generateUniqueId() {
+  return Math.random().toString(36).substring(2, 10);
+}
 
 export default function ClientQuotePage() {
   const params = useParams();
@@ -37,11 +41,26 @@ export default function ClientQuotePage() {
         return;
       }
 
+      // Reconstruct packages ensuring all plan fields are preserved
+      const reconstructedPackages: Package[] = quoteData.packages.map((pkg: Package) => ({
+        ...pkg,
+        id: pkg.id || generateUniqueId(),
+        plans: pkg.plans.map((plan: InsurancePlan) => ({
+          ...plan,
+          id: plan.id || generateUniqueId(),
+          primaryCareCopay: plan.primaryCareCopay ?? 0,
+          specialistCopay: plan.specialistCopay ?? 0,
+          genericDrugCopay: plan.genericDrugCopay ?? 0,
+          outOfPocketMax: plan.outOfPocketMax ?? plan.outOfPocket ?? 0,
+        })),
+        totalMonthlyPremium: pkg.plans.reduce((sum, plan) => sum + (plan.monthlyPremium || 0), 0),
+      }));
+
       const reconstructedQuote: Quote = {
         id: 'shared',
         agentId: 'shared',
         client: quoteData.client,
-        packages: quoteData.packages,
+        packages: reconstructedPackages,
         createdAt: quoteData.createdAt,
         updatedAt: quoteData.createdAt,
         status: 'presented',
@@ -50,7 +69,7 @@ export default function ClientQuotePage() {
 
       setQuote(reconstructedQuote);
 
-      const defaultPackage = reconstructedQuote.packages.find(pkg => pkg.name === 'Silver') 
+      const defaultPackage = reconstructedQuote.packages.find(pkg => pkg.name === 'Silver')
         || reconstructedQuote.packages[0];
 
       if (defaultPackage) setSelectedPackageId(defaultPackage.id);
@@ -68,7 +87,7 @@ export default function ClientQuotePage() {
 
   const handlePackageSelect = (packageId: string) => {
     setSelectedPackageId(packageId);
-    const redirectUrl = `https://example.com/purchase?package=${packageId}`;
+    const redirectUrl = `https://www.cognitoforms.com/SaltLightInsuranceGroup/ClientIntakeForm`;
     console.log('Redirecting to:', redirectUrl);
     window.open(redirectUrl, '_blank');
   };

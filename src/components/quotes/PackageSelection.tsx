@@ -1,3 +1,4 @@
+// src/components/quotes/PackageSelection.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -28,15 +29,13 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
   const [editingPlan, setEditingPlan] = useState<{ packageId: string; planId: string } | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<InsurancePlan>>({});
 
-  // Carrier logos mapping
   const carrierLogos: Record<string, string> = {
     Ameritas: '/logos/ameritas.png',
     Transamerica: '/logos/transamerica.png',
     'Manhattan Life': '/logos/manhattan-life.png',
-    ACA: '/logos/aca.png', // ACA logo for health
+    ACA: '/logos/aca.png',
     KonnectMD: '/logos/konnect.png',
     Breeze: '/logos/breeze.png',
-
   };
 
   useEffect(() => {
@@ -241,6 +240,12 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                                   <p className="font-medium">${plan.genericDrugCopay}</p>
                                 </div>
                               )}
+                              {plan.outOfPocketMax !== undefined && (
+                                <div>
+                                  <p className="text-gray-600">Out-of-Pocket Max</p>
+                                  <p className="font-medium">${plan.outOfPocketMax.toLocaleString()}</p>
+                                </div>
+                              )}
                             </>
                           )}
                           {plan.coverage && (
@@ -263,101 +268,111 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       </div>
 
       {/* Edit Plan Modal */}
-     {editingPlan && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <Card className="w-full max-w-md max-h-[90vh] overflow-hidden">
-      <CardHeader>
-        <CardTitle>Edit Plan Details</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 overflow-y-auto max-h-[70vh] pr-2">
-        <div className="space-y-2">
-          <Label>Plan Name</Label>
-          <Input
-            value={editFormData.name ?? ''}
-            onChange={e => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
-          />
+      {editingPlan && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md max-h-[90vh] overflow-hidden">
+            <CardHeader>
+              <CardTitle>Edit Plan Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 overflow-y-auto max-h-[70vh] pr-2">
+              <div className="space-y-2">
+                <Label>Plan Name</Label>
+                <Input
+                  value={editFormData.name ?? ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Monthly Premium</Label>
+                <Input
+                  type="number"
+                  value={editFormData.monthlyPremium ?? ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, monthlyPremium: Number(e.target.value) || 0 }))}
+                />
+              </div>
+
+              {editFormData.deductible !== undefined && (
+                <div className="space-y-2">
+                  <Label>Deductible</Label>
+                  <Input
+                    type="number"
+                    value={editFormData.deductible ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, deductible: Number(e.target.value) || 0 }))}
+                  />
+                </div>
+              )}
+
+              {editFormData.type === 'health' && editFormData.outOfPocketMax !== undefined && (
+                <div className="space-y-2">
+                  <Label>Out-of-Pocket Max</Label>
+                  <Input
+                    type="number"
+                    value={editFormData.outOfPocketMax ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, outOfPocketMax: Number(e.target.value) || 0 }))}
+                  />
+                </div>
+              )}
+
+              {editFormData.primaryCareCopay !== undefined && (
+                <div className="space-y-2">
+                  <Label>Primary Care Co-Pay</Label>
+                  <Input
+                    type="number"
+                    value={editFormData.primaryCareCopay ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, primaryCareCopay: Number(e.target.value) || 0 }))}
+                  />
+                </div>
+              )}
+
+              {editFormData.specialistCopay !== undefined && (
+                <div className="space-y-2">
+                  <Label>Specialist Co-Pay</Label>
+                  <Input
+                    type="number"
+                    value={editFormData.specialistCopay ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, specialistCopay: Number(e.target.value) || 0 }))}
+                  />
+                </div>
+              )}
+
+              {editFormData.genericDrugCopay !== undefined && (
+                <div className="space-y-2">
+                  <Label>Generic Drug Co-Pay</Label>
+                  <Input
+                    type="number"
+                    value={editFormData.genericDrugCopay ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, genericDrugCopay: Number(e.target.value) || 0 }))}
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label>Coverage Description</Label>
+                <Input
+                  value={editFormData.coverage ?? ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, coverage: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Additional Details</Label>
+                <Textarea
+                  value={editFormData.details ?? ''}
+                  onChange={e => setEditFormData(prev => ({ ...prev, details: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+            </CardContent>
+            <div className="flex justify-end space-x-2 p-4 border-t border-gray-200">
+              <Button variant="outline" onClick={() => { setEditingPlan(null); setEditFormData({}); }}>
+                Cancel
+              </Button>
+              <Button onClick={handleSavePlanEdit}>Save Changes</Button>
+            </div>
+          </Card>
         </div>
-
-        <div className="space-y-2">
-          <Label>Monthly Premium</Label>
-          <Input
-            type="number"
-            value={editFormData.monthlyPremium ?? ''}
-            onChange={e => setEditFormData(prev => ({ ...prev, monthlyPremium: Number(e.target.value) || 0 }))}
-          />
-        </div>
-
-        {editFormData.deductible !== undefined && (
-          <div className="space-y-2">
-            <Label>Deductible</Label>
-            <Input
-              type="number"
-              value={editFormData.deductible ?? ''}
-              onChange={e => setEditFormData(prev => ({ ...prev, deductible: Number(e.target.value) || 0 }))}
-            />
-          </div>
-        )}
-
-        {editFormData.primaryCareCopay !== undefined && (
-          <div className="space-y-2">
-            <Label>Primary Care Co-Pay</Label>
-            <Input
-              type="number"
-              value={editFormData.primaryCareCopay ?? ''}
-              onChange={e => setEditFormData(prev => ({ ...prev, primaryCareCopay: Number(e.target.value) || 0 }))}
-            />
-          </div>
-        )}
-
-        {editFormData.specialistCopay !== undefined && (
-          <div className="space-y-2">
-            <Label>Specialist Co-Pay</Label>
-            <Input
-              type="number"
-              value={editFormData.specialistCopay ?? ''}
-              onChange={e => setEditFormData(prev => ({ ...prev, specialistCopay: Number(e.target.value) || 0 }))}
-            />
-          </div>
-        )}
-
-        {editFormData.genericDrugCopay !== undefined && (
-          <div className="space-y-2">
-            <Label>Generic Drug Co-Pay</Label>
-            <Input
-              type="number"
-              value={editFormData.genericDrugCopay ?? ''}
-              onChange={e => setEditFormData(prev => ({ ...prev, genericDrugCopay: Number(e.target.value) || 0 }))}
-            />
-          </div>
-        )}
-
-        <div className="space-y-2">
-          <Label>Coverage Description</Label>
-          <Input
-            value={editFormData.coverage ?? ''}
-            onChange={e => setEditFormData(prev => ({ ...prev, coverage: e.target.value }))}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Additional Details</Label>
-          <Textarea
-            value={editFormData.details ?? ''}
-            onChange={e => setEditFormData(prev => ({ ...prev, details: e.target.value }))}
-            rows={3}
-          />
-        </div>
-      </CardContent>
-      <div className="flex justify-end space-x-2 p-4 border-t border-gray-200">
-        <Button variant="outline" onClick={() => { setEditingPlan(null); setEditFormData({}); }}>
-          Cancel
-        </Button>
-        <Button onClick={handleSavePlanEdit}>Save Changes</Button>
-      </div>
-    </Card>
-  </div>
-)}
-
+      )}
 
       {/* Summary */}
       {selectedPackageIds.size > 0 && (

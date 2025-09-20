@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +39,16 @@ export function QuoteReview({
 }: QuoteReviewProps) {
   const totalMonthlyPremium = packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0);
   const totalAnnualPremium = totalMonthlyPremium * 12;
+
+  // Carrier logos mapping (matches PackageSelection)
+  const carrierLogos: Record<string, string> = {
+    Ameritas: '/logos/ameritas.png',
+    Transamerica: '/logos/transamerica.png',
+    'Manhattan Life': '/logos/manhattan-life.png',
+    ACA: '/logos/aca.png', // ACA logo for health
+    KonnectMD: '/logos/konnect.png',
+    Breeze: '/logos/breeze.png',
+  };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {
     switch (type) {
@@ -141,7 +152,6 @@ export function QuoteReview({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Shield className="w-5 h-5" />
               Selected Packages ({packages.length})
             </CardTitle>
             <Button variant="ghost" size="sm" onClick={onEditPackages}>
@@ -176,7 +186,17 @@ export function QuoteReview({
                   <div key={plan.id} className="border rounded-lg p-4 bg-gray-50">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
-                        {getPlanIcon(plan.type)}
+                        {carrierLogos[plan.provider] ? (
+                          <Image
+                            src={carrierLogos[plan.provider]}
+                            alt={plan.provider}
+                            width={24}
+                            height={24}
+                            className="object-contain"
+                          />
+                        ) : (
+                          getPlanIcon(plan.type)
+                        )}
                         <h4 className="font-medium">{plan.name}</h4>
                         <Badge variant="outline">{plan.provider}</Badge>
                       </div>
@@ -210,6 +230,12 @@ export function QuoteReview({
                             <div>
                               <p className="text-gray-600">Generic Drug Copay</p>
                               <p className="font-medium">${plan.genericDrugCopay}</p>
+                            </div>
+                          )}
+                          {plan.outOfPocket !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Out-of-Pocket Max</p>
+                              <p className="font-medium">${plan.outOfPocket.toLocaleString()}</p>
                             </div>
                           )}
                         </>

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,10 +12,6 @@ import {
   Phone,
   Mail,
   DollarSign,
-  User,
-  CheckCircle,
-  SmileIcon,
-  SmilePlusIcon,
   CrossIcon,
   ShieldCheck
 } from 'lucide-react';
@@ -27,12 +24,22 @@ interface ClientPresentationProps {
 }
 
 export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }: ClientPresentationProps) {
+  // Same carrier logos as PackageSelection
+  const carrierLogos: Record<string, string> = {
+    Ameritas: '/logos/ameritas.png',
+    Transamerica: '/logos/transamerica.png',
+    'Manhattan Life': '/logos/manhattan-life.png',
+    ACA: '/logos/aca.png',
+    KonnectMD: '/logos/konnect.png',
+    Breeze: '/logos/breeze.png',
+  };
+
   const getPlanIcon = (type: InsurancePlan['type']) => {
     switch (type) {
-      case 'health': return <CrossIcon className="w-4 h-4 text-blue-600" />;
-      case 'dental': return <SmileIcon className="w-4 h-4 text-green-600" />;
+      case 'health': return <Shield className="w-4 h-4 text-blue-600" />;
+      case 'dental': return <Activity className="w-4 h-4 text-green-600" />;
       case 'vision': return <Eye className="w-4 h-4 text-purple-600" />;
-      case 'life': return <ShieldCheck className="w-4 h-4 text-red-600" />;
+      case 'life': return <Heart className="w-4 h-4 text-red-600" />;
       case 'cancer': return <Shield className="w-4 h-4 text-orange-600" />;
       case 'heart': return <Heart className="w-4 h-4 text-pink-600" />;
       case 'outOfPocket': return <DollarSign className="w-4 h-4 text-indigo-600" />;
@@ -52,31 +59,37 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
   };
 
   const formatPlanDetails = (plan: InsurancePlan) => {
-    const details = [];
-    if (plan.deductible) details.push(`• Deductible: $${plan.deductible.toLocaleString()}`);
-    if (plan.coverage) details.push(`• ${plan.coverage}`);
-    if (plan.details) details.push(`• ${plan.details}`);
+    const details: string[] = [];
+
+    if (plan.deductible !== undefined) details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+
+    if (plan.type === 'health') {
+      details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay ?? 0}`);
+      details.push(`Specialist Co-Pay: $${plan.specialistCopay ?? 0}`);
+      details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay ?? 0}`);
+      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax ?? 0}`);
+    }
+
+    if (plan.coverage) details.push(`Coverage: ${plan.coverage}`);
+    if (plan.details) details.push(plan.details);
+
     return details;
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
+      {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            {/* Client Information */}
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Packages Prepared For:</h1>
               <div className="text-2xl font-semibold text-gray-800 mb-1">{quote.client.name}</div>
               <div className="text-lg text-gray-600">
-                <a href={`tel:${quote.client.phone}`} className="hover:underline">
-                  {quote.client.phone}
-                </a>
+                <a href={`tel:${quote.client.phone}`} className="hover:underline">{quote.client.phone}</a>
               </div>
             </div>
 
-            {/* Agent Information */}
             <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
               <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
                 <img
@@ -103,23 +116,33 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
         </div>
       </div>
 
-      {/* Packages Section */}
+      {/* Packages */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className={`grid grid-cols-1 ${quote.packages.length === 2 ? 'lg:grid-cols-2' : quote.packages.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2 xl:grid-cols-4'} gap-6`}>
           {quote.packages.map((pkg, index) => (
             <div key={pkg.id} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-              {/* Package Header */}
+              {/* Header */}
               <div className={`bg-gradient-to-r ${getPackageColor(index)} text-white p-4 text-center`}>
                 <h2 className="text-xl font-bold">Package #{index + 1}</h2>
                 <div className="text-sm opacity-90 mt-1">{pkg.name}</div>
               </div>
 
-              {/* Package Content */}
+              {/* Plans */}
               <div className="p-4 flex-1 overflow-y-auto max-h-[400px] space-y-4">
-                {pkg.plans.map((plan) => (
+                {pkg.plans.map(plan => (
                   <div key={plan.id} className="border-l-4 border-gray-200 pl-3">
                     <div className="flex items-center gap-2 mb-1">
-                      {getPlanIcon(plan.type)}
+                      {carrierLogos[plan.provider] ? (
+                        <Image
+                          src={carrierLogos[plan.provider]}
+                          alt={plan.provider}
+                          width={24}
+                          height={24}
+                          className="object-contain"
+                        />
+                      ) : (
+                        getPlanIcon(plan.type)
+                      )}
                       <span className="font-semibold text-gray-900 uppercase tracking-wide text-sm">
                         {plan.type === 'outOfPocket' ? 'OUT-OF-POCKET PROTECTION' :
                          plan.type === 'life' ? 'LIFE INSURANCE' :
@@ -129,43 +152,28 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                     </div>
 
                     <div className="text-sm text-gray-800 mb-2">{plan.name}</div>
-
                     <div className="text-xs text-gray-600 space-y-1">
                       {formatPlanDetails(plan).map((detail, idx) => (
-                        <div key={idx}>{detail}</div>
+                        <div key={idx}>• {detail}</div>
                       ))}
                       <div className="text-blue-600 font-medium">
-                        Monthly Premium: ${plan.monthlyPremium}
+                        Monthly Premium: ${plan.monthlyPremium.toLocaleString()}
                       </div>
                     </div>
-
-                    {plan.type === 'health' && (
-                      <div className="mt-2 text-xs">
-                        <div className="text-green-600">✓ 100% Coverage of ALL Preventative Care!</div>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
 
-              {/* Monthly Payment */}
+              {/* Monthly Total */}
               <div className="border-t-2 border-gray-200 pt-4 mb-4 text-center">
-                <div className="text-lg font-semibold text-gray-700 mb-1">
-                  Your Monthly Payment:
-                </div>
-                <div className="text-3xl font-bold text-gray-900">
-                  ${pkg.totalMonthlyPremium.toLocaleString()}
-                </div>
+                <div className="text-lg font-semibold text-gray-700 mb-1">Your Monthly Payment:</div>
+                <div className="text-3xl font-bold text-gray-900">${pkg.totalMonthlyPremium.toLocaleString()}</div>
               </div>
 
-              {/* Centered Button */}
+              {/* Button */}
               <div className="flex justify-center mt-2 mb-4">
                 <Button
-                  onClick={() => window.open(
-                    'https://www.cognitoforms.com/SaltLightInsuranceGroup/ClientIntakeForm',
-                    '_blank',
-                    'noopener,noreferrer'
-                  )}
+                  onClick={() => onPackageSelect && onPackageSelect(pkg.id)}
                   className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r ${getPackageColor(index)} hover:opacity-90 transition-opacity`}
                 >
                   I want this package
@@ -173,30 +181,6 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Contact Information */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            Have Questions? We're Here to Help
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Our insurance experts are ready to answer your questions and help you choose the right coverage.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6">
-            <div className="flex items-center space-x-2">
-              <Phone className="w-4 h-4 text-blue-600" />
-              <span className="text-sm text-gray-700">
-                <a href="tel:6628828179" className="hover:underline">Call: (662) 882-8179</a>
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Mail className="w-4 h-4 text-blue-600" />
-              <span className="text-sm text-gray-700">
-                <a href="mailto:info@saltlightinsurancegroup.com" className="hover:underline">Email: info@saltlightinsurancegroup.com</a>
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     </div>

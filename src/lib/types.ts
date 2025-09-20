@@ -34,6 +34,7 @@ export interface InsurancePlan {
   monthlyPremium: number;
   deductible?: number;
   outOfPocket?: number; // general out-of-pocket
+  outOfPocketMax?: number; // health-specific max
   copay?: number;       // general copay
   coverage?: string;
   details?: string;
@@ -83,6 +84,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
+        outOfPocketMax: 5000,
         copay: 0,
         coverage: "Essential health benefits",
         details: "Bronze level ACA compliant health insurance",
@@ -133,6 +135,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
+        outOfPocketMax: 4000,
         copay: 0,
         coverage: "Enhanced health benefits",
         details: "Silver level ACA compliant health insurance",
@@ -217,6 +220,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "ACA",
         monthlyPremium: 550,
         deductible: 2500,
+        outOfPocketMax: 3000,
         copay: 20,
         coverage: "Premium health benefits",
         details: "Gold level ACA compliant health insurance",
