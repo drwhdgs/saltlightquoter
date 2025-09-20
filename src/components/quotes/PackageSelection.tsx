@@ -201,22 +201,22 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                           )}
                           {plan.type === 'health' && (
                             <>
-                              {plan.primaryCareOutOfPocket !== undefined && (
+                              {plan.primaryCareCopay !== undefined && (
                                 <div>
                                   <p className="text-gray-600">Primary Care Co-Pay</p>
-                                  <p className="font-medium">${plan.primaryCareOutOfPocket}</p>
+                                  <p className="font-medium">${plan.primaryCareCopay}</p>
                                 </div>
                               )}
-                              {plan.specialistOutOfPocket !== undefined && (
+                              {plan.specialistCopay !== undefined && (
                                 <div>
                                   <p className="text-gray-600">Specialist Co-Pay</p>
-                                  <p className="font-medium">${plan.specialistOutOfPocket}</p>
+                                  <p className="font-medium">${plan.specialistCopay}</p>
                                 </div>
                               )}
-                              {plan.genericDrugOutOfPocket !== undefined && (
+                              {plan.genericDrugCopay !== undefined && (
                                 <div>
                                   <p className="text-gray-600">Generic Drug Co-Pay</p>
-                                  <p className="font-medium">${plan.genericDrugOutOfPocket}</p>
+                                  <p className="font-medium">${plan.genericDrugCopay}</p>
                                 </div>
                               )}
                             </>
@@ -276,35 +276,35 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                 </div>
               )}
 
-              {editFormData.primaryCareOutOfPocket !== undefined && (
+              {editFormData.primaryCareCopay !== undefined && (
                 <div className="space-y-2">
-                  <Label>Primary Care Out-of-Pocket</Label>
+                  <Label>Primary Care Co-Pay</Label>
                   <Input
                     type="number"
-                    value={editFormData.primaryCareOutOfPocket ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, primaryCareOutOfPocket: Number(e.target.value) }))}
+                    value={editFormData.primaryCareCopay ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, primaryCareCopay: Number(e.target.value) }))}
                   />
                 </div>
               )}
 
-              {editFormData.specialistOutOfPocket !== undefined && (
+              {editFormData.specialistCopay !== undefined && (
                 <div className="space-y-2">
-                  <Label>Specialist Out-of-Pocket</Label>
+                  <Label>Specialist Co-Pay</Label>
                   <Input
                     type="number"
-                    value={editFormData.specialistOutOfPocket ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, specialistOutOfPocket: Number(e.target.value) }))}
+                    value={editFormData.specialistCopay ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, specialistCopay: Number(e.target.value) }))}
                   />
                 </div>
               )}
 
-              {editFormData.genericDrugOutOfPocket !== undefined && (
+              {editFormData.genericDrugCopay !== undefined && (
                 <div className="space-y-2">
-                  <Label>Generic Drug Out-of-Pocket</Label>
+                  <Label>Generic Drug Co-Pay</Label>
                   <Input
                     type="number"
-                    value={editFormData.genericDrugOutOfPocket ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, genericDrugOutOfPocket: Number(e.target.value) }))}
+                    value={editFormData.genericDrugCopay ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, genericDrugCopay: Number(e.target.value) }))}
                   />
                 </div>
               )}
