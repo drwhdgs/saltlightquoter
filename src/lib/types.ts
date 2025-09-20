@@ -15,7 +15,7 @@ export interface Client {
 }
 
 export interface InsurancePlan {
-  id: string;
+  id?: string;
   type: 'health' | 'konnect' | 'dental' | 'vision' | 'life' | 'cancer' | 'heart' | 'outOfPocket' | 'breeze' | 'disability';
   name: string;
   provider: string;
@@ -24,6 +24,10 @@ export interface InsurancePlan {
   copay?: number;
   coverage?: string;
   details?: string;
+  // New fields for health plans
+  primaryCareCopay?: number;
+  specialistCopay?: number;
+  genericDrugCopay?: number;
 }
 
 export interface Package {
@@ -66,7 +70,10 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         deductible: 0,
         copay: 0,
         coverage: 'Essential health benefits',
-        details: 'Bronze level ACA compliant health insurance'
+        details: 'Bronze level ACA compliant health insurance',
+        primaryCareCopay: 0,
+        specialistCopay: 0,
+        genericDrugCopay: 0
       },
       {
         type: 'dental',
@@ -109,7 +116,10 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         deductible: 0,
         copay: 0,
         coverage: 'Enhanced health benefits',
-        details: 'Silver level ACA compliant health insurance'
+        details: 'Silver level ACA compliant health insurance',
+        primaryCareCopay: 0,
+        specialistCopay: 0,
+        genericDrugCopay: 0
       },
       {
         type: 'dental',
@@ -150,7 +160,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: 'Manhattan Life Cancer Protection',
         provider: 'Manhattan Life',
         monthlyPremium: 0,
-        coverage: '$10,000 Benefit', 
+        coverage: '$10,000 Benefit',
         details: 'Receive a lump-sum cash benefit paid upon diagnosis of Cancer over and above any benefits you receive from any other plan!'
       },
       {
@@ -176,9 +186,12 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         deductible: 2500,
         copay: 20,
         coverage: 'Premium health benefits',
-        details: 'Gold level ACA compliant health insurance'
+        details: 'Gold level ACA compliant health insurance',
+        primaryCareCopay: 0,
+        specialistCopay: 0,
+        genericDrugCopay: 0
       },
-{
+      {
         type: 'dental',
         name: 'Ameritas PrimeStar Care Complete Dental',
         provider: 'Ameritas',
@@ -217,7 +230,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: 'Manhattan Life Cancer Protection',
         provider: 'Manhattan Life',
         monthlyPremium: 0,
-        coverage: '$10,000 Benefit', 
+        coverage: '$10,000 Benefit',
         details: 'Receive a lump-sum cash benefit paid upon diagnosis of Cancer over and above any benefits you receive from any other plan!'
       },
       {
@@ -290,3 +303,4 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     ]
   }
 ];
+
