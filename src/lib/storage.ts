@@ -196,7 +196,10 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
           deductible: defaultPlan.deductible,
           copay: defaultPlan.copay,
           coverage: defaultPlan.coverage,
-          details: defaultPlan.details
+          details: defaultPlan.details,
+          primaryCareOutOfPocket: defaultPlan.primaryCareOutOfPocket,
+          specialistOutOfPocket: defaultPlan.specialistOutOfPocket,
+          genericDrugOutOfPocket: defaultPlan.genericDrugOutOfPocket,
         };
       });
 
