@@ -12,7 +12,11 @@ import {
   Mail,
   DollarSign,
   User,
-  CheckCircle
+  CheckCircle,
+  SmileIcon,
+  SmilePlusIcon,
+  CrossIcon,
+  ShieldCheck
 } from 'lucide-react';
 import { Quote, Package, InsurancePlan } from '@/lib/types';
 
@@ -23,29 +27,19 @@ interface ClientPresentationProps {
 }
 
 export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }: ClientPresentationProps) {
-const getPlanIcon = (type: InsurancePlan['type']) => {
-  switch (type) {
-    case 'health': return <Shield className="w-4 h-4 text-blue-600" />;
-    case 'dental': 
-      return (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-4 h-4 text-green-600"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path d="M12 2C9 2 7 4 7 7c0 2 1 5 1 5s1 4 4 4 4-4 4-4 1-3 1-5c0-3-2-5-5-5z" />
-        </svg>
-      );
-    case 'vision': return <Eye className="w-4 h-4 text-purple-600" />;
-    case 'life': return <Heart className="w-4 h-4 text-red-600" />;
-    case 'cancer': return <Shield className="w-4 h-4 text-orange-600" />;
-    case 'heart': return <Heart className="w-4 h-4 text-pink-600" />;
-    case 'outOfPocket': return <DollarSign className="w-4 h-4 text-indigo-600" />;
-    case 'disability': return <Shield className="w-4 h-4 text-gray-600" />;
-    default: return <Shield className="w-4 h-4 text-blue-600" />;
-}
-  };
+  const getPlanIcon = (type: InsurancePlan['type']) => {
+    switch (type) {
+      case 'health': return <CrossIcon className="w-4 h-4 text-blue-600" />;
+      case 'dental': return <SmileIcon className="w-4 h-4 text-green-600" />;
+      case 'vision': return <Eye className="w-4 h-4 text-purple-600" />;
+      case 'life': return <ShieldCheck className="w-4 h-4 text-red-600" />;
+      case 'cancer': return <Shield className="w-4 h-4 text-orange-600" />;
+      case 'heart': return <Heart className="w-4 h-4 text-pink-600" />;
+      case 'outOfPocket': return <DollarSign className="w-4 h-4 text-indigo-600" />;
+      case 'disability': return <Shield className="w-4 h-4 text-gray-600" />;
+      default: return <Shield className="w-4 h-4 text-blue-600" />;
+    }
+};
 
   const getPackageColor = (index: number) => {
     const colors = [
