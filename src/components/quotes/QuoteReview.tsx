@@ -17,7 +17,7 @@ import {
   DollarSign,
   Edit
 } from 'lucide-react';
-import { Client, Package, InsurancePlan } from '@/lib/types';
+import { Client, Package, InsurancePlan, HealthInsurancePlan } from '@/lib/types'; // Import HealthInsurancePlan
 
 interface QuoteReviewProps {
   client: Client;
@@ -198,22 +198,23 @@ export function QuoteReview({
                       )}
                       {plan.type === 'health' && (
                         <>
-                          {plan.primaryCareCopay !== undefined && (
+                          {/* We now need to assert the type to access these properties */}
+                          {(plan as HealthInsurancePlan).primaryCareCopay !== undefined && (
                             <div>
                               <p className="text-gray-600">Primary Care</p>
-                              <p className="font-medium">${plan.primaryCareCopay}</p>
+                              <p className="font-medium">${(plan as HealthInsurancePlan).primaryCareCopay}</p>
                             </div>
                           )}
-                          {plan.specialistCopay !== undefined && (
+                          {(plan as HealthInsurancePlan).specialistCopay !== undefined && (
                             <div>
                               <p className="text-gray-600">Specialist</p>
-                              <p className="font-medium">${plan.specialistCopay}</p>
+                              <p className="font-medium">${(plan as HealthInsurancePlan).specialistCopay}</p>
                             </div>
                           )}
-                          {plan.genericDrugCopay !== undefined && (
+                          {(plan as HealthInsurancePlan).genericDrugCopay !== undefined && (
                             <div>
                               <p className="text-gray-600">Generic Drugs</p>
-                              <p className="font-medium">${plan.genericDrugCopay}</p>
+                              <p className="font-medium">${(plan as HealthInsurancePlan).genericDrugCopay}</p>
                             </div>
                           )}
                         </>
