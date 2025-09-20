@@ -33,14 +33,14 @@ export interface InsurancePlan {
   provider: string;
   monthlyPremium: number;
   deductible?: number;
-  copay?: number;
+  outOfPocket?: number;
   coverage?: string;
   details?: string;
 
   // Health plan–specific fields
-  primaryCareCopay?: number;
-  specialistCopay?: number;
-  genericDrugCopay?: number;
+  primaryCareOutOfPocket?: number;
+  specialistOutOfPocket?: number;
+  genericDrugOutOfPocket?: number;
 }
 
 export interface Package {
@@ -82,12 +82,12 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "ACA Marketplace",
         monthlyPremium: 0,
         deductible: 0,
-        copay: 0,
+        outOfPocket: 0,
         coverage: "Essential health benefits",
         details: "Bronze level ACA compliant health insurance",
-        primaryCareCopay: 0,
-        specialistCopay: 0,
-        genericDrugCopay: 0,
+        primaryCareOutOfPocket: 0,
+        specialistOutOfPocket: 0,
+        genericDrugOutOfPocket: 0,
       },
       {
         type: "dental",
@@ -130,12 +130,12 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "ACA Marketplace",
         monthlyPremium: 0,
         deductible: 0,
-        copay: 0,
+        outOfPocket: 0,
         coverage: "Enhanced health benefits",
         details: "Silver level ACA compliant health insurance",
-        primaryCareCopay: 0,
-        specialistCopay: 0,
-        genericDrugCopay: 0,
+        primaryCareOutOfPocket: 0,
+        specialistOutOfPocket: 0,
+        genericDrugOutOfPocket: 0,
       },
       {
         type: "dental",
@@ -212,12 +212,12 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "ACA Marketplace",
         monthlyPremium: 550,
         deductible: 2500,
-        copay: 20,
+        outOfPocket: 20,
         coverage: "Premium health benefits",
         details: "Gold level ACA compliant health insurance",
-        primaryCareCopay: 0,
-        specialistCopay: 0,
-        genericDrugCopay: 0,
+        primaryCareOutOfPocket: 0,
+        specialistOutOfPocket: 0,
+        genericDrugOutOfPocket: 0,
       },
       {
         type: "dental",
@@ -303,7 +303,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "KonnectMD",
         monthlyPremium: 0,
         deductible: 0,
-        copay: 0,
+        outOfPocket: 0,
         coverage: "Unlimited virtual healthcare",
         details:
           "24/7 access to doctors, therapists, and specialists with no copays, deductibles, or surprise bills.",
