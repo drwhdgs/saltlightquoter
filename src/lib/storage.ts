@@ -137,16 +137,13 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
     // Convert to JSON and use a more compact encoding
     const jsonString = JSON.stringify(ultraCompressed);
 
-    // Use Base36 encoding for more compact URLs (vs Base64)
-    const bytes = new TextEncoder().encode(jsonString);
-    let result = '';
-    for (let i = 0; i < bytes.length; i += 2) {
-      const combined = (bytes[i] << 8) | (bytes[i + 1] || 0);
-      result += combined.toString(36);
-      if (i < bytes.length - 2) result += '.';
-    }
+    // Use URL-safe Base64 encoding for reliability
+    const encoded = btoa(unescape(encodeURIComponent(jsonString)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
 
-    return result;
+    return encoded;
   } catch (error) {
     console.error('Error in ultraCompressAndEncode:', error);
     throw error;
@@ -156,21 +153,13 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
 // Decode ultra-compressed data
 const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: Package[]; createdAt: string } => {
   try {
-    // Decode from Base36
-    const parts = encoded.split('.');
-    const bytes = new Uint8Array(parts.length * 2);
-
-    for (let i = 0; i < parts.length; i++) {
-      const combined = parseInt(parts[i], 36);
-      bytes[i * 2] = (combined >> 8) & 0xFF;
-      if (i * 2 + 1 < bytes.length) {
-        bytes[i * 2 + 1] = combined & 0xFF;
-      }
+    // Add padding if needed and restore standard base64 characters
+    let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) {
+      base64 += '=';
     }
 
-    // Remove trailing zeros and decode
-    const trimmedBytes = bytes.subarray(0, bytes.findIndex(b => b === 0) || bytes.length);
-    const jsonString = new TextDecoder().decode(trimmedBytes);
+    const jsonString = decodeURIComponent(escape(atob(base64)));
     const compressed: UltraCompressedQuote = JSON.parse(jsonString);
 
     // Reconstruct client
