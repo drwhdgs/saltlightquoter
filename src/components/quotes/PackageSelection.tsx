@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +27,17 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
   const [customizedPackages, setCustomizedPackages] = useState<Map<string, Package>>(new Map());
   const [editingPlan, setEditingPlan] = useState<{ packageId: string; planId: string } | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<InsurancePlan>>({});
+
+  // Carrier logos mapping
+  const carrierLogos: Record<string, string> = {
+    Ameritas: '/logos/ameritas.png',
+    Transamerica: '/logos/transamerica.png',
+    'Manhattan Life': '/logos/manhattan-life.png',
+    ACA: '/logos/aca.png', // ACA logo for health
+    KonnectMD: '/logos/konnect.png',
+    Breeze: '/logos/breeze.png',
+
+  };
 
   useEffect(() => {
     if (initialPackages && initialPackages.length > 0) {
@@ -177,9 +189,19 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                       <div key={plan.id} className="border rounded-lg p-4 bg-gray-50">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2">
-                            {getPlanIcon(plan.type)}
+                            {carrierLogos[plan.provider] ? (
+                              <Image
+                                src={carrierLogos[plan.provider]}
+                                alt={plan.provider}
+                                width={24}
+                                height={24}
+                                className="object-contain"
+                              />
+                            ) : (
+                              getPlanIcon(plan.type)
+                            )}
                             <h5 className="font-medium">{plan.name}</h5>
-                            <Badge variant="outline">{plan.provider}</Badge>
+                            <span className="text-gray-500">{plan.provider}</span>
                           </div>
                           {plan.id && pkg.id && (
                             <Button variant="ghost" size="sm" onClick={() => handleEditPlan(pkg.id!, plan.id!)}>
@@ -241,101 +263,101 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       </div>
 
       {/* Edit Plan Modal */}
-      {editingPlan && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>Edit Plan Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Plan Name</Label>
-                <Input
-                  value={editFormData.name || ''}
-                  onChange={e => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Monthly Premium</Label>
-                <Input
-                  type="number"
-                  value={editFormData.monthlyPremium ?? ''}
-                  onChange={e => setEditFormData(prev => ({ ...prev, monthlyPremium: Number(e.target.value) }))}
-                />
-              </div>
-
-              {editFormData.deductible !== undefined && (
-                <div className="space-y-2">
-                  <Label>Deductible</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.deductible ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, deductible: Number(e.target.value) }))}
-                  />
-                </div>
-              )}
-
-              {editFormData.primaryCareCopay !== undefined && (
-                <div className="space-y-2">
-                  <Label>Primary Care Co-Pay</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.primaryCareCopay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, primaryCareCopay: Number(e.target.value) }))}
-                  />
-                </div>
-              )}
-
-              {editFormData.specialistCopay !== undefined && (
-                <div className="space-y-2">
-                  <Label>Specialist Co-Pay</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.specialistCopay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, specialistCopay: Number(e.target.value) }))}
-                  />
-                </div>
-              )}
-
-              {editFormData.genericDrugCopay !== undefined && (
-                <div className="space-y-2">
-                  <Label>Generic Drug Co-Pay</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.genericDrugCopay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, genericDrugCopay: Number(e.target.value) }))}
-                  />
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label>Coverage Description</Label>
-                <Input
-                  value={editFormData.coverage || ''}
-                  onChange={e => setEditFormData(prev => ({ ...prev, coverage: e.target.value }))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Additional Details</Label>
-                <Textarea
-                  value={editFormData.details || ''}
-                  onChange={e => setEditFormData(prev => ({ ...prev, details: e.target.value }))}
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" onClick={() => { setEditingPlan(null); setEditFormData({}); }}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSavePlanEdit}>Save Changes</Button>
-              </div>
-            </CardContent>
-          </Card>
+     {editingPlan && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <Card className="w-full max-w-md max-h-[90vh] overflow-hidden">
+      <CardHeader>
+        <CardTitle>Edit Plan Details</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4 overflow-y-auto max-h-[70vh] pr-2">
+        <div className="space-y-2">
+          <Label>Plan Name</Label>
+          <Input
+            value={editFormData.name ?? ''}
+            onChange={e => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+          />
         </div>
-      )}
+
+        <div className="space-y-2">
+          <Label>Monthly Premium</Label>
+          <Input
+            type="number"
+            value={editFormData.monthlyPremium ?? ''}
+            onChange={e => setEditFormData(prev => ({ ...prev, monthlyPremium: Number(e.target.value) || 0 }))}
+          />
+        </div>
+
+        {editFormData.deductible !== undefined && (
+          <div className="space-y-2">
+            <Label>Deductible</Label>
+            <Input
+              type="number"
+              value={editFormData.deductible ?? ''}
+              onChange={e => setEditFormData(prev => ({ ...prev, deductible: Number(e.target.value) || 0 }))}
+            />
+          </div>
+        )}
+
+        {editFormData.primaryCareCopay !== undefined && (
+          <div className="space-y-2">
+            <Label>Primary Care Co-Pay</Label>
+            <Input
+              type="number"
+              value={editFormData.primaryCareCopay ?? ''}
+              onChange={e => setEditFormData(prev => ({ ...prev, primaryCareCopay: Number(e.target.value) || 0 }))}
+            />
+          </div>
+        )}
+
+        {editFormData.specialistCopay !== undefined && (
+          <div className="space-y-2">
+            <Label>Specialist Co-Pay</Label>
+            <Input
+              type="number"
+              value={editFormData.specialistCopay ?? ''}
+              onChange={e => setEditFormData(prev => ({ ...prev, specialistCopay: Number(e.target.value) || 0 }))}
+            />
+          </div>
+        )}
+
+        {editFormData.genericDrugCopay !== undefined && (
+          <div className="space-y-2">
+            <Label>Generic Drug Co-Pay</Label>
+            <Input
+              type="number"
+              value={editFormData.genericDrugCopay ?? ''}
+              onChange={e => setEditFormData(prev => ({ ...prev, genericDrugCopay: Number(e.target.value) || 0 }))}
+            />
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label>Coverage Description</Label>
+          <Input
+            value={editFormData.coverage ?? ''}
+            onChange={e => setEditFormData(prev => ({ ...prev, coverage: e.target.value }))}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Additional Details</Label>
+          <Textarea
+            value={editFormData.details ?? ''}
+            onChange={e => setEditFormData(prev => ({ ...prev, details: e.target.value }))}
+            rows={3}
+          />
+        </div>
+      </CardContent>
+      <div className="flex justify-end space-x-2 p-4 border-t border-gray-200">
+        <Button variant="outline" onClick={() => { setEditingPlan(null); setEditFormData({}); }}>
+          Cancel
+        </Button>
+        <Button onClick={handleSavePlanEdit}>Save Changes</Button>
+      </div>
+    </Card>
+  </div>
+)}
+
 
       {/* Summary */}
       {selectedPackageIds.size > 0 && (
