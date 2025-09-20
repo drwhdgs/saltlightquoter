@@ -62,6 +62,14 @@ export function QuoteReview({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-gray-900">Review Quote</h2>
+        <p className="text-gray-600 mt-2">
+          Review all details before generating the final quote
+        </p>
+      </div>
+
       {/* Client Information */}
       <Card>
         <CardHeader>
@@ -181,14 +189,35 @@ export function QuoteReview({
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mt-3">
                       {plan.deductible !== undefined && (
                         <div>
                           <p className="text-gray-600">Deductible</p>
                           <p className="font-medium">${plan.deductible.toLocaleString()}</p>
                         </div>
                       )}
-
+                      {plan.type === 'health' && (
+                        <>
+                          {plan.primaryCareCopay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Primary Care</p>
+                              <p className="font-medium">${plan.primaryCareCopay}</p>
+                            </div>
+                          )}
+                          {plan.specialistCopay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Specialist</p>
+                              <p className="font-medium">${plan.specialistCopay}</p>
+                            </div>
+                          )}
+                          {plan.genericDrugCopay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Generic Drugs</p>
+                              <p className="font-medium">${plan.genericDrugCopay}</p>
+                            </div>
+                          )}
+                        </>
+                      )}
                       <div>
                         <p className="text-gray-600">Coverage</p>
                         <p className="font-medium">{plan.coverage}</p>
@@ -225,15 +254,47 @@ export function QuoteReview({
 
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Total Plans:</span>
-              <span className="font-medium">{packages.reduce((sum, pkg) => sum + pkg.plans.length, 0)}</span>
+              <span className="font-medium">
+                {packages.reduce((sum, pkg) => sum + pkg.plans.length, 0)}
+              </span>
             </div>
 
             <Separator />
 
             <div className="flex justify-between items-center text-lg">
               <span className="font-medium">Monthly Premium:</span>
-              <span className="font-bold text-green-600">${totalMonthlyPremium.toLocaleString()}/mo</span>
+              <span className="font-bold text-green-600">
+                ${totalMonthlyPremium.toLocaleString()}/mo
+              </span>
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Annual Premium:</
+              <span className="text-gray-600">Annual Premium:</span>
+              <span className="font-medium">
+                ${totalAnnualPremium.toLocaleString()}/year
+              </span>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-lg mt-4">
+              <p className="text-sm text-blue-800">
+                <strong>Next Steps:</strong> Once generated, you'll receive a shareable link
+                to present these packages to your client. The client will be able to review
+                all options and make their selection.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions */}
+      <div className="flex justify-between pt-6">
+        <Button variant="outline" onClick={onBack}>
+          Back to Packages
+        </Button>
+        <Button onClick={onComplete} className="bg-green-600 hover:bg-green-700">
+          Generate Quote & Create Shareable Link
+        </Button>
+      </div>
+    </div>
+  );
+}
