@@ -159,17 +159,19 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                 </div>
               </div>
 
-              <Button
-  onClick={() => window.open(
-    'https://www.cognitoforms.com/SaltLightInsuranceGroup/ClientIntakeForm',
-    '_blank',
-    'noopener,noreferrer'
-  )}
-  className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r ${getPackageColor(index)} hover:opacity-90 transition-opacity`}
->
-  I want this package
-</Button>
-
+              {/* Centered Button */}
+              <div className="flex justify-center mt-2 mb-4">
+                <Button
+                  onClick={() => window.open(
+                    'https://www.cognitoforms.com/SaltLightInsuranceGroup/ClientIntakeForm',
+                    '_blank',
+                    'noopener,noreferrer'
+                  )}
+                  className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r ${getPackageColor(index)} hover:opacity-90 transition-opacity`}
+                >
+                  I want this package
+                </Button>
+              </div>
 
               {index === 1 && (
                 <div className="text-center mt-2">
