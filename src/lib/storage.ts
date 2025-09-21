@@ -110,7 +110,8 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
           const planValue = plan[key];
           const defaultValue = defaultPlan[key];
           if (planValue !== defaultValue) {
-            planDiff[key] = planValue;
+            // This is the correct way to handle this without 'any'
+            Object.assign(planDiff, { [key]: planValue });
           }
         });
 
