@@ -53,6 +53,9 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
     const details: string[] = [];
 
     if (plan.deductible !== undefined) details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+    
+    // Add coinsurance detail
+    if (plan.coinsurance !== undefined) details.push(`Coinsurance: ${plan.coinsurance}%`);
 
     if (plan.type === 'health') {
       if (plan.primaryCareCopay !== undefined) details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
