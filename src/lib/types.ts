@@ -339,8 +339,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         deductible: 0,
         copay: 0,
-        coverage: "Unlimited virtual healthcare. Covers up to 7 family members",
-        details: "24/7 access to doctors, therapists, and specialists with no copays, deductibles, or surprise bills.",
+        coverage: "Unlimited virtual healthcare, 24/7 access to doctors, therapists, and specialists with no copays, deductibles, or surprise bills",
+        details: "Covers up to 7 family members",
         brochureUrl: "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf"
       }),
       withEffectiveDate({
