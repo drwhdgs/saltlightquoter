@@ -137,7 +137,8 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
     const jsonString = JSON.stringify(ultraCompressed);
     const compressed = pako.gzip(jsonString);
     
-    return btoa(String.fromCharCode.apply(null, compressed as any))
+    // Fix: Explicitly cast 'compressed' to Uint8Array to resolve the 'any' error
+    return btoa(String.fromCharCode.apply(null, compressed as Uint8Array))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');
