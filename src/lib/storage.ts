@@ -100,19 +100,20 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
           const modKey = `${pkgIndex}_${planIndex}`;
           const planDiff: Partial<InsurancePlan> = {};
 
-          const fields: (keyof InsurancePlan)[] = [
-            'monthlyPremium', 'deductible', 'copay', 'primaryCareCopay',
-            'specialistCopay', 'genericDrugCopay', 'outOfPocketMax',
-            'coverage', 'details', 'effectiveDate', 'brochureUrl'
-          ];
+          const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
+  'monthlyPremium', 'deductible', 'copay', 'primaryCareCopay',
+  'specialistCopay', 'genericDrugCopay', 'outOfPocketMax',
+  'coverage', 'details', 'effectiveDate', 'brochureUrl'
+];
 
-          fields.forEach((key) => {
-            const planValue = plan[key];
-            const defaultValue = defaultPlan[key];
-            if (planValue !== defaultValue) {
-              planDiff[key] = planValue;
-            }
-          });
+fields.forEach((key) => {
+  const planValue = plan[key];
+  const defaultValue = defaultPlan[key];
+  if (planValue !== defaultValue) {
+    planDiff[key] = planValue;
+  }
+});
+
 
           if (Object.keys(planDiff).length > 0) modifications[modKey] = planDiff;
         });
