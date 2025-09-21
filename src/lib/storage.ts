@@ -102,8 +102,8 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         const planDiff: Partial<Omit<InsurancePlan, 'id'>> = {};
 
         const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
-          'monthlyPremium', 'deductible', 'copay', 'primaryCareCopay',
-          'specialistCopay', 'genericDrugCopay', 'outOfPocketMax',
+          'monthlyPremium', 'deductible', 'copay', 'coinsurance',
+          'primaryCareCopay', 'specialistCopay', 'genericDrugCopay', 'outOfPocketMax',
           'coverage', 'details', 'effectiveDate', 'brochureUrl'
         ];
 
@@ -202,6 +202,7 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
           monthlyPremium: customData.monthlyPremium ?? defaultPlan.monthlyPremium,
           deductible: customData.deductible ?? defaultPlan.deductible,
           copay: customData.copay ?? defaultPlan.copay,
+          coinsurance: (customData as any).coinsurance ?? (defaultPlan as any).coinsurance,
           primaryCareCopay: customData.primaryCareCopay ?? defaultPlan.primaryCareCopay,
           specialistCopay: customData.specialistCopay ?? defaultPlan.specialistCopay,
           genericDrugCopay: customData.genericDrugCopay ?? defaultPlan.genericDrugCopay,
