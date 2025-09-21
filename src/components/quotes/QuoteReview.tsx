@@ -123,10 +123,10 @@ export function QuoteReview({
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-gray-500" />
-                <div>
-                <p className="font-medium">Email</p>
-                 <p className="break-words">{quote.client.email}</p>
-              </div>
+                <<div>
+                  <p className="text-sm text-gray-600">Email</p>
+                  <p className="font-medium">{client.email}</p>
+                </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-gray-500" />
