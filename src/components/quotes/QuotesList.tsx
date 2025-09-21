@@ -72,7 +72,6 @@ export function QuotesList({
   };
 
   const handleCopyLink = (quote: Quote) => {
-    // Ensure the quote has a proper shareable link
     let shareableLink = quote.shareableLink;
     if (!shareableLink) {
       shareableLink = generateShareableLink(quote);
@@ -241,7 +240,7 @@ export function QuotesList({
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-gray-900 break-words">
                           {quote.client.name}
                         </h3>
                         <Badge className={getStatusColor(quote.status)}>
@@ -252,7 +251,7 @@ export function QuotesList({
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600">
                         <div>
                           <p className="font-medium">Email</p>
-                          <p>{quote.client.email}</p>
+                          <p className="break-words">{quote.client.email}</p>
                         </div>
                         <div>
                           <p className="font-medium">ZIP Code</p>
