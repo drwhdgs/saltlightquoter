@@ -137,7 +137,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
     const jsonString = JSON.stringify(ultraCompressed);
     const compressed = pako.gzip(jsonString);
     
-    // Fix: Convert the Uint8Array to a regular array using the spread operator
+    // Convert the Uint8Array to a regular array using the spread operator
     return btoa(String.fromCharCode(...compressed))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
@@ -194,23 +194,16 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
             : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toISOString();
         }
 
+        // Fix the type issue here by casting or being more specific
+        const planWithUpdates = {
+          ...defaultPlan,
+          ...customData,
+          effectiveDate
+        };
+
         return {
-          id: generateId(),
-          type: defaultPlan.type,
-          name: defaultPlan.name,
-          provider: defaultPlan.provider,
-          monthlyPremium: customData.monthlyPremium ?? defaultPlan.monthlyPremium,
-          deductible: customData.deductible ?? defaultPlan.deductible,
-          copay: customData.copay ?? defaultPlan.copay,
-          coinsurance: (customData as any).coinsurance ?? (defaultPlan as any).coinsurance,
-          primaryCareCopay: customData.primaryCareCopay ?? defaultPlan.primaryCareCopay,
-          specialistCopay: customData.specialistCopay ?? defaultPlan.specialistCopay,
-          genericDrugCopay: customData.genericDrugCopay ?? defaultPlan.genericDrugCopay,
-          outOfPocketMax: customData.outOfPocketMax ?? defaultPlan.outOfPocketMax,
-          coverage: customData.coverage ?? defaultPlan.coverage,
-          details: customData.details ?? defaultPlan.details,
-          effectiveDate,
-          brochureUrl: customData.brochureUrl ?? defaultPlan.brochureUrl,
+          ...planWithUpdates,
+          id: generateId(), // Ensure a unique ID for the new plan object
         };
       });
 
