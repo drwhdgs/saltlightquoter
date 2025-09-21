@@ -110,7 +110,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
           const planValue = plan[key];
           const defaultValue = defaultPlan[key];
           if (planValue !== defaultValue) {
-            (planDiff as any)[key] = planValue;
+            planDiff[key] = planValue;
           }
         });
 
