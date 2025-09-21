@@ -1,11 +1,10 @@
 import { Agent, Quote, Client, Package, InsurancePlan, PACKAGE_TEMPLATES } from './types';
 
-// Types for ultra-compressed quote data
 interface UltraCompressedQuote {
-  c: [string, string, string, string, string, string?]; // [name, zip, dob, email, phone, additionalInfo?]
-  p: number[]; // Package template indices (0=Bronze, 1=Silver, 2=Gold, 3=Healthy Bundle)
-  m?: { [key: string]: Partial<InsurancePlan> }; // Modified plan details
-  t: number; // Timestamp
+  c: [string, string, string, string, string, string?];
+  p: number[];
+  m?: { [key: string]: Partial<InsurancePlan> };
+  t: number;
 }
 
 const STORAGE_KEYS = {
@@ -99,7 +98,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         if (!defaultPlan) return;
 
         const modKey = `${pkgIndex}_${planIndex}`;
-        const planDiff: Partial<InsurancePlan> = {};
+        const planDiff: Partial<Omit<InsurancePlan, 'id'>> = {};
 
         const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
           'monthlyPremium', 'deductible', 'copay', 'primaryCareCopay',
@@ -111,8 +110,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
           const planValue = plan[key];
           const defaultValue = defaultPlan[key];
           if (planValue !== defaultValue) {
-            // TypeScript-safe assignment
-            (planDiff as any)[key] = planValue;
+            planDiff[key] = planValue;
           }
         });
 
@@ -215,65 +213,6 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
     return { client, packages, createdAt: new Date(compressed.t).toISOString() };
   } catch (error) {
     console.error('Error in ultraDecodeAndDecompress:', error);
-    throw error;
-  }
-};
-
-// -------------------- Legacy Decoding --------------------
-interface CompressedClient { n: string; z: string; d: string; e: string; p: string; a: string; }
-interface CompressedPlan { t: string; n: string; pr: string; mp: number; de: number; co: number; cv: string; dt: string; ed?: string; br?: string; }
-interface CompressedPackage { n: string; d: string; t: number; pl: CompressedPlan[]; }
-interface CompressedQuote { c: CompressedClient; p: CompressedPackage[]; t: string; }
-
-const decodeAndDecompress = (encoded: string): { client: Client; packages: Package[]; createdAt: string } => {
-  try {
-    let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) base64 += '=';
-    const jsonString = decodeURIComponent(escape(atob(base64)));
-    const compressed: CompressedQuote = JSON.parse(jsonString);
-
-    const client: Client = {
-      name: compressed.c.n,
-      zipCode: compressed.c.z,
-      dateOfBirth: compressed.c.d,
-      email: compressed.c.e,
-      phone: compressed.c.p,
-      additionalInfo: compressed.c.a || undefined,
-    };
-
-    const validPackageNames: Package['name'][] = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle'];
-
-    const packages: Package[] = compressed.p.map(compPkg => {
-      const pkgName: Package['name'] = validPackageNames.includes(compPkg.n as Package['name'])
-        ? (compPkg.n as Package['name'])
-        : 'Bronze';
-
-      const plans = compPkg.pl.map(compPlan => ({
-        id: generateId(),
-        type: compPlan.t as InsurancePlan['type'],
-        name: compPlan.n,
-        provider: compPlan.pr,
-        monthlyPremium: compPlan.mp,
-        deductible: compPlan.de || undefined,
-        copay: compPlan.co || undefined,
-        coverage: compPlan.cv || undefined,
-        details: compPlan.dt || undefined,
-        effectiveDate: compPlan.ed || undefined,
-        brochureUrl: compPlan.br || undefined,
-      }));
-
-      return {
-        id: generateId(),
-        name: pkgName,
-        description: compPkg.d,
-        plans,
-        totalMonthlyPremium: compPkg.t,
-      };
-    });
-
-    return { client, packages, createdAt: compressed.t };
-  } catch (error) {
-    console.error('Error in decodeAndDecompress:', error);
     throw error;
   }
 };
