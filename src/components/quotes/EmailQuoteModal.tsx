@@ -179,48 +179,48 @@ Click this link to view your quote: ${link}`;
           )}
 
           {/* SMS Form */}
-          {activeTab === 'sms' && (
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                  Phone Number *
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={quote.client.phone}
-                  readOnly
-                  className="mt-1 bg-gray-50"
-                />
-              </div>
+{activeTab === 'sms' && (
+  <div className="space-y-4">
+    <div>
+      <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+        Phone Number *
+      </Label>
+      <Input
+        id="phone"
+        type="tel"
+        value={quote.client.phone}
+        readOnly
+        className="mt-1 bg-gray-50"
+      />
+    </div>
 
-              <div>
-                <Label htmlFor="smsMessage" className="text-sm font-medium text-gray-700">
-                  Message *
-                </Label>
-                <Textarea
-                  id="smsMessage"
-                  value={`Good afternoon ${quote.client.name}! This is Salt & Light Insurance Group. Thank you for filling out our quote form! We appreciate the opportunity to provide a quote for you. Here's your full health insurance quote with the different packages that you can choose from. If you have any questions, please let us know. Thank you! 
-                  Click this link to view your quote: ${shareableLink}`}
-                  rows={4}
-                  className="mt-1"
-                  readOnly
-                />
-              </div>
+    <div>
+      <Label htmlFor="smsMessage" className="text-sm font-medium text-gray-700">
+        Message *
+      </Label>
+      <Textarea
+        id="smsMessage"
+        value={`Good afternoon ${quote.client.name}! This is Salt & Light Insurance Group. Thank you for filling out our quote form! We appreciate the opportunity to provide a quote for you. Here's your full health insurance quote with the different packages that you can choose from. If you have any questions, please let us know. Thank you!\nClick this link to view your quote: ${shareableLink}`}
+        rows={4}
+        className="mt-1"
+        readOnly
+      />
+    </div>
 
-              <Button
-                onClick={() => {
-                  const smsLink = `sms:${quote.client.phone}?body=${encodeURIComponent(`Good afternoon ${quote.client.name}! This is Salt & Light Insurance Group. Thank you for filling out our quote form! We appreciate the opportunity to provide a quote for you. Here's your full health insurance quote with the different packages that you can choose from. If you have any questions, please let us know. Thank you! 
-                  Click this link to view your quote: ${shareableLink}`)}`;
-                  window.open(smsLink, '_self');
-                  onClose();
-                }}
-                className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg font-medium"
-              >
-                Send SMS
-              </Button>
-            </div>
-          )}
+    <Button
+      onClick={() => {
+        const smsBody = `Good afternoon ${quote.client.name}! This is Salt & Light Insurance Group. Thank you for filling out our quote form! We appreciate the opportunity to provide a quote for you. Here's your full health insurance quote with the different packages that you can choose from. If you have any questions, please let us know. Thank you!\nClick this link to view your quote: ${shareableLink}`;
+        const smsLink = `sms:${quote.client.phone}?body=${encodeURIComponent(smsBody)}`;
+        window.open(smsLink, '_self');
+        onClose();
+      }}
+      className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg font-medium"
+    >
+      Send SMS
+    </Button>
+  </div>
+)}
+
 
           {/* Shareable Quote Link Section */}
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
