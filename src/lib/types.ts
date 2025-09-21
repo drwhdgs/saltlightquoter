@@ -129,7 +129,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         copay: 0,
         coverage: "Preventive and basic dental care",
         details: "Affordable plan for those with a healthy mouth. Preventive care such as exams and cleanings, with increasing coverage after the first year.",
-        brochureUrl: "https://www.ameritas.com/resources/brochures/PrimeStarCareLiteDental.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
       }),
       withEffectiveDate({
         type: "vision",
@@ -140,7 +140,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         copay: 0,
         coverage: "Preventive and basic vision care",
         details: "Protecting your eyes starts with routine eye exams!",
-        brochureUrl: "https://www.ameritas.com/resources/brochures/PrimeStarSelectVision.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
       }),
       withEffectiveDate({
         type: "outOfPocket",
@@ -149,7 +149,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$100/day Inpatient Hospital Confinement Benefit",
         details: "Helps cover unexpected medical expenses",
-        brochureUrl: "https://www.manhattanlife.com/resources/brochures/out-of-pocket.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
     ],
   },
@@ -181,7 +181,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         copay: 0,
         coverage: "Preventive and family-focused dental care",
         details: "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
-        brochureUrl: "https://www.ameritas.com/resources/brochures/PrimeStarCareBoostDental.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
       }),
       withEffectiveDate({
         type: "vision",
@@ -192,7 +192,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         copay: 0,
         coverage: "Preventive and basic vision care",
         details: "Protecting your eyes starts with routine eye exams!",
-        brochureUrl: "https://www.ameritas.com/resources/brochures/PrimeStarSelectVision.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
       }),
       withEffectiveDate({
         type: "outOfPocket",
@@ -201,7 +201,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$200/day Inpatient Hospital Confinement Benefit",
         details: "Helps cover unexpected medical expenses",
-        brochureUrl: "https://www.manhattanlife.com/resources/brochures/out-of-pocket.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
       withEffectiveDate({
         type: "life",
@@ -260,7 +260,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         copay: 20,
         coverage: "Premium dental care",
         details: "Extensive dental plan with high annual maximum, implant coverage, and hearing benefits. Expands after first year.",
-        brochureUrl: "https://www.ameritas.com/resources/brochures/PrimeStarCareCompleteDental.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
       }),
       withEffectiveDate({
         type: "vision",
@@ -271,7 +271,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         copay: 20,
         coverage: "Enhanced vision benefits",
         details: "Eye exams, frames, lenses, contacts",
-        brochureUrl: "https://www.ameritas.com/resources/brochures/PrimeStarChoiceVision.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
       }),
       withEffectiveDate({
         type: "outOfPocket",
@@ -280,7 +280,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$200/day Inpatient Hospital Confinement Benefit",
         details: "Helps cover unexpected medical expenses",
-        brochureUrl: "https://www.manhattanlife.com/resources/brochures/out-of-pocket.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
       withEffectiveDate({
         type: "life",
@@ -343,7 +343,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         copay: 20,
         coverage: "Premium dental care",
         details: "Extensive dental plan with high annual maximum and implant coverage. Expands after first year.",
-        brochureUrl: "https://www.ameritas.com/resources/brochures/PrimeStarDentalComplete.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
       }),
       withEffectiveDate({
         type: "vision",
@@ -354,7 +354,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         copay: 20,
         coverage: "Enhanced vision benefits",
         details: "Eye exams, frames, lenses, contacts",
-        brochureUrl: "https://www.ameritas.com/resources/brochures/PrimeStarChoiceVision.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
       }),
       withEffectiveDate({
         type: "life",
