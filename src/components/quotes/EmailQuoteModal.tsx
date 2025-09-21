@@ -200,7 +200,7 @@ Click this link to view your quote: ${link}`;
       </Label>
       <Textarea
         id="smsMessage"
-        value={`Good afternoon ${quote.client.name}! This is Salt & Light Insurance Group. Thank you for filling out our quote form! We appreciate the opportunity to provide a quote for you. Here's your full health insurance quote with the different packages that you can choose from. If you have any questions, please let us know. Thank you!\nClick this link to view your quote: ${shareableLink}`}
+        value={`Good afternoon ${quote.client.name}! This is Salt & Light Insurance Group. Thank you for filling out our quote form! We appreciate the opportunity to provide a quote for you. Here's your full health insurance quote with the different packages that you can choose from. If you have any questions, please let us know. Thank you!\n\nClick this link to view your quote: ${shareableLink}`}
         rows={4}
         className="mt-1"
         readOnly
@@ -209,7 +209,7 @@ Click this link to view your quote: ${link}`;
 
     <Button
       onClick={() => {
-        const smsBody = `Good afternoon ${quote.client.name}! This is Salt & Light Insurance Group. Thank you for filling out our quote form! We appreciate the opportunity to provide a quote for you. Here's your full health insurance quote with the different packages that you can choose from. If you have any questions, please let us know. Thank you!\nClick this link to view your quote: ${shareableLink}`;
+        const smsBody = `Good afternoon ${quote.client.name}! This is Salt & Light Insurance Group. Thank you for filling out our quote form! We appreciate the opportunity to provide a quote for you. Here's your full health insurance quote with the different packages that you can choose from. If you have any questions, please let us know. Thank you!\n\nClick this link to view your quote: ${shareableLink}`;
         const smsLink = `sms:${quote.client.phone}?body=${encodeURIComponent(smsBody)}`;
         window.open(smsLink, '_self');
         onClose();
