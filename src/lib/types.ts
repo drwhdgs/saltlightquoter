@@ -316,6 +316,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "Short-term disability income",
         details: "Income replacement for temporary disabilities",
+        brochureUrl: "https://www.meetbreeze.com/disability-insurance/short-term-disability-insurance/"
+
       }),
     ],
   },
