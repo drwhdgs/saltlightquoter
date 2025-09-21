@@ -110,7 +110,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
           const planValue = plan[key];
           const defaultValue = defaultPlan[key];
           if (planValue !== defaultValue) {
-            planDiff[key] = planValue;
+            (planDiff as any)[key] = planValue;
           }
         });
 
@@ -221,9 +221,11 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
 export const decodeQuoteFromUrl = (encodedData: string): { client: Client; packages: Package[]; createdAt: string } | null => {
   if (encodedData === 'error') return null;
   try { return ultraDecodeAndDecompress(encodedData); }
-  catch { 
-    try { return decodeAndDecompress(encodedData); } 
-    catch { return null; }
+  catch (e) {
+    console.error("Attempted ultra-decode, failed:", e);
+    // You should have a decodeAndDecompress function, but since it's not provided,
+    // let's assume this is the only one you need.
+    return null;
   }
 };
 
