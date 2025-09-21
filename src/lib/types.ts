@@ -340,13 +340,13 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Dental Complete",
+        name: "Ameritas PrimeStar Care Lite Dental",
         provider: "Ameritas",
-        monthlyPremium: 53.85,
+        monthlyPremium: 25.95,
         deductible: 50,
-        copay: 20,
-        coverage: "Premium dental care",
-        details: "Extensive dental plan with high annual maximum and implant coverage. Expands after first year.",
+        copay: 0,
+        coverage: "Preventive and basic dental care",
+        details: "Affordable plan for those with a healthy mouth. Preventive care such as exams and cleanings, with increasing coverage after the first year.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
       }),
       withEffectiveDate({
