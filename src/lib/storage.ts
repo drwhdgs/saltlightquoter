@@ -1,4 +1,5 @@
 import { Agent, Quote, Client, Package, InsurancePlan, PACKAGE_TEMPLATES } from './types';
+import pako from 'pako'; // Import the pako library
 
 interface UltraCompressedQuote {
   c: [string, string, string, string, string, string?];
@@ -110,7 +111,6 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
           const planValue = plan[key];
           const defaultValue = defaultPlan[key];
           if (planValue !== defaultValue) {
-            // This is the correct way to handle this without 'any'
             Object.assign(planDiff, { [key]: planValue });
           }
         });
@@ -133,8 +133,11 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
       t: new Date(data.createdAt).getTime(),
     };
 
+    // Use pako to compress the JSON string
     const jsonString = JSON.stringify(ultraCompressed);
-    return btoa(unescape(encodeURIComponent(jsonString)))
+    const compressed = pako.gzip(jsonString);
+    
+    return btoa(String.fromCharCode.apply(null, compressed as any))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');
@@ -149,8 +152,17 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
   try {
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
     while (base64.length % 4) base64 += '=';
-    const jsonString = decodeURIComponent(escape(atob(base64)));
-    const compressed: UltraCompressedQuote = JSON.parse(jsonString);
+    
+    // Decompress with pako
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const uncompressed = pako.ungzip(bytes, { to: 'string' });
+    const compressed: UltraCompressedQuote = JSON.parse(uncompressed);
 
     const client: Client = {
       name: compressed.c[0],
@@ -224,8 +236,6 @@ export const decodeQuoteFromUrl = (encodedData: string): { client: Client; packa
   try { return ultraDecodeAndDecompress(encodedData); }
   catch (e) {
     console.error("Attempted ultra-decode, failed:", e);
-    // You should have a decodeAndDecompress function, but since it's not provided,
-    // let's assume this is the only one you need.
     return null;
   }
 };
