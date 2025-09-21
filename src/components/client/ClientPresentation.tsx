@@ -183,7 +183,7 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
               <div className="flex justify-center mt-2 mb-4">
                 <Button
                   onClick={() => onPackageSelect && onPackageSelect(pkg.id)}
-                  className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r ${getPackageColor(index)} hover:opacity-90 transition-opacity`}
+                  className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r text-white ${getPackageColor(index)} hover:opacity-90 transition-opacity`}
                   variant={selectedPackageId === pkg.id ? 'default' : 'outline'}
                 >
                   I want this package
