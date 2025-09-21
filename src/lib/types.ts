@@ -108,7 +108,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "health",
-        name: "ACA Bronze Health Plan",
+        name: "Molina Bronze 8 - HMO",
         provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
@@ -160,7 +160,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "health",
-        name: "ACA Silver Health Plan",
+        name: "Molina Silver 12 150 - HMO",
         provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
@@ -239,7 +239,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "health",
-        name: "ACA Gold Health Plan",
+        name: "Molina Gold 1 - HMO",
         provider: "ACA",
         monthlyPremium: 550,
         deductible: 2500,
@@ -335,6 +335,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         copay: 0,
         coverage: "Unlimited virtual healthcare",
         details: "24/7 access to doctors, therapists, and specialists with no copays, deductibles, or surprise bills.",
+        brochureUrl: "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf"
+
       }),
       withEffectiveDate({
         type: "dental",
