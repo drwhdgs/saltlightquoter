@@ -105,8 +105,8 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                 </div>
                 <div className="text-sm text-gray-600">
                   <Mail className="w-3 h-3 inline mr-1" />
-                  <a href="mailto:info@saltlightinsurancegroup.com" className="hover:underline">
-                    info@saltlightinsurancegroup.com
+                  <a href="mailto:support@saltlightinsurancegroup.com" className="hover:underline">
+                    support@saltlightinsurancegroup.com
                   </a>
                 </div>
               </div>
