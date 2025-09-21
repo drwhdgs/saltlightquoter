@@ -92,32 +92,32 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
 
     data.packages.forEach((pkg, pkgIndex) => {
       const template = PACKAGE_TEMPLATES.find(t => t.name === pkg.name);
-      if (template) {
-        pkg.plans.forEach((plan, planIndex) => {
-          const defaultPlan = template.defaultPlans[planIndex];
-          if (!defaultPlan) return;
+      if (!template) return;
 
-          const modKey = `${pkgIndex}_${planIndex}`;
-          const planDiff: Partial<InsurancePlan> = {};
+      pkg.plans.forEach((plan, planIndex) => {
+        const defaultPlan = template.defaultPlans[planIndex];
+        if (!defaultPlan) return;
 
-          const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
-  'monthlyPremium', 'deductible', 'copay', 'primaryCareCopay',
-  'specialistCopay', 'genericDrugCopay', 'outOfPocketMax',
-  'coverage', 'details', 'effectiveDate', 'brochureUrl'
-];
+        const modKey = `${pkgIndex}_${planIndex}`;
+        const planDiff: Partial<InsurancePlan> = {};
 
-fields.forEach((key) => {
-  const planValue = plan[key];
-  const defaultValue = defaultPlan[key];
-  if (planValue !== defaultValue) {
-    planDiff[key] = planValue;
-  }
-});
+        const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
+          'monthlyPremium', 'deductible', 'copay', 'primaryCareCopay',
+          'specialistCopay', 'genericDrugCopay', 'outOfPocketMax',
+          'coverage', 'details', 'effectiveDate', 'brochureUrl'
+        ];
 
-
-          if (Object.keys(planDiff).length > 0) modifications[modKey] = planDiff;
+        fields.forEach((key) => {
+          const planValue = plan[key];
+          const defaultValue = defaultPlan[key];
+          if (planValue !== defaultValue) {
+            // TypeScript-safe assignment
+            (planDiff as any)[key] = planValue;
+          }
         });
-      }
+
+        if (Object.keys(planDiff).length > 0) modifications[modKey] = planDiff;
+      });
     });
 
     const ultraCompressed: UltraCompressedQuote = {
@@ -135,13 +135,17 @@ fields.forEach((key) => {
     };
 
     const jsonString = JSON.stringify(ultraCompressed);
-    return btoa(unescape(encodeURIComponent(jsonString))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    return btoa(unescape(encodeURIComponent(jsonString)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
   } catch (error) {
     console.error('Error in ultraCompressAndEncode:', error);
     throw error;
   }
 };
 
+// -------------------- Ultra-Compact Decode --------------------
 const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: Package[]; createdAt: string } => {
   try {
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
@@ -173,14 +177,9 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
           effectiveDate = customData.effectiveDate;
         } else {
           const today = new Date();
-          if (defaultPlan.type === 'health') {
-            const firstOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-            effectiveDate = firstOfNextMonth.toISOString();
-          } else {
-            const tomorrow = new Date(today);
-            tomorrow.setDate(today.getDate() + 1);
-            effectiveDate = tomorrow.toISOString();
-          }
+          effectiveDate = defaultPlan.type === 'health'
+            ? new Date(today.getFullYear(), today.getMonth() + 1, 1).toISOString()
+            : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toISOString();
         }
 
         return {
@@ -342,3 +341,4 @@ export const initializeStorage = (): void => {
   if (!localStorage.getItem(STORAGE_KEYS.AGENTS)) localStorage.setItem(STORAGE_KEYS.AGENTS, JSON.stringify([]));
   if (!localStorage.getItem(STORAGE_KEYS.QUOTES)) localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify([]));
 };
+
