@@ -239,6 +239,18 @@ export function QuoteReview({
                           )}
                         </>
                       )}
+                      {plan.copay !== undefined && (
+                        <div>
+                          <p className="text-gray-600">Co-Pay</p>
+                          <p className="font-medium">${plan.copay}</p>
+                        </div>
+                      )}
+                      {plan.coinsurance !== undefined && (
+                        <div>
+                          <p className="text-gray-600">Coinsurance</p>
+                          <p className="font-medium">{plan.coinsurance}%</p>
+                        </div>
+                      )}
                       {plan.coverage && (
                         <div>
                           <p className="text-gray-600">Coverage</p>
