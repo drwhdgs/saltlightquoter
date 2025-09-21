@@ -341,4 +341,3 @@ export const initializeStorage = (): void => {
   if (!localStorage.getItem(STORAGE_KEYS.AGENTS)) localStorage.setItem(STORAGE_KEYS.AGENTS, JSON.stringify([]));
   if (!localStorage.getItem(STORAGE_KEYS.QUOTES)) localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify([]));
 };
-
