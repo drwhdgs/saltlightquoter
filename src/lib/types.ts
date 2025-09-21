@@ -210,7 +210,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$100,000 term life insurance",
         details: "20-year level term life insurance",
-        brochureUrl: "https://www.transamerica.com/brochures/trendsetter-super-term.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf"
       }),
       withEffectiveDate({
         type: "cancer",
@@ -219,7 +219,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$10,000 Benefit",
         details: "Lump-sum cash benefit paid upon diagnosis of cancer, regardless of other coverage.",
-        brochureUrl: "https://www.manhattanlife.com/resources/brochures/cancer.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/paiGfNlyK9QsGs0yyXr0XP9rmeRnwDLbKu8M8iPS.pdf"
       }),
       withEffectiveDate({
         type: "heart",
@@ -228,7 +228,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$10,000 Benefit",
         details: "Lump-sum cash benefit upon diagnosis of heart attack or stroke, in addition to any other plan.",
-        brochureUrl: "https://www.manhattanlife.com/resources/brochures/heart-stroke.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/paiGfNlyK9QsGs0yyXr0XP9rmeRnwDLbKu8M8iPS.pdf"
       }),
     ],
   },
@@ -289,7 +289,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$100,000 term life insurance",
         details: "20-year level term life insurance",
-        brochureUrl: "https://www.transamerica.com/brochures/trendsetter-super-term.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf"
       }),
       withEffectiveDate({
         type: "cancer",
@@ -298,7 +298,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$10,000 Benefit",
         details: "Lump-sum cash benefit paid upon diagnosis of cancer.",
-        brochureUrl: "https://www.manhattanlife.com/resources/brochures/cancer.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/paiGfNlyK9QsGs0yyXr0XP9rmeRnwDLbKu8M8iPS.pdf"
       }),
       withEffectiveDate({
         type: "heart",
@@ -307,7 +307,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$10,000 Benefit",
         details: "Lump-sum cash benefit paid upon diagnosis of heart attack or stroke.",
-        brochureUrl: "https://www.manhattanlife.com/resources/brochures/heart-stroke.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/paiGfNlyK9QsGs0yyXr0XP9rmeRnwDLbKu8M8iPS.pdf"
       }),
       withEffectiveDate({
         type: "disability",
@@ -363,7 +363,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         coverage: "$500,000 term life insurance",
         details: "25-year level term life insurance",
-        brochureUrl: "https://www.transamerica.com/brochures/trendsetter-super-preferred.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf"
       }),
       withEffectiveDate({
         type: "outOfPocket",
