@@ -87,7 +87,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       plan.id === editingPlan.planId ? { ...plan, ...editFormData } : plan
     );
 
-    const totalMonthlyPremium = updatedPlans.reduce((sum, plan) => sum + plan.monthlyPremium, 0);
+    const totalMonthlyPremium = updatedPlans.reduce((sum, plan) => sum + (plan.monthlyPremium ?? 0), 0);
     const updatedPackage: Package = { ...currentPackage, plans: updatedPlans, totalMonthlyPremium };
 
     const newCustomizations = new Map(customizedPackages);
@@ -247,6 +247,18 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                               )}
                             </>
                           )}
+                          {plan.copay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Co-Pay</p>
+                              <p className="font-medium">${plan.copay}</p>
+                            </div>
+                          )}
+                          {plan.coinsurance !== undefined && (
+                            <div>
+                              <p className="text-gray-600">Coinsurance</p>
+                              <p className="font-medium">{plan.coinsurance}%</p>
+                            </div>
+                          )}
                           {plan.coverage && (
                             <div>
                               <p className="text-gray-600">Coverage</p>
@@ -348,6 +360,28 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                     type="number"
                     value={editFormData.genericDrugCopay ?? ''}
                     onChange={e => setEditFormData(prev => ({ ...prev, genericDrugCopay: Number(e.target.value) || 0 }))}
+                  />
+                </div>
+              )}
+
+              {editFormData.copay !== undefined && (
+                <div className="space-y-2">
+                  <Label>Co-Pay</Label>
+                  <Input
+                    type="number"
+                    value={editFormData.copay ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, copay: Number(e.target.value) || 0 }))}
+                  />
+                </div>
+              )}
+
+              {editFormData.coinsurance !== undefined && (
+                <div className="space-y-2">
+                  <Label>Coinsurance (%)</Label>
+                  <Input
+                    type="number"
+                    value={editFormData.coinsurance ?? ''}
+                    onChange={e => setEditFormData(prev => ({ ...prev, coinsurance: Number(e.target.value) || 0 }))}
                   />
                 </div>
               )}
