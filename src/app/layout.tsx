@@ -16,7 +16,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Salt & Light Quoter",
-  description: "Easily create and share health insurance quotes for clients with Salt & Light Insurance Group. Send quotes via email or SMS with pre-filled package options and shareable links.",
+  description:
+    "Easily create and share health insurance quotes for clients with Salt & Light Insurance Group. Send quotes via email or SMS with pre-filled package options and shareable links.",
+  icons: {
+    icon: [
+      { url: "/favicon.png" }, // standard .ico favicon
+    ],
+    apple: "/apple-touch-icon.png", // optional for iOS home screen
+  },
 };
 
 export default function RootLayout({
