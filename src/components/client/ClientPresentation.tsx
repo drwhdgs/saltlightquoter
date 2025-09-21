@@ -143,6 +143,11 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                         {plan.type === 'outOfPocket' ? 'OUT-OF-POCKET PROTECTION' :
                          plan.type === 'life' ? 'LIFE INSURANCE' :
                          plan.type === 'health' ? 'ACA HEALTH INSURANCE' :
+                         plan.type === 'dental' ? 'DENTAL INSURANCE' :
+                         plan.type === 'vision' ? 'VISION INSURANCE' :
+                         plan.type === 'cancer' ? 'CANCER PROTECTION' :
+                         plan.type === 'heart' ? 'HEART ATTACK & STROKE PROTECTION' :
+                         plan.type === 'disability' ? 'SHORT-TERM DISABILITY' :
                          plan.name.toUpperCase()}
                       </span>
                     </div>
