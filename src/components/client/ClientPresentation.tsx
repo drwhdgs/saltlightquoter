@@ -27,6 +27,8 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
     'Manhattan Life': '/logos/manhattan-life.png',
     KonnectMD: '/logos/konnect.png',
     Breeze: '/logos/breeze.png',
+    ACA: '/logos/aca.png',
+
   };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {
