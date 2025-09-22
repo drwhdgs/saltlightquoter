@@ -335,7 +335,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: "UHC TriTerm Medical Catastrophic Coverage",
         provider: "United Healthcare",
         monthlyPremium: 0, // adjust if you want a sample premium
-        deductible: 0, // max deductible option
+        deductible: 15000, // max deductible option
         coverage: "$2 Million lifetime benefit per person",
         details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care.
         Continuous protection for nearly 3 years with one application.`,
