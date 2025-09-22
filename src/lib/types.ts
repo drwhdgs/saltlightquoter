@@ -330,6 +330,17 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     description: "Complete protection package with all available plans including disability",
     planTypes: ["health","konnect","dental","vision","life","cancer","heart","outOfPocket","breeze","disability"],
     defaultPlans: [
+    withEffectiveDate({
+        type: "catastrophic",
+        name: "UHC TriTerm Medical Catastrophic Coverage",
+        provider: "United Healthcare",
+        monthlyPremium: 0, // adjust if you want a sample premium
+        deductible: 0, // max deductible option
+        coverage: "$2 Million lifetime benefit per person",
+        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care.
+        Continuous protection for nearly 3 years with one application.`,
+        brochureUrl: "https://www.uhone.com/health-insurance/short-term-health-insurance/tri-term-medical"
+        }),
       withEffectiveDate({
         type: "konnect",
         name: "KonnectMD",
@@ -341,17 +352,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         details: "Covers up to 7 family members",
         brochureUrl: "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf"
       }),
-        withEffectiveDate({
-        type: "catastrophic",
-        name: "UHC TriTerm Medical Catastrophic Coverage",
-        provider: "United Healthcare",
-        monthlyPremium: 0, // adjust if you want a sample premium
-        deductible: 0, // max deductible option
-        coverage: "$2 Million lifetime benefit per person",
-        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care.
-        Continuous protection for nearly 3 years with one application.`,
-        brochureUrl: "https://www.uhone.com/health-insurance/short-term-health-insurance/tri-term-medical"
-        }),
       withEffectiveDate({
         type: "dental",
         name: "Ameritas PrimeStar Care Lite Dental",
