@@ -353,17 +353,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         brochureUrl: "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf"
       }),
       withEffectiveDate({
-        type: "dental",
-        name: "Ameritas PrimeStar Care Lite Dental",
-        provider: "Ameritas",
-        monthlyPremium: 25.95,
-        deductible: 50,
-        copay: 0,
-        coverage: "Preventive and basic dental care",
-        details: "Affordable plan for those with a healthy mouth. Preventive care such as exams and cleanings, with increasing coverage after the first year.",
-        brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
-      }),
-      withEffectiveDate({
         type: "vision",
         name: "Ameritas PrimeStar Choice Vision",
         provider: "Ameritas",
