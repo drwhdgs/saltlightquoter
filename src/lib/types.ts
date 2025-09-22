@@ -345,7 +345,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: "konnect",
         name: "KonnectMD",
         provider: "KonnectMD",
-        monthlyPremium: 0,
+        monthlyPremium: 99.99,
         deductible: 0,
         copay: 0,
         coverage: "Unlimited virtual healthcare, 24/7 access to doctors, therapists, and specialists with no copays, deductibles, or surprise bills",
