@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -47,11 +47,13 @@ export function QuoteReview({
     ACA: '/logos/aca.png',
     KonnectMD: '/logos/konnect.png',
     Breeze: '/logos/breeze.png',
+    'United Healthcare': '/logos/uhc.png'
   };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {
     switch (type) {
       case 'health': return <Shield className="w-4 h-4" />;
+      case 'catastrophic': return <Shield className="w-4 h-4 text-red-500" />;
       case 'dental': return <Activity className="w-4 h-4" />;
       case 'vision': return <Eye className="w-4 h-4" />;
       case 'life': return <Heart className="w-4 h-4" />;
@@ -123,10 +125,10 @@ export function QuoteReview({
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-gray-500" />
-              <div>
-                <p className="text-sm text-gray-600">Email</p>
-                <p className="font-medium break-words">{client.email}</p>
-              </div>
+                <div>
+                  <p className="text-sm text-gray-600">Email</p>
+                  <p className="font-medium break-words">{client.email}</p>
+                </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-gray-500" />
@@ -211,7 +213,7 @@ export function QuoteReview({
                           <p className="font-medium">${plan.deductible.toLocaleString()}</p>
                         </div>
                       )}
-                      {plan.type === 'health' && (
+                      {(plan.type === 'health' || plan.type === 'catastrophic') && (
                         <>
                           {plan.primaryCareCopay !== undefined && (
                             <div>

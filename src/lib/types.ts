@@ -20,6 +20,7 @@ export interface InsurancePlan {
     | "health"
     | "konnect"
     | "dental"
+    | "catastrophic"
     | "vision"
     | "life"
     | "cancer"
@@ -340,6 +341,17 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         details: "Covers up to 7 family members",
         brochureUrl: "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf"
       }),
+        withEffectiveDate({
+        type: "catastrophic",
+        name: "UHC TriTerm Medical Catastrophic Coverage",
+        provider: "United Healthcare",
+        monthlyPremium: 0, // adjust if you want a sample premium
+        deductible: 0, // max deductible option
+        coverage: "$2 Million lifetime benefit per person",
+        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care.
+        Continuous protection for nearly 3 years with one application.`,
+        brochureUrl: "https://www.uhone.com/health-insurance/short-term-health-insurance/tri-term-medical"
+        }),
       withEffectiveDate({
         type: "dental",
         name: "Ameritas PrimeStar Care Lite Dental",
@@ -361,15 +373,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         coverage: "Enhanced vision benefits",
         details: "Eye exams, frames, lenses, contacts",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
-      }),
-      withEffectiveDate({
-        type: "life",
-        name: "Transamerica Trendsetter Super Prefered",
-        provider: "Transamerica",
-        monthlyPremium: 0,
-        coverage: "$500,000 term life insurance",
-        details: "25-year level term life insurance",
-        brochureUrl: "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf"
       }),
       withEffectiveDate({
         type: "outOfPocket",

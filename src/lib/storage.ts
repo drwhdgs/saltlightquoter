@@ -121,23 +121,21 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
 
     const ultraCompressed: UltraCompressedQuote = {
       c: [
-        data.client.name,
-        data.client.zipCode,
-        data.client.dateOfBirth,
-        data.client.email,
-        data.client.phone,
-        data.client.additionalInfo || undefined,
-      ].filter(x => x !== undefined) as [string, string, string, string, string, string?],
+        String(data.client.name),
+        String(data.client.zipCode),
+        String(data.client.dateOfBirth),
+        String(data.client.email),
+        String(data.client.phone),
+        data.client.additionalInfo ? String(data.client.additionalInfo) : undefined,
+      ] as [string, string, string, string, string, string?],
       p: packageIndices,
       ...(Object.keys(modifications).length > 0 && { m: modifications }),
       t: new Date(data.createdAt).getTime(),
     };
 
-    // Use pako to compress the JSON string
     const jsonString = JSON.stringify(ultraCompressed);
     const compressed = pako.gzip(jsonString);
-    
-    // Convert the Uint8Array to a regular array using the spread operator
+
     return btoa(String.fromCharCode(...compressed))
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
@@ -153,8 +151,7 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
   try {
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
     while (base64.length % 4) base64 += '=';
-    
-    // Decompress with pako
+
     const binaryString = atob(base64);
     const len = binaryString.length;
     const bytes = new Uint8Array(len);
@@ -194,16 +191,11 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
             : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toISOString();
         }
 
-        // Fix the type issue here by casting or being more specific
-        const planWithUpdates = {
+        return {
           ...defaultPlan,
           ...customData,
-          effectiveDate
-        };
-
-        return {
-          ...planWithUpdates,
-          id: generateId(), // Ensure a unique ID for the new plan object
+          effectiveDate,
+          id: generateId(),
         };
       });
 

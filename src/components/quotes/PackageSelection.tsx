@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Edit, Shield, Heart, Eye, Activity } from 'lucide-react';
+import { Edit, Shield, Heart, Eye, Activity, AlertTriangle } from 'lucide-react';
 import { Package, InsurancePlan, Client } from '@/lib/types';
 import { generateAllPackages } from '@/lib/packages';
 
@@ -35,6 +35,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     ACA: '/logos/aca.png',
     KonnectMD: '/logos/konnect.png',
     Breeze: '/logos/breeze.png',
+    'United Healthcare': '/logos/uhc.png',
   };
 
   useEffect(() => {
@@ -110,6 +111,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
   const getPlanIcon = (type: InsurancePlan['type']) => {
     switch (type) {
       case 'health': return <Shield className="w-4 h-4" />;
+      case 'catastrophic': return <AlertTriangle className="w-4 h-4 text-red-500" />;
       case 'dental': return <Activity className="w-4 h-4" />;
       case 'vision': return <Eye className="w-4 h-4" />;
       case 'life': return <Heart className="w-4 h-4" />;
@@ -219,7 +221,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                               <p className="font-medium">${plan.deductible.toLocaleString()}</p>
                             </div>
                           )}
-                          {plan.type === 'health' && (
+                          {(plan.type === 'health' || plan.type === 'catastrophic') && (
                             <>
                               {plan.primaryCareCopay !== undefined && (
                                 <div>
@@ -320,7 +322,8 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                 </div>
               )}
 
-              {editFormData.type === 'health' && editFormData.outOfPocketMax !== undefined && (
+              {(editFormData.type === 'health' || editFormData.type === 'catastrophic') &&
+                editFormData.outOfPocketMax !== undefined && (
                 <div className="space-y-2">
                   <Label>Out-of-Pocket Max</Label>
                   <Input
@@ -449,14 +452,8 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
 
       {/* Actions */}
       <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onBack}>Back to Client Info</Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={selectedPackageIds.size === 0}
-          className={selectedPackageIds.size === 0 ? 'opacity-50 cursor-not-allowed' : ''}
-        >
-          Generate Quote ({selectedPackageIds.size} package{selectedPackageIds.size !== 1 ? 's' : ''})
-        </Button>
+        <Button variant="outline" onClick={onBack}>Back</Button>
+        <Button onClick={handleSubmit}>Continue</Button>
       </div>
     </div>
   );
