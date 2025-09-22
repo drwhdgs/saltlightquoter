@@ -230,6 +230,15 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                       >
                         Copy
                       </button>
+                      <button
+                        onClick={() => {
+                        const shareableLink = quote.shareableLink || generateShareableLink(quote);
+                        window.open(shareableLink, '_blank');
+                       }}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                        >
+                      Preview
+                      </button>
                     </div>
                   </div>
 
