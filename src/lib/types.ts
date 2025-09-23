@@ -152,7 +152,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Manhattan Life",
         monthlyPremium: 0,
         coverage: "$100/day Inpatient Hospital Confinement Benefit",
-        details: "Helps cover unexpected medical expenses",
+        details: "An Out-of-Pocket policy can help the costs associated with a hospital stay from becoming an unnecessary burden.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
     ],
@@ -204,7 +204,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Manhattan Life",
         monthlyPremium: 0,
         coverage: "$200/day Inpatient Hospital Confinement Benefit",
-        details: "Helps cover unexpected medical expenses",
+        details: "An Out-of-Pocket policy can help the costs associated with a hospital stay from becoming an unnecessary burden.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
       withEffectiveDate({
@@ -283,7 +283,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Manhattan Life",
         monthlyPremium: 0,
         coverage: "$200/day Inpatient Hospital Confinement Benefit",
-        details: "Helps cover unexpected medical expenses",
+        details: "An Out-of-Pocket policy can help the costs associated with a hospital stay from becoming an unnecessary burden.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
       withEffectiveDate({
@@ -369,7 +369,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Manhattan Life",
         monthlyPremium: 0,
         coverage: "$200/day Inpatient Hospital Confinement Benefit",
-        details: "Highest coverage for all medical expenses",
+        details: "An Out-of-Pocket policy can help the costs associated with a hospital stay from becoming an unnecessary burden.",
         brochureUrl: "https://www.manhattanlife.com/resources/brochures/out-of-pocket.pdf"
       }),
     ],
