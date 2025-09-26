@@ -302,7 +302,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: "Breeze Short-Term Disability",
         provider: "Breeze",
         monthlyPremium: 0,
-        coverage: "Short-term disability income",
+        coverage: "$200/month short-term disability income for 26 weeks",
         details: "Income replacement for temporary disabilities",
         brochureUrl: "https://www.meetbreeze.com/disability-insurance/short-term-disability-insurance/"
 
