@@ -248,7 +248,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 550,
         deductible: 2500,
         outOfPocketMax: 3000,
-        copay: 20,
+        copay: 0,
         coinsurance: 20,
         details: "Offers premium coverage with higher monthly premiums but lower out-of-pocket costs, ideal for frequent medical care and prescriptions.",
         primaryCareCopay: 0,
