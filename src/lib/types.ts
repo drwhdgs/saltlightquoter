@@ -34,7 +34,6 @@ export interface InsurancePlan {
   deductible?: number;
   outOfPocket?: number; // general out-of-pocket
   outOfPocketMax?: number; // health-specific max
-  copay?: number;       // general copay
   coverage?: string;
   details?: string;
 
@@ -117,7 +116,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         deductible: 0,
         outOfPocketMax: 5000,
-        copay: 0,
         coinsurance: 50,
         details: "Covers essential health benefits and protects against major medical expenses, with lower premiums but higher out-of-pocket costs.",
         primaryCareCopay: 0,
@@ -130,7 +128,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 25.95,
         deductible: 50,
-        copay: 0,
         coverage: "Preventive and basic dental care",
         details: "Affordable plan for those with a healthy mouth. Preventive care such as exams and cleanings, with increasing coverage after the first year.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
@@ -141,7 +138,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
-        copay: 0,
         coverage: "Preventive and basic vision care",
         details: "Protecting your eyes starts with routine eye exams!",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
@@ -169,7 +165,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         deductible: 0,
         outOfPocketMax: 4000,
-        copay: 0,
         coinsurance: 30,
         details: "Provides enhanced coverage with moderate premiums and cost-sharing, balancing benefits and affordability for typical medical care.",
         primaryCareCopay: 0,
@@ -182,7 +177,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 46.89,
         deductible: 50,
-        copay: 0,
         coverage: "Preventive and family-focused dental care",
         details: "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
@@ -193,7 +187,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
-        copay: 0,
         coverage: "Preventive and basic vision care",
         details: "Protecting your eyes starts with routine eye exams!",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
@@ -248,7 +241,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 550,
         deductible: 2500,
         outOfPocketMax: 3000,
-        copay: 0,
         coinsurance: 20,
         details: "Offers premium coverage with higher monthly premiums but lower out-of-pocket costs, ideal for frequent medical care and prescriptions.",
         primaryCareCopay: 0,
@@ -261,7 +253,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 53.85,
         deductible: 50,
-        copay: 20,
         coverage: "Premium dental care",
         details: "Extensive dental plan with high annual maximum, implant coverage, and hearing benefits. Expands after first year.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
@@ -272,7 +263,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
-        copay: 20,
         coverage: "Enhanced vision benefits",
         details: "Eye exams, frames, lenses, contacts",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
@@ -347,7 +337,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "KonnectMD",
         monthlyPremium: 99.99,
         deductible: 0,
-        copay: 0,
         coverage: "Unlimited virtual healthcare, 24/7 access to doctors, therapists, and specialists with no copays, deductibles, or surprise bills",
         details: "Covers up to 7 family members",
         brochureUrl: "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf"
@@ -358,7 +347,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
-        copay: 20,
         coverage: "Enhanced vision benefits",
         details: "Eye exams, frames, lenses, contacts",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
