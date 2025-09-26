@@ -249,12 +249,6 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                               )}
                             </>
                           )}
-                          {plan.copay !== undefined && (
-                            <div>
-                              <p className="text-gray-600">Co-Pay</p>
-                              <p className="font-medium">${plan.copay}</p>
-                            </div>
-                          )}
                           {plan.coinsurance !== undefined && (
                             <div>
                               <p className="text-gray-600">Coinsurance</p>
@@ -363,17 +357,6 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                     type="number"
                     value={editFormData.genericDrugCopay ?? ''}
                     onChange={e => setEditFormData(prev => ({ ...prev, genericDrugCopay: Number(e.target.value) || 0 }))}
-                  />
-                </div>
-              )}
-
-              {editFormData.copay !== undefined && (
-                <div className="space-y-2">
-                  <Label>Co-Pay</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.copay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, copay: Number(e.target.value) || 0 }))}
                   />
                 </div>
               )}
