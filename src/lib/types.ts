@@ -128,7 +128,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 25.95,
         deductible: 50,
-        coverage: "Preventive and basic dental care",
         details: "Affordable plan for those with a healthy mouth. Preventive care such as exams and cleanings, with increasing coverage after the first year.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
       }),
@@ -138,8 +137,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
-        coverage: "Preventive and basic vision care",
-        details: "Protecting your eyes starts with routine eye exams!",
+        details: "Preventive and basic vision care protecting your eyes starts with routine eye exams!",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
       }),
       withEffectiveDate({
@@ -177,7 +175,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 46.89,
         deductible: 50,
-        coverage: "Preventive and family-focused dental care",
         details: "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
       }),
@@ -187,8 +184,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
-        coverage: "Preventive and basic vision care",
-        details: "Protecting your eyes starts with routine eye exams!",
+        details: "Preventive and basic vision care protecting your eyes starts with routine eye exams!",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
       }),
       withEffectiveDate({
@@ -253,7 +249,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 53.85,
         deductible: 50,
-        coverage: "Premium dental care",
         details: "Extensive dental plan with high annual maximum, implant coverage, and hearing benefits. Expands after first year.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf"
       }),
@@ -263,8 +258,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "Ameritas",
         monthlyPremium: 13.07,
         deductible: 0,
-        coverage: "Enhanced vision benefits",
-        details: "Eye exams, frames, lenses, contacts",
+        details: "Enhanced vision benefits with eye exams, frames, lenses, contact coverage",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
       }),
       withEffectiveDate({
