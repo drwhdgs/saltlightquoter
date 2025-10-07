@@ -1,18 +1,26 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Edit, Shield, Heart, Eye, Activity, AlertTriangle, BriefcaseMedical } from 'lucide-react';
-import { Package, InsurancePlan, Client } from '@/lib/types';
-import { generateAllPackages } from '@/lib/packages';
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Edit,
+  Shield,
+  Heart,
+  Eye,
+  Activity,
+  AlertTriangle,
+  BriefcaseMedical,
+} from "lucide-react";
+import { Package, InsurancePlan, Client } from "@/lib/types";
+import { generateAllPackages } from "@/lib/packages";
 
 interface PackageSelectionProps {
   client: Client;
@@ -21,33 +29,48 @@ interface PackageSelectionProps {
   onBack: () => void;
 }
 
-export function PackageSelection({ client, initialPackages, onSubmit, onBack }: PackageSelectionProps) {
+export function PackageSelection({
+  client,
+  initialPackages,
+  onSubmit,
+  onBack,
+}: PackageSelectionProps) {
   const [availablePackages] = useState<Package[]>(generateAllPackages());
-  const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(new Set());
-  const [customizedPackages, setCustomizedPackages] = useState<Map<string, Package>>(new Map());
-  const [editingPlan, setEditingPlan] = useState<{ packageId: string; planId: string } | null>(null);
+  const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(
+    new Set()
+  );
+  const [customizedPackages, setCustomizedPackages] = useState<
+    Map<string, Package>
+  >(new Map());
+  const [editingPlan, setEditingPlan] = useState<{
+    packageId: string;
+    planId: string;
+  } | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<InsurancePlan>>({});
 
   const carrierLogos: Record<string, string> = {
-    Ameritas: '/logos/ameritas.png',
-    Transamerica: '/logos/transamerica.png',
-    'Manhattan Life': '/logos/manhattan-life.png',
-    ACA: '/logos/aca.png',
-    KonnectMD: '/logos/konnect.png',
-    Breeze: '/logos/breeze.png',
-    'United Healthcare': '/logos/uhc.png',
+    Ameritas: "/logos/ameritas.png",
+    Transamerica: "/logos/transamerica.png",
+    "Manhattan Life": "/logos/manhattan-life.png",
+    ACA: "/logos/aca.png",
+    KonnectMD: "/logos/konnect.png",
+    Breeze: "/logos/breeze.png",
+    "United Healthcare": "/logos/uhc.png",
   };
 
   useEffect(() => {
     if (initialPackages && initialPackages.length > 0) {
       const initialIds = new Set(
-        initialPackages.map(pkg => availablePackages.find(ap => ap.name === pkg.name)?.id ?? pkg.id)
+        initialPackages.map(
+          (pkg) =>
+            availablePackages.find((ap) => ap.name === pkg.name)?.id ?? pkg.id
+        )
       );
       setSelectedPackageIds(initialIds);
 
       const customizations = new Map<string, Package>();
-      initialPackages.forEach(pkg => {
-        const matchingPkg = availablePackages.find(ap => ap.name === pkg.name);
+      initialPackages.forEach((pkg) => {
+        const matchingPkg = availablePackages.find((ap) => ap.name === pkg.name);
         if (matchingPkg) customizations.set(matchingPkg.id, pkg);
       });
       setCustomizedPackages(customizations);
@@ -67,11 +90,12 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
   };
 
   const getPackageToDisplay = (packageId: string): Package =>
-    customizedPackages.get(packageId) || availablePackages.find(p => p.id === packageId)!;
+    customizedPackages.get(packageId) ||
+    availablePackages.find((p) => p.id === packageId)!;
 
   const handleEditPlan = (packageId: string, planId: string) => {
     const pkg = getPackageToDisplay(packageId);
-    const plan = pkg.plans.find(pl => pl.id === planId);
+    const plan = pkg.plans.find((pl) => pl.id === planId);
     if (plan) {
       setEditFormData(plan);
       setEditingPlan({ packageId, planId });
@@ -80,16 +104,26 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
 
   const handleSavePlanEdit = () => {
     if (!editingPlan) return;
-    const originalPackage = availablePackages.find(p => p.id === editingPlan.packageId);
+    const originalPackage = availablePackages.find(
+      (p) => p.id === editingPlan.packageId
+    );
     if (!originalPackage) return;
 
-    const currentPackage = customizedPackages.get(editingPlan.packageId) || originalPackage;
-    const updatedPlans = currentPackage.plans.map(plan =>
+    const currentPackage =
+      customizedPackages.get(editingPlan.packageId) || originalPackage;
+    const updatedPlans = currentPackage.plans.map((plan) =>
       plan.id === editingPlan.planId ? { ...plan, ...editFormData } : plan
     );
 
-    const totalMonthlyPremium = updatedPlans.reduce((sum, plan) => sum + (plan.monthlyPremium ?? 0), 0);
-    const updatedPackage: Package = { ...currentPackage, plans: updatedPlans, totalMonthlyPremium };
+    const totalMonthlyPremium = updatedPlans.reduce(
+      (sum, plan) => sum + (plan.monthlyPremium ?? 0),
+      0
+    );
+    const updatedPackage: Package = {
+      ...currentPackage,
+      plans: updatedPlans,
+      totalMonthlyPremium,
+    };
 
     const newCustomizations = new Map(customizedPackages);
     newCustomizations.set(editingPlan.packageId, updatedPackage);
@@ -101,23 +135,32 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
 
   const handleSubmit = () => {
     if (selectedPackageIds.size === 0) {
-      alert('Please select at least one package before continuing.');
+      alert("Please select at least one package before continuing.");
       return;
     }
-    const selectedPackages = Array.from(selectedPackageIds).map(id => getPackageToDisplay(id));
+    const selectedPackages = Array.from(selectedPackageIds).map((id) =>
+      getPackageToDisplay(id)
+    );
     onSubmit(selectedPackages);
   };
 
-  // 🔹 Updated to include "disability" plan type
-  const getPlanIcon = (type: InsurancePlan['type']) => {
+  // ✅ Updated: No colored icons, uniform style
+  const getPlanIcon = (type: InsurancePlan["type"]) => {
     switch (type) {
-      case 'health': return <Shield className="w-4 h-4" />;
-      case 'catastrophic': return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      case 'dental': return <Activity className="w-4 h-4" />;
-      case 'vision': return <Eye className="w-4 h-4" />;
-      case 'life': return <Heart className="w-4 h-4" />;
-      case 'disability': return <BriefcaseMedical className="w-4 h-4 text-purple-500" />;
-      default: return <Shield className="w-4 h-4" />;
+      case "health":
+        return <Shield className="w-4 h-4" />;
+      case "catastrophic":
+        return <AlertTriangle className="w-4 h-4" />;
+      case "dental":
+        return <Activity className="w-4 h-4" />;
+      case "vision":
+        return <Eye className="w-4 h-4" />;
+      case "life":
+        return <Heart className="w-4 h-4" />;
+      case "disability":
+        return <BriefcaseMedical className="w-4 h-4" />;
+      default:
+        return <Shield className="w-4 h-4" />;
     }
   };
 
@@ -131,17 +174,20 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900">Package Selection</h2>
-        <p className="text-gray-600 mt-2">Choose insurance packages for {client.name}</p>
+        <p className="text-gray-600 mt-2">
+          Choose insurance packages for {client.name}
+        </p>
         <div className="mt-4 p-4 bg-blue-50 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>Instructions:</strong> Check the boxes to select packages and customize plans as needed.
+            <strong>Instructions:</strong> Check the boxes to select packages
+            and customize plans as needed.
           </p>
         </div>
       </div>
 
       {/* Package List */}
       <div className="grid gap-6">
-        {availablePackages.map(pkg => {
+        {availablePackages.map((pkg) => {
           const isSelected = selectedPackageIds.has(pkg.id);
           const displayPackage = getPackageToDisplay(pkg.id);
 
@@ -149,7 +195,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
             <Card
               key={pkg.id}
               className={`transition-all duration-200 ${
-                isSelected ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:shadow-md'
+                isSelected ? "ring-2 ring-blue-500 shadow-lg" : "hover:shadow-md"
               }`}
             >
               <CardHeader>
@@ -157,15 +203,21 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                   <div className="flex items-center space-x-3">
                     <Checkbox
                       checked={isSelected}
-                      onCheckedChange={checked => handlePackageToggle(pkg.id, !!checked)}
+                      onCheckedChange={(checked) =>
+                        handlePackageToggle(pkg.id, !!checked)
+                      }
                       className="scale-125"
                     />
                     <div>
                       <CardTitle className="flex items-center gap-2">
                         {pkg.name}
-                        {pkg.name === 'Silver' && <Badge variant="secondary">Recommended</Badge>}
+                        {pkg.name === "Silver" && (
+                          <Badge variant="secondary">Recommended</Badge>
+                        )}
                       </CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">{pkg.description}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {pkg.description}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -173,7 +225,8 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                       ${displayPackage.totalMonthlyPremium.toLocaleString()}/mo
                     </div>
                     <p className="text-sm text-gray-500">
-                      ${(displayPackage.totalMonthlyPremium * 12).toLocaleString()}/year
+                      ${(displayPackage.totalMonthlyPremium * 12).toLocaleString()}
+                      /year
                     </p>
                   </div>
                 </div>
@@ -184,15 +237,16 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                   <Separator className="mb-4" />
                   <div className="space-y-4">
                     <h4 className="font-medium text-gray-900 flex items-center gap-2">
-                      Included Plans: <Badge variant="outline">{displayPackage.plans.length} plans</Badge>
+                      Included Plans:{" "}
+                      <Badge variant="outline">
+                        {displayPackage.plans.length} plans
+                      </Badge>
                     </h4>
 
-                    {displayPackage.plans.map(plan => (
+                    {displayPackage.plans.map((plan) => (
                       <div
                         key={plan.id}
-                        className={`border rounded-lg p-4 ${
-                          plan.type === 'disability' ? 'bg-purple-50' : 'bg-gray-50'
-                        }`}
+                        className="border rounded-lg p-4 bg-gray-50"
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2">
@@ -208,10 +262,16 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                               getPlanIcon(plan.type)
                             )}
                             <h5 className="font-medium">{plan.name}</h5>
-                            <span className="text-gray-500">{plan.provider}</span>
+                            <span className="text-gray-500">
+                              {plan.provider}
+                            </span>
                           </div>
                           {plan.id && pkg.id && (
-                            <Button variant="ghost" size="sm" onClick={() => handleEditPlan(pkg.id!, plan.id!)}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditPlan(pkg.id!, plan.id!)}
+                            >
                               <Edit className="w-3 h-3" />
                             </Button>
                           )}
@@ -220,7 +280,9 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div>
                             <p className="text-gray-600">Monthly Premium</p>
-                            <p className="font-medium">${plan.monthlyPremium}/mo</p>
+                            <p className="font-medium">
+                              ${plan.monthlyPremium}/mo
+                            </p>
                           </div>
                           {plan.coverage && (
                             <div>
@@ -231,12 +293,18 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                           {plan.effectiveDate && (
                             <div>
                               <p className="text-gray-600">Effective Date</p>
-                              <p className="font-medium">{plan.effectiveDate}</p>
+                              <p className="font-medium">
+                                {plan.effectiveDate}
+                              </p>
                             </div>
                           )}
                         </div>
 
-                        {plan.details && <p className="text-sm text-gray-600 mt-2">{plan.details}</p>}
+                        {plan.details && (
+                          <p className="text-sm text-gray-600 mt-2">
+                            {plan.details}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -258,8 +326,13 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
               <div className="space-y-2">
                 <Label>Plan Name</Label>
                 <Input
-                  value={editFormData.name ?? ''}
-                  onChange={e => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+                  value={editFormData.name ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
                 />
               </div>
 
@@ -267,16 +340,26 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                 <Label>Monthly Premium</Label>
                 <Input
                   type="number"
-                  value={editFormData.monthlyPremium ?? ''}
-                  onChange={e => setEditFormData(prev => ({ ...prev, monthlyPremium: Number(e.target.value) || 0 }))}
+                  value={editFormData.monthlyPremium ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      monthlyPremium: Number(e.target.value) || 0,
+                    }))
+                  }
                 />
               </div>
 
               <div className="space-y-2">
                 <Label>Coverage Description</Label>
                 <Input
-                  value={editFormData.coverage ?? ''}
-                  onChange={e => setEditFormData(prev => ({ ...prev, coverage: e.target.value }))}
+                  value={editFormData.coverage ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      coverage: e.target.value,
+                    }))
+                  }
                 />
               </div>
 
@@ -284,22 +367,38 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                 <Label>Effective Date</Label>
                 <Input
                   type="date"
-                  value={editFormData.effectiveDate ?? ''}
-                  onChange={e => setEditFormData(prev => ({ ...prev, effectiveDate: e.target.value }))}
+                  value={editFormData.effectiveDate ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      effectiveDate: e.target.value,
+                    }))
+                  }
                 />
               </div>
 
               <div className="space-y-2">
                 <Label>Additional Details</Label>
                 <Textarea
-                  value={editFormData.details ?? ''}
-                  onChange={e => setEditFormData(prev => ({ ...prev, details: e.target.value }))}
+                  value={editFormData.details ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      details: e.target.value,
+                    }))
+                  }
                   rows={3}
                 />
               </div>
             </CardContent>
             <div className="flex justify-end space-x-2 p-4 border-t border-gray-200">
-              <Button variant="outline" onClick={() => { setEditingPlan(null); setEditFormData({}); }}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setEditingPlan(null);
+                  setEditFormData({});
+                }}
+              >
                 Cancel
               </Button>
               <Button onClick={handleSavePlanEdit}>Save Changes</Button>
@@ -322,7 +421,9 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
               </div>
               <div className="flex justify-between items-center font-medium">
                 <span>Total Monthly Premium:</span>
-                <span className="text-xl text-green-600">${totalSelectedValue.toLocaleString()}/mo</span>
+                <span className="text-xl text-green-600">
+                  ${totalSelectedValue.toLocaleString()}/mo
+                </span>
               </div>
               <div className="flex justify-between items-center text-sm text-gray-600">
                 <span>Total Annual Premium:</span>
@@ -335,7 +436,9 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
 
       {/* Actions */}
       <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onBack}>Back</Button>
+        <Button variant="outline" onClick={onBack}>
+          Back
+        </Button>
         <Button onClick={handleSubmit}>Continue</Button>
       </div>
     </div>
