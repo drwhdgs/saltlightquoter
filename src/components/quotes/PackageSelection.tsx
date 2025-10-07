@@ -144,7 +144,6 @@ export function PackageSelection({
     onSubmit(selectedPackages);
   };
 
-  // ✅ Updated: No colored icons, uniform style
   const getPlanIcon = (type: InsurancePlan["type"]) => {
     switch (type) {
       case "health":
