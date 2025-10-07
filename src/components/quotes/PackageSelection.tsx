@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Edit, Shield, Heart, Eye, Activity, AlertTriangle } from 'lucide-react';
+import { Edit, Shield, Heart, Eye, Activity, AlertTriangle, BriefcaseMedical } from 'lucide-react';
 import { Package, InsurancePlan, Client } from '@/lib/types';
 import { generateAllPackages } from '@/lib/packages';
 
@@ -108,6 +108,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     onSubmit(selectedPackages);
   };
 
+  // 🔹 Updated to include "disability" plan type
   const getPlanIcon = (type: InsurancePlan['type']) => {
     switch (type) {
       case 'health': return <Shield className="w-4 h-4" />;
@@ -115,6 +116,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       case 'dental': return <Activity className="w-4 h-4" />;
       case 'vision': return <Eye className="w-4 h-4" />;
       case 'life': return <Heart className="w-4 h-4" />;
+      case 'disability': return <BriefcaseMedical className="w-4 h-4 text-purple-500" />;
       default: return <Shield className="w-4 h-4" />;
     }
   };
@@ -186,7 +188,12 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                     </h4>
 
                     {displayPackage.plans.map(plan => (
-                      <div key={plan.id} className="border rounded-lg p-4 bg-gray-50">
+                      <div
+                        key={plan.id}
+                        className={`border rounded-lg p-4 ${
+                          plan.type === 'disability' ? 'bg-purple-50' : 'bg-gray-50'
+                        }`}
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2">
                             {carrierLogos[plan.provider] ? (
@@ -215,46 +222,6 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                             <p className="text-gray-600">Monthly Premium</p>
                             <p className="font-medium">${plan.monthlyPremium}/mo</p>
                           </div>
-                          {plan.deductible !== undefined && (
-                            <div>
-                              <p className="text-gray-600">Deductible</p>
-                              <p className="font-medium">${plan.deductible.toLocaleString()}</p>
-                            </div>
-                          )}
-                          {(plan.type === 'health' || plan.type === 'catastrophic') && (
-                            <>
-                              {plan.primaryCareCopay !== undefined && (
-                                <div>
-                                  <p className="text-gray-600">Primary Care Co-Pay</p>
-                                  <p className="font-medium">${plan.primaryCareCopay}</p>
-                                </div>
-                              )}
-                              {plan.specialistCopay !== undefined && (
-                                <div>
-                                  <p className="text-gray-600">Specialist Co-Pay</p>
-                                  <p className="font-medium">${plan.specialistCopay}</p>
-                                </div>
-                              )}
-                              {plan.genericDrugCopay !== undefined && (
-                                <div>
-                                  <p className="text-gray-600">Generic Drug Co-Pay</p>
-                                  <p className="font-medium">${plan.genericDrugCopay}</p>
-                                </div>
-                              )}
-                              {plan.outOfPocketMax !== undefined && (
-                                <div>
-                                  <p className="text-gray-600">Out-of-Pocket Max</p>
-                                  <p className="font-medium">${plan.outOfPocketMax.toLocaleString()}</p>
-                                </div>
-                              )}
-                            </>
-                          )}
-                          {plan.coinsurance !== undefined && (
-                            <div>
-                              <p className="text-gray-600">Coinsurance</p>
-                              <p className="font-medium">{plan.coinsurance}%</p>
-                            </div>
-                          )}
                           {plan.coverage && (
                             <div>
                               <p className="text-gray-600">Coverage</p>
@@ -304,73 +271,6 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                   onChange={e => setEditFormData(prev => ({ ...prev, monthlyPremium: Number(e.target.value) || 0 }))}
                 />
               </div>
-
-              {editFormData.deductible !== undefined && (
-                <div className="space-y-2">
-                  <Label>Deductible</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.deductible ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, deductible: Number(e.target.value) || 0 }))}
-                  />
-                </div>
-              )}
-
-              {(editFormData.type === 'health' || editFormData.type === 'catastrophic') &&
-                editFormData.outOfPocketMax !== undefined && (
-                <div className="space-y-2">
-                  <Label>Out-of-Pocket Max</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.outOfPocketMax ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, outOfPocketMax: Number(e.target.value) || 0 }))}
-                  />
-                </div>
-              )}
-
-              {editFormData.primaryCareCopay !== undefined && (
-                <div className="space-y-2">
-                  <Label>Primary Care Co-Pay</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.primaryCareCopay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, primaryCareCopay: Number(e.target.value) || 0 }))}
-                  />
-                </div>
-              )}
-
-              {editFormData.specialistCopay !== undefined && (
-                <div className="space-y-2">
-                  <Label>Specialist Co-Pay</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.specialistCopay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, specialistCopay: Number(e.target.value) || 0 }))}
-                  />
-                </div>
-              )}
-
-              {editFormData.genericDrugCopay !== undefined && (
-                <div className="space-y-2">
-                  <Label>Generic Drug Co-Pay</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.genericDrugCopay ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, genericDrugCopay: Number(e.target.value) || 0 }))}
-                  />
-                </div>
-              )}
-
-              {editFormData.coinsurance !== undefined && (
-                <div className="space-y-2">
-                  <Label>Coinsurance (%)</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.coinsurance ?? ''}
-                    onChange={e => setEditFormData(prev => ({ ...prev, coinsurance: Number(e.target.value) || 0 }))}
-                  />
-                </div>
-              )}
 
               <div className="space-y-2">
                 <Label>Coverage Description</Label>
