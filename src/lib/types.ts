@@ -223,6 +223,16 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         details: "Lump-sum cash benefit upon diagnosis of heart attack or stroke, in addition to any other plan.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/paiGfNlyK9QsGs0yyXr0XP9rmeRnwDLbKu8M8iPS.pdf"
       }),
+        withEffectiveDate({
+        type: "disability",
+        name: "Breeze Short-Term Disability",
+        provider: "Breeze",
+        monthlyPremium: 0,
+        coverage: "$200/week short-term disability income for 26 weeks",
+        details: "Income replacement for temporary disabilities",
+        brochureUrl: "https://www.meetbreeze.com/disability-insurance/short-term-disability-insurance/"
+
+      }),
     ],
   },
   {
