@@ -3,15 +3,13 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Edit,
   Shield,
@@ -48,8 +46,7 @@ export function PackageSelection({
     packageId: string;
     planId: string;
   } | null>(null);
-  const [editFormData, setEditFormData] =
-    useState<Partial<InsurancePlan>>({});
+  const [editFormData, setEditFormData] = useState<Partial<InsurancePlan>>({});
 
   const carrierLogos: Record<string, string> = {
     Ameritas: "/logos/ameritas.png",
@@ -61,9 +58,8 @@ export function PackageSelection({
     "United Healthcare": "/logos/uhc.png",
   };
 
-  // Load any preselected packages
   useEffect(() => {
-    if (initialPackages?.length) {
+    if (initialPackages && initialPackages.length > 0) {
       const initialIds = new Set(
         initialPackages.map(
           (pkg) =>
@@ -74,9 +70,7 @@ export function PackageSelection({
 
       const customizations = new Map<string, Package>();
       initialPackages.forEach((pkg) => {
-        const matchingPkg = availablePackages.find(
-          (ap) => ap.name === pkg.name
-        );
+        const matchingPkg = availablePackages.find((ap) => ap.name === pkg.name);
         if (matchingPkg) customizations.set(matchingPkg.id, pkg);
       });
       setCustomizedPackages(customizations);
@@ -125,7 +119,6 @@ export function PackageSelection({
       (sum, plan) => sum + (plan.monthlyPremium ?? 0),
       0
     );
-
     const updatedPackage: Package = {
       ...currentPackage,
       plans: updatedPlans,
@@ -231,10 +224,7 @@ export function PackageSelection({
                       ${displayPackage.totalMonthlyPremium.toLocaleString()}/mo
                     </div>
                     <p className="text-sm text-gray-500">
-                      $
-                      {(
-                        displayPackage.totalMonthlyPremium * 12
-                      ).toLocaleString()}
+                      ${(displayPackage.totalMonthlyPremium * 12).toLocaleString()}
                       /year
                     </p>
                   </div>
@@ -252,146 +242,70 @@ export function PackageSelection({
                       </Badge>
                     </h4>
 
-                    {displayPackage.plans.map(
-                      (plan) =>
-                        plan.id && (
-                          <div
-                            key={plan.id}
-                            className="border rounded-lg p-4 bg-gray-50"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center space-x-2">
-                                {carrierLogos[plan.provider] ? (
-                                  <Image
-                                    src={carrierLogos[plan.provider]}
-                                    alt={plan.provider}
-                                    width={24}
-                                    height={24}
-                                    className="object-contain"
-                                  />
-                                ) : (
-                                  getPlanIcon(plan.type)
-                                )}
-                                <h5 className="font-medium">{plan.name}</h5>
-                                <span className="text-gray-500">
-                                  {plan.provider}
-                                </span>
-                              </div>
-                              {pkg.id && plan.id && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    handleEditPlan(pkg.id!, plan.id!)
-                                  }
-                                >
-                                  <Edit className="w-3 h-3" />
-                                </Button>
-                              )}
-                            </div>
-
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                              <div>
-                                <p className="text-gray-600">
-                                  Monthly Premium
-                                </p>
-                                <p className="font-medium">
-                                  ${plan.monthlyPremium}/mo
-                                </p>
-                              </div>
-                              {plan.coverage && (
-                                <div>
-                                  <p className="text-gray-600">Coverage</p>
-                                  <p className="font-medium">
-                                    {plan.coverage}
-                                  </p>
-                                </div>
-                              )}
-                              {plan.effectiveDate && (
-                                <div>
-                                  <p className="text-gray-600">
-                                    Effective Date
-                                  </p>
-                                  <p className="font-medium">
-                                    {plan.effectiveDate}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-
-                            {plan.type === "health" && (
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-3 text-sm">
-                                {plan.deductible && (
-                                  <div>
-                                    <p className="text-gray-600">
-                                      Deductible
-                                    </p>
-                                    <p className="font-medium">
-                                      {plan.deductible}
-                                    </p>
-                                  </div>
-                                )}
-                                {plan.coinsurance && (
-                                  <div>
-                                    <p className="text-gray-600">
-                                      Coinsurance
-                                    </p>
-                                    <p className="font-medium">
-                                      {plan.coinsurance}
-                                    </p>
-                                  </div>
-                                )}
-                                {plan.primaryCareCopay && (
-                                  <div>
-                                    <p className="text-gray-600">
-                                      Primary Care Co-Pay
-                                    </p>
-                                    <p className="font-medium">
-                                      {plan.primaryCareCopay}
-                                    </p>
-                                  </div>
-                                )}
-                                {plan.specialistCopay && (
-                                  <div>
-                                    <p className="text-gray-600">
-                                      Specialist Co-Pay
-                                    </p>
-                                    <p className="font-medium">
-                                      {plan.specialistCopay}
-                                    </p>
-                                  </div>
-                                )}
-                                {plan.genericDrugCopay && (
-                                  <div>
-                                    <p className="text-gray-600">
-                                      Generic Drug Co-Pay
-                                    </p>
-                                    <p className="font-medium">
-                                      {plan.genericDrugCopay}
-                                    </p>
-                                  </div>
-                                )}
-                                {plan.outOfPocketMax && (
-                                  <div>
-                                    <p className="text-gray-600">
-                                      Out-of-Pocket Max
-                                    </p>
-                                    <p className="font-medium">
-                                      {plan.outOfPocketMax}
-                                    </p>
-                                  </div>
-                                )}
-                              </div>
+                    {displayPackage.plans.map((plan) => (
+                      <div
+                        key={plan.id}
+                        className="border rounded-lg p-4 bg-gray-50"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-2">
+                            {carrierLogos[plan.provider] ? (
+                              <Image
+                                src={carrierLogos[plan.provider]}
+                                alt={plan.provider}
+                                width={24}
+                                height={24}
+                                className="object-contain"
+                              />
+                            ) : (
+                              getPlanIcon(plan.type)
                             )}
-
-                            {plan.details && (
-                              <p className="text-sm text-gray-600 mt-2">
-                                {plan.details}
-                              </p>
-                            )}
+                            <h5 className="font-medium">{plan.name}</h5>
+                            <span className="text-gray-500">
+                              {plan.provider}
+                            </span>
                           </div>
-                        )
-                    )}
+                          {plan.id && pkg.id && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditPlan(pkg.id!, plan.id!)}
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-600">Monthly Premium</p>
+                            <p className="font-medium">
+                              ${plan.monthlyPremium}/mo
+                            </p>
+                          </div>
+                          {plan.coverage && (
+                            <div>
+                              <p className="text-gray-600">Coverage</p>
+                              <p className="font-medium">{plan.coverage}</p>
+                            </div>
+                          )}
+                          {plan.effectiveDate && (
+                            <div>
+                              <p className="text-gray-600">Effective Date</p>
+                              <p className="font-medium">
+                                {plan.effectiveDate}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {plan.details && (
+                          <p className="text-sm text-gray-600 mt-2">
+                            {plan.details}
+                          </p>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               )}
@@ -399,6 +313,98 @@ export function PackageSelection({
           );
         })}
       </div>
+
+      {/* Edit Plan Modal */}
+      {editingPlan && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md max-h-[90vh] overflow-hidden">
+            <CardHeader>
+              <CardTitle>Edit Plan Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 overflow-y-auto max-h-[70vh] pr-2">
+              <div className="space-y-2">
+                <Label>Plan Name</Label>
+                <Input
+                  value={editFormData.name ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Monthly Premium</Label>
+                <Input
+                  type="number"
+                  value={editFormData.monthlyPremium ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      monthlyPremium: Number(e.target.value) || 0,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Coverage Description</Label>
+                <Input
+                  value={editFormData.coverage ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      coverage: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Effective Date</Label>
+                <Input
+                  type="date"
+                  value={editFormData.effectiveDate ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      effectiveDate: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Additional Details</Label>
+                <Textarea
+                  value={editFormData.details ?? ""}
+                  onChange={(e) =>
+                    setEditFormData((prev) => ({
+                      ...prev,
+                      details: e.target.value,
+                    }))
+                  }
+                  rows={3}
+                />
+              </div>
+            </CardContent>
+            <div className="flex justify-end space-x-2 p-4 border-t border-gray-200">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setEditingPlan(null);
+                  setEditFormData({});
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSavePlanEdit}>Save Changes</Button>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Summary */}
       {selectedPackageIds.size > 0 && (
@@ -420,9 +426,7 @@ export function PackageSelection({
               </div>
               <div className="flex justify-between items-center text-sm text-gray-600">
                 <span>Total Annual Premium:</span>
-                <span>
-                  ${(totalSelectedValue * 12).toLocaleString()}/year
-                </span>
+                <span>${(totalSelectedValue * 12).toLocaleString()}/year</span>
               </div>
             </div>
           </CardContent>
