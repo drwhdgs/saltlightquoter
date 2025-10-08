@@ -3,13 +3,15 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Edit,
   Shield,
@@ -36,10 +38,18 @@ export function PackageSelection({
   onBack,
 }: PackageSelectionProps) {
   const [availablePackages] = useState<Package[]>(generateAllPackages());
-  const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(new Set());
-  const [customizedPackages, setCustomizedPackages] = useState<Map<string, Package>>(new Map());
-  const [editingPlan, setEditingPlan] = useState<{ packageId: string; planId: string } | null>(null);
-  const [editFormData, setEditFormData] = useState<Partial<InsurancePlan>>({});
+  const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(
+    new Set()
+  );
+  const [customizedPackages, setCustomizedPackages] = useState<
+    Map<string, Package>
+  >(new Map());
+  const [editingPlan, setEditingPlan] = useState<{
+    packageId: string;
+    planId: string;
+  } | null>(null);
+  const [editFormData, setEditFormData] =
+    useState<Partial<InsurancePlan>>({});
 
   const carrierLogos: Record<string, string> = {
     Ameritas: "/logos/ameritas.png",
@@ -56,14 +66,17 @@ export function PackageSelection({
     if (initialPackages?.length) {
       const initialIds = new Set(
         initialPackages.map(
-          (pkg) => availablePackages.find((ap) => ap.name === pkg.name)?.id ?? pkg.id
+          (pkg) =>
+            availablePackages.find((ap) => ap.name === pkg.name)?.id ?? pkg.id
         )
       );
       setSelectedPackageIds(initialIds);
 
       const customizations = new Map<string, Package>();
       initialPackages.forEach((pkg) => {
-        const matchingPkg = availablePackages.find((ap) => ap.name === pkg.name);
+        const matchingPkg = availablePackages.find(
+          (ap) => ap.name === pkg.name
+        );
         if (matchingPkg) customizations.set(matchingPkg.id, pkg);
       });
       setCustomizedPackages(customizations);
@@ -83,7 +96,8 @@ export function PackageSelection({
   };
 
   const getPackageToDisplay = (packageId: string): Package =>
-    customizedPackages.get(packageId) || availablePackages.find((p) => p.id === packageId)!;
+    customizedPackages.get(packageId) ||
+    availablePackages.find((p) => p.id === packageId)!;
 
   const handleEditPlan = (packageId: string, planId: string) => {
     const pkg = getPackageToDisplay(packageId);
@@ -96,10 +110,13 @@ export function PackageSelection({
 
   const handleSavePlanEdit = () => {
     if (!editingPlan) return;
-    const originalPackage = availablePackages.find((p) => p.id === editingPlan.packageId);
+    const originalPackage = availablePackages.find(
+      (p) => p.id === editingPlan.packageId
+    );
     if (!originalPackage) return;
 
-    const currentPackage = customizedPackages.get(editingPlan.packageId) || originalPackage;
+    const currentPackage =
+      customizedPackages.get(editingPlan.packageId) || originalPackage;
     const updatedPlans = currentPackage.plans.map((plan) =>
       plan.id === editingPlan.planId ? { ...plan, ...editFormData } : plan
     );
@@ -163,10 +180,13 @@ export function PackageSelection({
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900">Package Selection</h2>
-        <p className="text-gray-600 mt-2">Choose insurance packages for {client.name}</p>
+        <p className="text-gray-600 mt-2">
+          Choose insurance packages for {client.name}
+        </p>
         <div className="mt-4 p-4 bg-blue-50 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>Instructions:</strong> Check the boxes to select packages and customize plans as needed.
+            <strong>Instructions:</strong> Check the boxes to select packages
+            and customize plans as needed.
           </p>
         </div>
       </div>
@@ -189,7 +209,9 @@ export function PackageSelection({
                   <div className="flex items-center space-x-3">
                     <Checkbox
                       checked={isSelected}
-                      onCheckedChange={(checked) => handlePackageToggle(pkg.id, !!checked)}
+                      onCheckedChange={(checked) =>
+                        handlePackageToggle(pkg.id, !!checked)
+                      }
                       className="scale-125"
                     />
                     <div>
@@ -199,7 +221,9 @@ export function PackageSelection({
                           <Badge variant="secondary">Recommended</Badge>
                         )}
                       </CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">{pkg.description}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {pkg.description}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -207,7 +231,11 @@ export function PackageSelection({
                       ${displayPackage.totalMonthlyPremium.toLocaleString()}/mo
                     </div>
                     <p className="text-sm text-gray-500">
-                      ${(displayPackage.totalMonthlyPremium * 12).toLocaleString()}/year
+                      $
+                      {(
+                        displayPackage.totalMonthlyPremium * 12
+                      ).toLocaleString()}
+                      /year
                     </p>
                   </div>
                 </div>
@@ -219,99 +247,151 @@ export function PackageSelection({
                   <div className="space-y-4">
                     <h4 className="font-medium text-gray-900 flex items-center gap-2">
                       Included Plans:{" "}
-                      <Badge variant="outline">{displayPackage.plans.length} plans</Badge>
+                      <Badge variant="outline">
+                        {displayPackage.plans.length} plans
+                      </Badge>
                     </h4>
 
-                    {displayPackage.plans.map((plan) => (
-                      <div key={plan.id} className="border rounded-lg p-4 bg-gray-50">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-2">
-                            {carrierLogos[plan.provider] ? (
-                              <Image
-                                src={carrierLogos[plan.provider]}
-                                alt={plan.provider}
-                                width={24}
-                                height={24}
-                                className="object-contain"
-                              />
-                            ) : (
-                              getPlanIcon(plan.type)
-                            )}
-                            <h5 className="font-medium">{plan.name}</h5>
-                            <span className="text-gray-500">{plan.provider}</span>
-                          </div>
-                          <Button variant="ghost" size="sm" onClick={() => handleEditPlan(pkg.id, plan.id)}>
-                            <Edit className="w-3 h-3" />
-                          </Button>
-                        </div>
-
-                        {/* Base Plan Info */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <p className="text-gray-600">Monthly Premium</p>
-                            <p className="font-medium">${plan.monthlyPremium}/mo</p>
-                          </div>
-                          {plan.coverage && (
-                            <div>
-                              <p className="text-gray-600">Coverage</p>
-                              <p className="font-medium">{plan.coverage}</p>
+                    {displayPackage.plans.map(
+                      (plan) =>
+                        plan.id && (
+                          <div
+                            key={plan.id}
+                            className="border rounded-lg p-4 bg-gray-50"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center space-x-2">
+                                {carrierLogos[plan.provider] ? (
+                                  <Image
+                                    src={carrierLogos[plan.provider]}
+                                    alt={plan.provider}
+                                    width={24}
+                                    height={24}
+                                    className="object-contain"
+                                  />
+                                ) : (
+                                  getPlanIcon(plan.type)
+                                )}
+                                <h5 className="font-medium">{plan.name}</h5>
+                                <span className="text-gray-500">
+                                  {plan.provider}
+                                </span>
+                              </div>
+                              {pkg.id && plan.id && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleEditPlan(pkg.id!, plan.id!)
+                                  }
+                                >
+                                  <Edit className="w-3 h-3" />
+                                </Button>
+                              )}
                             </div>
-                          )}
-                          {plan.effectiveDate && (
-                            <div>
-                              <p className="text-gray-600">Effective Date</p>
-                              <p className="font-medium">{plan.effectiveDate}</p>
-                            </div>
-                          )}
-                        </div>
 
-                        {/* Health Plan Details */}
-                        {plan.type === "health" && (
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-3 text-sm">
-                            {plan.deductible && (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                               <div>
-                                <p className="text-gray-600">Deductible</p>
-                                <p className="font-medium">{plan.deductible}</p>
+                                <p className="text-gray-600">
+                                  Monthly Premium
+                                </p>
+                                <p className="font-medium">
+                                  ${plan.monthlyPremium}/mo
+                                </p>
+                              </div>
+                              {plan.coverage && (
+                                <div>
+                                  <p className="text-gray-600">Coverage</p>
+                                  <p className="font-medium">
+                                    {plan.coverage}
+                                  </p>
+                                </div>
+                              )}
+                              {plan.effectiveDate && (
+                                <div>
+                                  <p className="text-gray-600">
+                                    Effective Date
+                                  </p>
+                                  <p className="font-medium">
+                                    {plan.effectiveDate}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+
+                            {plan.type === "health" && (
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-3 text-sm">
+                                {plan.deductible && (
+                                  <div>
+                                    <p className="text-gray-600">
+                                      Deductible
+                                    </p>
+                                    <p className="font-medium">
+                                      {plan.deductible}
+                                    </p>
+                                  </div>
+                                )}
+                                {plan.coinsurance && (
+                                  <div>
+                                    <p className="text-gray-600">
+                                      Coinsurance
+                                    </p>
+                                    <p className="font-medium">
+                                      {plan.coinsurance}
+                                    </p>
+                                  </div>
+                                )}
+                                {plan.primaryCareCopay && (
+                                  <div>
+                                    <p className="text-gray-600">
+                                      Primary Care Co-Pay
+                                    </p>
+                                    <p className="font-medium">
+                                      {plan.primaryCareCopay}
+                                    </p>
+                                  </div>
+                                )}
+                                {plan.specialistCopay && (
+                                  <div>
+                                    <p className="text-gray-600">
+                                      Specialist Co-Pay
+                                    </p>
+                                    <p className="font-medium">
+                                      {plan.specialistCopay}
+                                    </p>
+                                  </div>
+                                )}
+                                {plan.genericDrugCopay && (
+                                  <div>
+                                    <p className="text-gray-600">
+                                      Generic Drug Co-Pay
+                                    </p>
+                                    <p className="font-medium">
+                                      {plan.genericDrugCopay}
+                                    </p>
+                                  </div>
+                                )}
+                                {plan.outOfPocketMax && (
+                                  <div>
+                                    <p className="text-gray-600">
+                                      Out-of-Pocket Max
+                                    </p>
+                                    <p className="font-medium">
+                                      {plan.outOfPocketMax}
+                                    </p>
+                                  </div>
+                                )}
                               </div>
                             )}
-                            {plan.coinsurance && (
-                              <div>
-                                <p className="text-gray-600">Coinsurance</p>
-                                <p className="font-medium">{plan.coinsurance}</p>
-                              </div>
-                            )}
-                            {plan.primaryCareCopay && (
-                              <div>
-                                <p className="text-gray-600">Primary Care Co-Pay</p>
-                                <p className="font-medium">{plan.primaryCareCopay}</p>
-                              </div>
-                            )}
-                            {plan.specialistCopay && (
-                              <div>
-                                <p className="text-gray-600">Specialist Co-Pay</p>
-                                <p className="font-medium">{plan.specialistCopay}</p>
-                              </div>
-                            )}
-                            {plan.genericDrugCopay && (
-                              <div>
-                                <p className="text-gray-600">Generic Drug Co-Pay</p>
-                                <p className="font-medium">{plan.genericDrugCopay}</p>
-                              </div>
-                            )}
-                            {plan.outOfPocketMax && (
-                              <div>
-                                <p className="text-gray-600">Out-of-Pocket Max</p>
-                                <p className="font-medium">{plan.outOfPocketMax}</p>
-                              </div>
+
+                            {plan.details && (
+                              <p className="text-sm text-gray-600 mt-2">
+                                {plan.details}
+                              </p>
                             )}
                           </div>
-                        )}
-
-                        {plan.details && (
-                          <p className="text-sm text-gray-600 mt-2">{plan.details}</p>
-                        )}
-                      </div>
-                    ))}
+                        )
+                    )}
                   </div>
                 </CardContent>
               )}
@@ -340,7 +420,9 @@ export function PackageSelection({
               </div>
               <div className="flex justify-between items-center text-sm text-gray-600">
                 <span>Total Annual Premium:</span>
-                <span>${(totalSelectedValue * 12).toLocaleString()}/year</span>
+                <span>
+                  ${(totalSelectedValue * 12).toLocaleString()}/year
+                </span>
               </div>
             </div>
           </CardContent>
