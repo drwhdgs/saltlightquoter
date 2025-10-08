@@ -170,21 +170,13 @@ export function PackageSelection({
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900">Package Selection</h2>
         <p className="text-gray-600 mt-2">
           Choose insurance packages for {client.name}
         </p>
-        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800">
-            <strong>Instructions:</strong> Check the boxes to select packages
-            and customize plans as needed.
-          </p>
-        </div>
       </div>
 
-      {/* Package List */}
       <div className="grid gap-6">
         {availablePackages.map((pkg) => {
           const isSelected = selectedPackageIds.has(pkg.id);
@@ -223,10 +215,6 @@ export function PackageSelection({
                     <div className="text-2xl font-bold text-green-600">
                       ${displayPackage.totalMonthlyPremium.toLocaleString()}/mo
                     </div>
-                    <p className="text-sm text-gray-500">
-                      ${(displayPackage.totalMonthlyPremium * 12).toLocaleString()}
-                      /year
-                    </p>
                   </div>
                 </div>
               </CardHeader>
@@ -235,13 +223,6 @@ export function PackageSelection({
                 <CardContent className="pt-0">
                   <Separator className="mb-4" />
                   <div className="space-y-4">
-                    <h4 className="font-medium text-gray-900 flex items-center gap-2">
-                      Included Plans:{" "}
-                      <Badge variant="outline">
-                        {displayPackage.plans.length} plans
-                      </Badge>
-                    </h4>
-
                     {displayPackage.plans.map((plan) => (
                       <div
                         key={plan.id}
@@ -255,7 +236,6 @@ export function PackageSelection({
                                 alt={plan.provider}
                                 width={24}
                                 height={24}
-                                className="object-contain"
                               />
                             ) : (
                               getPlanIcon(plan.type)
@@ -265,35 +245,73 @@ export function PackageSelection({
                               {plan.provider}
                             </span>
                           </div>
-                          {plan.id && pkg.id && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEditPlan(pkg.id!, plan.id!)}
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditPlan(pkg.id!, plan.id!)}
+                          >
+                            <Edit className="w-3 h-3" />
+                          </Button>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                           <div>
                             <p className="text-gray-600">Monthly Premium</p>
                             <p className="font-medium">
                               ${plan.monthlyPremium}/mo
                             </p>
                           </div>
-                          {plan.coverage && (
+                          {plan.deductible !== undefined && (
                             <div>
-                              <p className="text-gray-600">Coverage</p>
-                              <p className="font-medium">{plan.coverage}</p>
+                              <p className="text-gray-600">Deductible</p>
+                              <p className="font-medium">${plan.deductible}</p>
                             </div>
                           )}
-                          {plan.effectiveDate && (
+                          {plan.coinsurance !== undefined && (
                             <div>
-                              <p className="text-gray-600">Effective Date</p>
+                              <p className="text-gray-600">Coinsurance</p>
                               <p className="font-medium">
-                                {plan.effectiveDate}
+                                {plan.coinsurance}%
+                              </p>
+                            </div>
+                          )}
+                          {plan.primaryCareCopay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">
+                                Primary Care Co-Pay
+                              </p>
+                              <p className="font-medium">
+                                ${plan.primaryCareCopay}
+                              </p>
+                            </div>
+                          )}
+                          {plan.specialistCopay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">
+                                Specialist Co-Pay
+                              </p>
+                              <p className="font-medium">
+                                ${plan.specialistCopay}
+                              </p>
+                            </div>
+                          )}
+                          {plan.genericDrugCopay !== undefined && (
+                            <div>
+                              <p className="text-gray-600">
+                                Generic Drug Co-Pay
+                              </p>
+                              <p className="font-medium">
+                                ${plan.genericDrugCopay}
+                              </p>
+                            </div>
+                          )}
+                          {plan.outOfPocketMax !== undefined && (
+                            <div>
+                              <p className="text-gray-600">
+                                Out-of-Pocket Max
+                              </p>
+                              <p className="font-medium">
+                                ${plan.outOfPocketMax}
                               </p>
                             </div>
                           )}
@@ -314,55 +332,56 @@ export function PackageSelection({
         })}
       </div>
 
-      {/* Edit Plan Modal */}
+      {/* Edit Modal */}
       {editingPlan && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md max-h-[90vh] overflow-hidden">
+          <Card className="w-full max-w-md overflow-hidden">
             <CardHeader>
               <CardTitle>Edit Plan Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 overflow-y-auto max-h-[70vh] pr-2">
-              <div className="space-y-2">
-                <Label>Plan Name</Label>
-                <Input
-                  value={editFormData.name ?? ""}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                    }))
-                  }
-                />
-              </div>
+            <CardContent className="space-y-3 overflow-y-auto max-h-[70vh] pr-2">
+              {[
+                ["name", "Plan Name"],
+                ["monthlyPremium", "Monthly Premium"],
+                ["deductible", "Deductible"],
+                ["coinsurance", "Coinsurance (%)"],
+                ["primaryCareCopay", "Primary Care Co-Pay"],
+                ["specialistCopay", "Specialist Co-Pay"],
+                ["genericDrugCopay", "Generic Drug Co-Pay"],
+                ["outOfPocketMax", "Out-of-Pocket Max"],
+                ["coverage", "Coverage Description"],
+              ].map(([key, label]) => (
+                <div key={key} className="space-y-1">
+                  <Label>{label}</Label>
+                  <Input
+                    type={
+                      [
+                        "monthlyPremium",
+                        "deductible",
+                        "coinsurance",
+                        "primaryCareCopay",
+                        "specialistCopay",
+                        "genericDrugCopay",
+                        "outOfPocketMax",
+                      ].includes(key)
+                        ? "number"
+                        : "text"
+                    }
+                    value={(editFormData as any)[key] ?? ""}
+                    onChange={(e) =>
+                      setEditFormData((prev) => ({
+                        ...prev,
+                        [key]:
+                          e.target.type === "number"
+                            ? Number(e.target.value)
+                            : e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              ))}
 
-              <div className="space-y-2">
-                <Label>Monthly Premium</Label>
-                <Input
-                  type="number"
-                  value={editFormData.monthlyPremium ?? ""}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      monthlyPremium: Number(e.target.value) || 0,
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Coverage Description</Label>
-                <Input
-                  value={editFormData.coverage ?? ""}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      coverage: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label>Effective Date</Label>
                 <Input
                   type="date"
@@ -376,9 +395,10 @@ export function PackageSelection({
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label>Additional Details</Label>
                 <Textarea
+                  rows={3}
                   value={editFormData.details ?? ""}
                   onChange={(e) =>
                     setEditFormData((prev) => ({
@@ -386,11 +406,10 @@ export function PackageSelection({
                       details: e.target.value,
                     }))
                   }
-                  rows={3}
                 />
               </div>
             </CardContent>
-            <div className="flex justify-end space-x-2 p-4 border-t border-gray-200">
+            <div className="flex justify-end space-x-2 p-4 border-t">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -413,27 +432,16 @@ export function PackageSelection({
             <CardTitle>Quote Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span>Selected Packages:</span>
-                <span>{selectedPackageIds.size}</span>
-              </div>
-              <div className="flex justify-between items-center font-medium">
-                <span>Total Monthly Premium:</span>
-                <span className="text-xl text-green-600">
-                  ${totalSelectedValue.toLocaleString()}/mo
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-sm text-gray-600">
-                <span>Total Annual Premium:</span>
-                <span>${(totalSelectedValue * 12).toLocaleString()}/year</span>
-              </div>
+            <div className="flex justify-between">
+              <span>Total Monthly Premium:</span>
+              <span className="text-lg font-semibold text-green-600">
+                ${totalSelectedValue.toLocaleString()}/mo
+              </span>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Actions */}
       <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={onBack}>
           Back
