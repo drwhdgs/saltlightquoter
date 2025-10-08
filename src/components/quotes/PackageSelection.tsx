@@ -247,9 +247,13 @@ export function PackageSelection({
 
                             {/* Show edit only when both ids are present */}
                             {pkg.id && plan.id && (
-                              <Button variant="ghost" size="sm" onClick={() => handleEditPlan(pkg.id, plan.id)}>
-                                <Edit className="w-3 h-3" />
-                              </Button>
+                              <Button
+  variant="ghost"
+  size="sm"
+  onClick={() => handleEditPlan(pkg.id as string, plan.id as string)}
+>
+  <Edit className="w-3 h-3" />
+</Button>
                             )}
                           </div>
 
