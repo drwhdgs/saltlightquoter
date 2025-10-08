@@ -36,16 +36,9 @@ export function PackageSelection({
   onBack,
 }: PackageSelectionProps) {
   const [availablePackages] = useState<Package[]>(generateAllPackages());
-  const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(
-    new Set()
-  );
-  const [customizedPackages, setCustomizedPackages] = useState<
-    Map<string, Package>
-  >(new Map());
-  const [editingPlan, setEditingPlan] = useState<{
-    packageId: string;
-    planId: string;
-  } | null>(null);
+  const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(new Set());
+  const [customizedPackages, setCustomizedPackages] = useState<Map<string, Package>>(new Map());
+  const [editingPlan, setEditingPlan] = useState<{ packageId: string; planId: string } | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<InsurancePlan>>({});
 
   const carrierLogos: Record<string, string> = {
@@ -58,12 +51,12 @@ export function PackageSelection({
     "United Healthcare": "/logos/uhc.png",
   };
 
+  // Load any preselected packages
   useEffect(() => {
-    if (initialPackages && initialPackages.length > 0) {
+    if (initialPackages?.length) {
       const initialIds = new Set(
         initialPackages.map(
-          (pkg) =>
-            availablePackages.find((ap) => ap.name === pkg.name)?.id ?? pkg.id
+          (pkg) => availablePackages.find((ap) => ap.name === pkg.name)?.id ?? pkg.id
         )
       );
       setSelectedPackageIds(initialIds);
@@ -90,8 +83,7 @@ export function PackageSelection({
   };
 
   const getPackageToDisplay = (packageId: string): Package =>
-    customizedPackages.get(packageId) ||
-    availablePackages.find((p) => p.id === packageId)!;
+    customizedPackages.get(packageId) || availablePackages.find((p) => p.id === packageId)!;
 
   const handleEditPlan = (packageId: string, planId: string) => {
     const pkg = getPackageToDisplay(packageId);
@@ -104,13 +96,10 @@ export function PackageSelection({
 
   const handleSavePlanEdit = () => {
     if (!editingPlan) return;
-    const originalPackage = availablePackages.find(
-      (p) => p.id === editingPlan.packageId
-    );
+    const originalPackage = availablePackages.find((p) => p.id === editingPlan.packageId);
     if (!originalPackage) return;
 
-    const currentPackage =
-      customizedPackages.get(editingPlan.packageId) || originalPackage;
+    const currentPackage = customizedPackages.get(editingPlan.packageId) || originalPackage;
     const updatedPlans = currentPackage.plans.map((plan) =>
       plan.id === editingPlan.planId ? { ...plan, ...editFormData } : plan
     );
@@ -119,6 +108,7 @@ export function PackageSelection({
       (sum, plan) => sum + (plan.monthlyPremium ?? 0),
       0
     );
+
     const updatedPackage: Package = {
       ...currentPackage,
       plans: updatedPlans,
@@ -173,13 +163,10 @@ export function PackageSelection({
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900">Package Selection</h2>
-        <p className="text-gray-600 mt-2">
-          Choose insurance packages for {client.name}
-        </p>
+        <p className="text-gray-600 mt-2">Choose insurance packages for {client.name}</p>
         <div className="mt-4 p-4 bg-blue-50 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>Instructions:</strong> Check the boxes to select packages
-            and customize plans as needed.
+            <strong>Instructions:</strong> Check the boxes to select packages and customize plans as needed.
           </p>
         </div>
       </div>
@@ -202,9 +189,7 @@ export function PackageSelection({
                   <div className="flex items-center space-x-3">
                     <Checkbox
                       checked={isSelected}
-                      onCheckedChange={(checked) =>
-                        handlePackageToggle(pkg.id, !!checked)
-                      }
+                      onCheckedChange={(checked) => handlePackageToggle(pkg.id, !!checked)}
                       className="scale-125"
                     />
                     <div>
@@ -214,9 +199,7 @@ export function PackageSelection({
                           <Badge variant="secondary">Recommended</Badge>
                         )}
                       </CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {pkg.description}
-                      </p>
+                      <p className="text-sm text-gray-600 mt-1">{pkg.description}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -224,8 +207,7 @@ export function PackageSelection({
                       ${displayPackage.totalMonthlyPremium.toLocaleString()}/mo
                     </div>
                     <p className="text-sm text-gray-500">
-                      ${(displayPackage.totalMonthlyPremium * 12).toLocaleString()}
-                      /year
+                      ${(displayPackage.totalMonthlyPremium * 12).toLocaleString()}/year
                     </p>
                   </div>
                 </div>
@@ -237,16 +219,11 @@ export function PackageSelection({
                   <div className="space-y-4">
                     <h4 className="font-medium text-gray-900 flex items-center gap-2">
                       Included Plans:{" "}
-                      <Badge variant="outline">
-                        {displayPackage.plans.length} plans
-                      </Badge>
+                      <Badge variant="outline">{displayPackage.plans.length} plans</Badge>
                     </h4>
 
                     {displayPackage.plans.map((plan) => (
-                      <div
-                        key={plan.id}
-                        className="border rounded-lg p-4 bg-gray-50"
-                      >
+                      <div key={plan.id} className="border rounded-lg p-4 bg-gray-50">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2">
                             {carrierLogos[plan.provider] ? (
@@ -261,27 +238,18 @@ export function PackageSelection({
                               getPlanIcon(plan.type)
                             )}
                             <h5 className="font-medium">{plan.name}</h5>
-                            <span className="text-gray-500">
-                              {plan.provider}
-                            </span>
+                            <span className="text-gray-500">{plan.provider}</span>
                           </div>
-                          {plan.id && pkg.id && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEditPlan(pkg.id!, plan.id!)}
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                          )}
+                          <Button variant="ghost" size="sm" onClick={() => handleEditPlan(pkg.id, plan.id)}>
+                            <Edit className="w-3 h-3" />
+                          </Button>
                         </div>
 
+                        {/* Base Plan Info */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div>
                             <p className="text-gray-600">Monthly Premium</p>
-                            <p className="font-medium">
-                              ${plan.monthlyPremium}/mo
-                            </p>
+                            <p className="font-medium">${plan.monthlyPremium}/mo</p>
                           </div>
                           {plan.coverage && (
                             <div>
@@ -292,17 +260,55 @@ export function PackageSelection({
                           {plan.effectiveDate && (
                             <div>
                               <p className="text-gray-600">Effective Date</p>
-                              <p className="font-medium">
-                                {plan.effectiveDate}
-                              </p>
+                              <p className="font-medium">{plan.effectiveDate}</p>
                             </div>
                           )}
                         </div>
 
+                        {/* Health Plan Details */}
+                        {plan.type === "health" && (
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-3 text-sm">
+                            {plan.deductible && (
+                              <div>
+                                <p className="text-gray-600">Deductible</p>
+                                <p className="font-medium">{plan.deductible}</p>
+                              </div>
+                            )}
+                            {plan.coinsurance && (
+                              <div>
+                                <p className="text-gray-600">Coinsurance</p>
+                                <p className="font-medium">{plan.coinsurance}</p>
+                              </div>
+                            )}
+                            {plan.primaryCareCopay && (
+                              <div>
+                                <p className="text-gray-600">Primary Care Co-Pay</p>
+                                <p className="font-medium">{plan.primaryCareCopay}</p>
+                              </div>
+                            )}
+                            {plan.specialistCopay && (
+                              <div>
+                                <p className="text-gray-600">Specialist Co-Pay</p>
+                                <p className="font-medium">{plan.specialistCopay}</p>
+                              </div>
+                            )}
+                            {plan.genericDrugCopay && (
+                              <div>
+                                <p className="text-gray-600">Generic Drug Co-Pay</p>
+                                <p className="font-medium">{plan.genericDrugCopay}</p>
+                              </div>
+                            )}
+                            {plan.outOfPocketMax && (
+                              <div>
+                                <p className="text-gray-600">Out-of-Pocket Max</p>
+                                <p className="font-medium">{plan.outOfPocketMax}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         {plan.details && (
-                          <p className="text-sm text-gray-600 mt-2">
-                            {plan.details}
-                          </p>
+                          <p className="text-sm text-gray-600 mt-2">{plan.details}</p>
                         )}
                       </div>
                     ))}
@@ -313,98 +319,6 @@ export function PackageSelection({
           );
         })}
       </div>
-
-      {/* Edit Plan Modal */}
-      {editingPlan && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md max-h-[90vh] overflow-hidden">
-            <CardHeader>
-              <CardTitle>Edit Plan Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 overflow-y-auto max-h-[70vh] pr-2">
-              <div className="space-y-2">
-                <Label>Plan Name</Label>
-                <Input
-                  value={editFormData.name ?? ""}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Monthly Premium</Label>
-                <Input
-                  type="number"
-                  value={editFormData.monthlyPremium ?? ""}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      monthlyPremium: Number(e.target.value) || 0,
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Coverage Description</Label>
-                <Input
-                  value={editFormData.coverage ?? ""}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      coverage: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Effective Date</Label>
-                <Input
-                  type="date"
-                  value={editFormData.effectiveDate ?? ""}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      effectiveDate: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Additional Details</Label>
-                <Textarea
-                  value={editFormData.details ?? ""}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      details: e.target.value,
-                    }))
-                  }
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-            <div className="flex justify-end space-x-2 p-4 border-t border-gray-200">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setEditingPlan(null);
-                  setEditFormData({});
-                }}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleSavePlanEdit}>Save Changes</Button>
-            </div>
-          </Card>
-        </div>
-      )}
 
       {/* Summary */}
       {selectedPackageIds.size > 0 && (
