@@ -70,11 +70,13 @@ export function ClientPresentation({
   const formatPlanDetails = (plan: InsurancePlan) => {
     const details: (string | string[])[] = [];
 
+    // Basic plan info
     if (plan.deductible !== undefined)
       details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
     if (plan.coinsurance !== undefined)
       details.push(`Coinsurance: ${plan.coinsurance}%`);
 
+    // Health / catastrophic specifics
     if (plan.type === 'health' || plan.type === 'catastrophic') {
       if (plan.type !== 'catastrophic') {
         if (plan.primaryCareCopay !== undefined)
@@ -88,7 +90,12 @@ export function ClientPresentation({
         details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
     }
 
-    // ✅ Bullet coverage for KonnectMD and Out-of-Pocket plans
+    // Out-of-Pocket Max for any outOfPocket plan (always inline)
+    if (plan.type === 'outOfPocket' && plan.outOfPocketMax !== undefined) {
+      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+    }
+
+    // Bullet coverage for KonnectMD or outOfPocket plans
     if (plan.provider === 'KonnectMD' || plan.type === 'outOfPocket') {
       if (Array.isArray(plan.coverage)) {
         details.push(['Coverage:', ...plan.coverage]);
