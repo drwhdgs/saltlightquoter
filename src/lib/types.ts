@@ -325,16 +325,18 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     planTypes: ["health","konnect","dental","vision","life","cancer","heart","outOfPocket","breeze","disability"],
     defaultPlans: [
     withEffectiveDate({
-        type: "catastrophic",
-        name: "UHC TriTerm Medical Catastrophic Coverage",
-        provider: "United Healthcare",
-        monthlyPremium: 0, // adjust if you want a sample premium
-        deductible: 15000, // max deductible option
-        coverage: "$2 Million lifetime benefit per person",
-        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care.
-        Continuous protection for nearly 3 years with one application.`,
-        brochureUrl: "https://www.uhone.com/api/supplysystem/?FileName=45747C1-G202509.pdf"
-        }),
+    type: "catastrophic",
+    name: "UHC TriTerm Medical Catastrophic Coverage",
+    provider: "United Healthcare",
+    monthlyPremium: 0, // adjust if you want a sample premium
+    deductible: 15000, // max deductible option
+    coinsurance: "70%", // patient pays 20% after deductible
+    outOfPocketMax: 10000, // maximum a person pays per year
+    coverage: "$2 Million lifetime benefit per person",
+    details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care.
+    Continuous protection for nearly 3 years with one application.`,
+    brochureUrl: "https://www.uhone.com/api/supplysystem/?FileName=45747C1-G202509.pdf"
+}),
       withEffectiveDate({
         type: "konnect",
         name: "KonnectMD",
