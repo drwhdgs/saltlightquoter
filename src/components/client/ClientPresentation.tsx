@@ -121,7 +121,7 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                 </div>
                 <div className="text-sm text-gray-600">
                   <Phone className="w-3 h-3 inline mr-1" />
-                  <a href="tel:6628828179" className="hover:underline">
+                  <a href="tel:+16624603656" className="hover:underline">
                     (662) 460-3656
                   </a>
                 </div>
