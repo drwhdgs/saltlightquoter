@@ -346,7 +346,7 @@ outOfPocketMax: 10000, // maximum a person pays per year
         provider: "KonnectMD",
         monthlyPremium: 99.99,
         deductible: 0,
-        coverage: "$0 virtual care, $0 prescriptions, $0 annual exam, $0 labs, $0 counseling, and discounts on dental & chiropractic",
+        coverage: "$0 virtual care, $0 prescriptions, $0 annual exam, $0 labs, $0 counseling, Discounts on dental & chiropractic",
         details: "Covers up to 7 family members",
         brochureUrl: "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf"
       }),
