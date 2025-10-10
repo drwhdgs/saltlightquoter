@@ -343,8 +343,8 @@ outOfPocketMax: 10000, // maximum a person pays per year
         provider: "KonnectMD",
         monthlyPremium: 99.99,
         deductible: 0,
-        coverage: "Unlimited virtual healthcare, 24/7 access to doctors, therapists, and specialists with no copays, deductibles, or surprise bills",
-        details: "Covers up to 7 family members",
+        coverage: "$0 virtual urgent and primary care, $0 acute and chronic medications, $0 virtual dermatology, $0 annual exam and bloodwork, $0 counseling, $0 to message a specialist, Dental and Chiropractic discounts",
+        details: "Covers up to 7 family members",
         brochureUrl: "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf"
       }),
       withEffectiveDate({
