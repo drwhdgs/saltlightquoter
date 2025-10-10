@@ -351,16 +351,6 @@ outOfPocketMax: 10000, // maximum a person pays per year
         brochureUrl: "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf"
       }),
       withEffectiveDate({
-        type: "vision",
-        name: "Ameritas PrimeStar Choice Vision",
-        provider: "Ameritas",
-        monthlyPremium: 13.07,
-        deductible: 0,
-        coverage: "Enhanced vision benefits",
-        details: "Eye exams, frames, lenses, contacts",
-        brochureUrl: "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf"
-      }),
-      withEffectiveDate({
         type: "outOfPocket",
         name: "Manhattan Life Out-of-Pocket Protection",
         provider: "Manhattan Life",
