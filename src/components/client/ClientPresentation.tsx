@@ -55,39 +55,53 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
     return colors[index % colors.length];
   };
 
-  const formatPlanDetails = (plan: InsurancePlan) => {
-    const details: string[] = [];
+ const formatPlanDetails = (plan: InsurancePlan) => {
+  const details: (string | string[])[] = [];
 
-    if (plan.deductible !== undefined)
-      details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
-    if (plan.coinsurance !== undefined)
-      details.push(`Coinsurance: ${plan.coinsurance}%`);
+  if (plan.deductible !== undefined)
+    details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+  if (plan.coinsurance !== undefined)
+    details.push(`Coinsurance: ${plan.coinsurance}%`);
 
-    if (plan.type === 'health' || plan.type === 'catastrophic') {
-      // Only show these for non-catastrophic plans
-      if (plan.type !== 'catastrophic') {
-        if (plan.primaryCareCopay !== undefined)
-          details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
-        if (plan.specialistCopay !== undefined)
-          details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
-        if (plan.genericDrugCopay !== undefined)
-          details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
-      }
-
-      if (plan.outOfPocketMax !== undefined)
-        details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+  if (plan.type === 'health' || plan.type === 'catastrophic') {
+    if (plan.type !== 'catastrophic') {
+      if (plan.primaryCareCopay !== undefined)
+        details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
+      if (plan.specialistCopay !== undefined)
+        details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
+      if (plan.genericDrugCopay !== undefined)
+        details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
     }
+    if (plan.outOfPocketMax !== undefined)
+      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+  }
 
+  // ✅ Handle KonnectMD and Out-of-Pocket plans with bullet list coverage
+  if (
+    plan.provider === 'KonnectMD' ||
+    plan.type === 'outOfPocket'
+  ) {
+    if (Array.isArray(plan.coverage)) {
+      details.push(['Coverage:', ...plan.coverage]);
+    } else if (typeof plan.coverage === 'string') {
+      // fallback in case it's a single string
+      const items = plan.coverage.split(',').map(i => i.trim());
+      details.push(['Coverage:', ...items]);
+    }
+  } else {
+    // for all other plans, show coverage inline
     if (plan.coverage) details.push(`Coverage: ${plan.coverage}`);
-    if (plan.details) details.push(plan.details);
+  }
 
-    if (plan.effectiveDate) {
-      const effectiveDate = new Date(plan.effectiveDate);
-      details.push(`Effective Date: ${effectiveDate.toLocaleDateString('en-US')}`);
-    }
+  if (plan.details) details.push(plan.details);
 
-    return details;
-  };
+  if (plan.effectiveDate) {
+    const effectiveDate = new Date(plan.effectiveDate);
+    details.push(`Effective Date: ${effectiveDate.toLocaleDateString('en-US')}`);
+  }
+
+  return details;
+};
 
   return (
     <div className="min-h-screen bg-gray-50">
