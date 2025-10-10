@@ -34,8 +34,8 @@ export interface InsurancePlan {
   deductible?: number;
   outOfPocket?: number; // general out-of-pocket
   outOfPocketMax?: number; // health-specific max
-  coverage?: string;
-  details?: string;
+coverage: string | string[];
+details?: string;
 
   // Health plan–specific copays
   primaryCareCopay?: number;
