@@ -367,7 +367,7 @@ outOfPocketMax: 10000, // maximum a person pays per year
         monthlyPremium: 0,
         coverage: "$200/day Inpatient Hospital Confinement Benefit, $6,350 Hospital Admission Benefit",
         details: "An Out-of-Pocket policy can help the costs associated with a hospital stay from becoming an unnecessary burden.",
-        brochureUrl: "https://www.manhattanlife.com/resources/brochures/out-of-pocket.pdf"
+        brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
     ],
   },
