@@ -148,7 +148,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: "Manhattan Life Out-of-Pocket Protection",
         provider: "Manhattan Life",
         monthlyPremium: 0,
-        coverage: "$100/day Inpatient Hospital Confinement Benefit, $6,350 Hospital Admission Benefit",
+        coverage: "$100/day Inpatient Hospital Confinement Benefit, $6350 Hospital Admission Benefit",
         details: "An Out-of-Pocket policy helps the costs associated with a hospital stay from becoming an unnecessary burden.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
@@ -195,7 +195,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: "Manhattan Life Out-of-Pocket Protection",
         provider: "Manhattan Life",
         monthlyPremium: 0,
-        coverage: "$200/day Inpatient Hospital Confinement Benefit, $5,000 Hospital Admission Benefit",
+        coverage: "$200/day Inpatient Hospital Confinement Benefit, $5000 Hospital Admission Benefit",
         details: "An Out-of-Pocket policy helps the costs associated with a hospital stay from becoming an unnecessary burden.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
@@ -279,7 +279,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: "Manhattan Life Out-of-Pocket Protection",
         provider: "Manhattan Life",
         monthlyPremium: 0,
-        coverage: "$200/day Inpatient Hospital Confinement Benefit, $2,500 Hospital Admission Benefit",
+        coverage: "$200/day Inpatient Hospital Confinement Benefit, $2500 Hospital Admission Benefit",
         details: "An Out-of-Pocket policy helps the costs associated with a hospital stay from becoming an unnecessary burden.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
@@ -365,7 +365,7 @@ outOfPocketMax: 10000, // maximum a person pays per year
         name: "Manhattan Life Out-of-Pocket Protection",
         provider: "Manhattan Life",
         monthlyPremium: 0,
-        coverage: "$200/day Inpatient Hospital Confinement Benefit, $6,350 Hospital Admission Benefit",
+        coverage: "$200/day Inpatient Hospital Confinement Benefit, $6350 Hospital Admission Benefit",
         details: "An Out-of-Pocket policy can help the costs associated with a hospital stay from becoming an unnecessary burden.",
         brochureUrl: "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf"
       }),
