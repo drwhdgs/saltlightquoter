@@ -333,7 +333,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         coverage: "$2 Million lifetime benefit per person",
         details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care.
         Continuous protection for nearly 3 years with one application.`,
-        brochureUrl: "https://www.uhone.com/health-insurance/short-term-health-insurance/tri-term-medical"
+        brochureUrl: "https://www.uhone.com/api/supplysystem/?FileName=45747C1-G202509.pdf"
         }),
       withEffectiveDate({
         type: "konnect",
