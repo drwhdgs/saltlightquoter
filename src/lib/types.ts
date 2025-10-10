@@ -330,8 +330,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     provider: "United Healthcare",
     monthlyPremium: 0, // adjust if you want a sample premium
     deductible: 15000, // max deductible option
-    coinsurance: "70", // patient pays 20% after deductible
-    outOfPocketMax: 10000, // maximum a person pays per year
+coinsurance: 70, // ✅ number
+outOfPocketMax: 10000, // maximum a person pays per year
     coverage: "$2 Million lifetime benefit per person",
     details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care.
     Continuous protection for nearly 3 years with one application.`,
