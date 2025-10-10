@@ -21,7 +21,11 @@ interface ClientPresentationProps {
   selectedPackageId?: string;
 }
 
-export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }: ClientPresentationProps) {
+export function ClientPresentation({
+  quote,
+  onPackageSelect,
+  selectedPackageId
+}: ClientPresentationProps) {
   const carrierLogos: Record<string, string> = {
     Ameritas: '/logos/ameritas.png',
     Transamerica: '/logos/transamerica.png',
@@ -29,19 +33,27 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
     KonnectMD: '/logos/konnect.png',
     Breeze: '/logos/breeze.png',
     ACA: '/logos/aca.png',
-    'United Healthcare': '/logos/uhc.png',
+    'United Healthcare': '/logos/uhc.png'
   };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {
     switch (type) {
-      case 'health': return <Shield className="w-4 h-4 text-blue-600" />;
-      case 'catastrophic': return <Shield className="w-4 h-4 text-red-600" />;
-      case 'dental': return <Activity className="w-4 h-4 text-green-600" />;
-      case 'vision': return <Eye className="w-4 h-4 text-purple-600" />;
-      case 'life': return <Heart className="w-4 h-4 text-red-600" />;
-      case 'heart': return <Heart className="w-4 h-4 text-pink-600" />;
-      case 'outOfPocket': return <DollarSign className="w-4 h-4 text-indigo-600" />;
-      default: return <Shield className="w-4 h-4 text-gray-600" />;
+      case 'health':
+        return <Shield className="w-4 h-4 text-blue-600" />;
+      case 'catastrophic':
+        return <Shield className="w-4 h-4 text-red-600" />;
+      case 'dental':
+        return <Activity className="w-4 h-4 text-green-600" />;
+      case 'vision':
+        return <Eye className="w-4 h-4 text-purple-600" />;
+      case 'life':
+        return <Heart className="w-4 h-4 text-red-600" />;
+      case 'heart':
+        return <Heart className="w-4 h-4 text-pink-600" />;
+      case 'outOfPocket':
+        return <DollarSign className="w-4 h-4 text-indigo-600" />;
+      default:
+        return <Shield className="w-4 h-4 text-gray-600" />;
     }
   };
 
@@ -55,53 +67,52 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
     return colors[index % colors.length];
   };
 
- const formatPlanDetails = (plan: InsurancePlan) => {
-  const details: (string | string[])[] = [];
+  const formatPlanDetails = (plan: InsurancePlan) => {
+    const details: (string | string[])[] = [];
 
-  if (plan.deductible !== undefined)
-    details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
-  if (plan.coinsurance !== undefined)
-    details.push(`Coinsurance: ${plan.coinsurance}%`);
+    if (plan.deductible !== undefined)
+      details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+    if (plan.coinsurance !== undefined)
+      details.push(`Coinsurance: ${plan.coinsurance}%`);
 
-  if (plan.type === 'health' || plan.type === 'catastrophic') {
-    if (plan.type !== 'catastrophic') {
-      if (plan.primaryCareCopay !== undefined)
-        details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
-      if (plan.specialistCopay !== undefined)
-        details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
-      if (plan.genericDrugCopay !== undefined)
-        details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
+    if (plan.type === 'health' || plan.type === 'catastrophic') {
+      if (plan.type !== 'catastrophic') {
+        if (plan.primaryCareCopay !== undefined)
+          details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
+        if (plan.specialistCopay !== undefined)
+          details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
+        if (plan.genericDrugCopay !== undefined)
+          details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
+      }
+      if (plan.outOfPocketMax !== undefined)
+        details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
     }
-    if (plan.outOfPocketMax !== undefined)
-      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-  }
 
-  // ✅ Handle KonnectMD and Out-of-Pocket plans with bullet list coverage
-  if (
-    plan.provider === 'KonnectMD' ||
-    plan.type === 'outOfPocket'
-  ) {
-    if (Array.isArray(plan.coverage)) {
-      details.push(['Coverage:', ...plan.coverage]);
-    } else if (typeof plan.coverage === 'string') {
-      // fallback in case it's a single string
-      const items = plan.coverage.split(',').map(i => i.trim());
-      details.push(['Coverage:', ...items]);
+    // ✅ Bullet coverage for KonnectMD and Out-of-Pocket plans
+    if (plan.provider === 'KonnectMD' || plan.type === 'outOfPocket') {
+      if (Array.isArray(plan.coverage)) {
+        details.push(['Coverage:', ...plan.coverage]);
+      } else if (typeof plan.coverage === 'string') {
+        const items = plan.coverage
+          .replace(/and /gi, '')
+          .split(/[,]+/)
+          .map(i => i.trim())
+          .filter(i => i.length > 0);
+        details.push(['Coverage:', ...items]);
+      }
+    } else if (plan.coverage) {
+      details.push(`Coverage: ${plan.coverage}`);
     }
-  } else {
-    // for all other plans, show coverage inline
-    if (plan.coverage) details.push(`Coverage: ${plan.coverage}`);
-  }
 
-  if (plan.details) details.push(plan.details);
+    if (plan.details) details.push(plan.details);
 
-  if (plan.effectiveDate) {
-    const effectiveDate = new Date(plan.effectiveDate);
-    details.push(`Effective Date: ${effectiveDate.toLocaleDateString('en-US')}`);
-  }
+    if (plan.effectiveDate) {
+      const effectiveDate = new Date(plan.effectiveDate);
+      details.push(`Effective Date: ${effectiveDate.toLocaleDateString('en-US')}`);
+    }
 
-  return details;
-};
+    return details;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -110,7 +121,9 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Packages Prepared For:</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Packages Prepared For:
+              </h1>
               <div className="text-2xl font-semibold text-gray-800 mb-1">
                 {quote.client.name}
               </div>
@@ -182,7 +195,7 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
 
               {/* Plans */}
               <div className="p-4 flex-1 overflow-y-auto max-h-[400px] space-y-4">
-                {pkg.plans.map((plan) => (
+                {pkg.plans.map(plan => (
                   <div key={plan.id} className="border-l-4 border-gray-200 pl-3">
                     <div className="flex items-center gap-2 mb-1">
                       {carrierLogos[plan.provider] ? (
@@ -221,12 +234,27 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
 
                     <div className="text-sm text-gray-800 mb-2">{plan.name}</div>
                     <div className="text-xs text-gray-600 space-y-1">
-                      {formatPlanDetails(plan).map((detail, idx) => (
-                        <div key={idx}>• {detail}</div>
-                      ))}
+                      {formatPlanDetails(plan).map((detail, idx) =>
+                        Array.isArray(detail) ? (
+                          <div key={idx}>
+                            <div className="font-semibold text-gray-800">
+                              {detail[0]}
+                            </div>
+                            <ul className="list-disc list-inside text-gray-600 ml-3">
+                              {detail.slice(1).map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : (
+                          <div key={idx}>• {detail}</div>
+                        )
+                      )}
+
                       <div className="text-blue-600 font-medium">
                         Monthly Premium: ${plan.monthlyPremium.toLocaleString()}
                       </div>
+
                       {plan.brochureUrl && (
                         <div className="mt-1">
                           <a
