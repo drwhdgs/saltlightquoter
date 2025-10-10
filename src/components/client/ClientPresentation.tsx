@@ -30,7 +30,6 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
     Breeze: '/logos/breeze.png',
     ACA: '/logos/aca.png',
     'United Healthcare': '/logos/uhc.png',
-
   };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {
@@ -59,20 +58,25 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
   const formatPlanDetails = (plan: InsurancePlan) => {
     const details: string[] = [];
 
-    if (plan.deductible !== undefined) details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
-    if (plan.coinsurance !== undefined) details.push(`Coinsurance: ${plan.coinsurance}%`);
+    if (plan.deductible !== undefined)
+      details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+    if (plan.coinsurance !== undefined)
+      details.push(`Coinsurance: ${plan.coinsurance}%`);
 
     if (plan.type === 'health' || plan.type === 'catastrophic') {
-  if (plan.primaryCareCopay !== undefined) details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
-  
-  // Only show specialist copay if NOT catastrophic
-  if (plan.type !== 'catastrophic' && plan.specialistCopay !== undefined) {
-    details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
-  }
+      // Only show these for non-catastrophic plans
+      if (plan.type !== 'catastrophic') {
+        if (plan.primaryCareCopay !== undefined)
+          details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
+        if (plan.specialistCopay !== undefined)
+          details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
+        if (plan.genericDrugCopay !== undefined)
+          details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
+      }
 
-  if (plan.genericDrugCopay !== undefined) details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
-  if (plan.outOfPocketMax !== undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-}
+      if (plan.outOfPocketMax !== undefined)
+        details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+    }
 
     if (plan.coverage) details.push(`Coverage: ${plan.coverage}`);
     if (plan.details) details.push(plan.details);
@@ -93,9 +97,13 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Packages Prepared For:</h1>
-              <div className="text-2xl font-semibold text-gray-800 mb-1">{quote.client.name}</div>
+              <div className="text-2xl font-semibold text-gray-800 mb-1">
+                {quote.client.name}
+              </div>
               <div className="text-lg text-gray-600">
-                <a href={`tel:${quote.client.phone}`} className="hover:underline">{quote.client.phone}</a>
+                <a href={`tel:${quote.client.phone}`} className="hover:underline">
+                  {quote.client.phone}
+                </a>
               </div>
             </div>
 
@@ -108,14 +116,21 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                 />
               </div>
               <div>
-                <div className="font-semibold text-gray-900">Salt & Light Insurance Group</div>
+                <div className="font-semibold text-gray-900">
+                  Salt & Light Insurance Group
+                </div>
                 <div className="text-sm text-gray-600">
                   <Phone className="w-3 h-3 inline mr-1" />
-                  <a href="tel:6628828179" className="hover:underline">(662) 882-8179</a>
+                  <a href="tel:6628828179" className="hover:underline">
+                    (662) 882-8179
+                  </a>
                 </div>
                 <div className="text-sm text-gray-600">
                   <Mail className="w-3 h-3 inline mr-1" />
-                  <a href="mailto:support@saltlightinsurancegroup.com" className="hover:underline">
+                  <a
+                    href="mailto:support@saltlightinsurancegroup.com"
+                    className="hover:underline"
+                  >
                     support@saltlightinsurancegroup.com
                   </a>
                 </div>
@@ -127,20 +142,33 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
 
       {/* Packages */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className={`grid grid-cols-1 ${quote.packages.length === 2 ? 'lg:grid-cols-2' : quote.packages.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2 xl:grid-cols-4'} gap-6`}>
+        <div
+          className={`grid grid-cols-1 ${
+            quote.packages.length === 2
+              ? 'lg:grid-cols-2'
+              : quote.packages.length === 3
+              ? 'lg:grid-cols-3'
+              : 'lg:grid-cols-2 xl:grid-cols-4'
+          } gap-6`}
+        >
           {quote.packages.map((pkg, index) => (
             <div
               key={pkg.id}
-              className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"            >
+              className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
+            >
               {/* Header */}
-              <div className={`bg-gradient-to-r ${getPackageColor(index)} text-white p-4 text-center`}>
+              <div
+                className={`bg-gradient-to-r ${getPackageColor(
+                  index
+                )} text-white p-4 text-center`}
+              >
                 <h2 className="text-xl font-bold">Package #{index + 1}</h2>
                 <div className="text-sm opacity-90 mt-1">{pkg.name}</div>
               </div>
 
               {/* Plans */}
               <div className="p-4 flex-1 overflow-y-auto max-h-[400px] space-y-4">
-                {pkg.plans.map(plan => (
+                {pkg.plans.map((plan) => (
                   <div key={plan.id} className="border-l-4 border-gray-200 pl-3">
                     <div className="flex items-center gap-2 mb-1">
                       {carrierLogos[plan.provider] ? (
@@ -155,16 +183,25 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
                         getPlanIcon(plan.type)
                       )}
                       <span className="font-semibold text-gray-900 uppercase tracking-wide text-sm">
-                        {plan.type === 'outOfPocket' ? 'OUT-OF-POCKET PROTECTION' :
-                         plan.type === 'life' ? 'LIFE INSURANCE' :
-                         plan.type === 'health' ? 'ACA HEALTH INSURANCE' :
-                         plan.type === 'catastrophic' ? 'CATASTROPHIC HEALTH PLAN' :
-                         plan.type === 'dental' ? 'DENTAL INSURANCE' :
-                         plan.type === 'vision' ? 'VISION INSURANCE' :
-                         plan.type === 'cancer' ? 'CANCER PROTECTION' :
-                         plan.type === 'heart' ? 'HEART ATTACK & STROKE PROTECTION' :
-                         plan.type === 'disability' ? 'SHORT-TERM DISABILITY' :
-                         plan.name.toUpperCase()}
+                        {plan.type === 'outOfPocket'
+                          ? 'OUT-OF-POCKET PROTECTION'
+                          : plan.type === 'life'
+                          ? 'LIFE INSURANCE'
+                          : plan.type === 'health'
+                          ? 'ACA HEALTH INSURANCE'
+                          : plan.type === 'catastrophic'
+                          ? 'CATASTROPHIC HEALTH PLAN'
+                          : plan.type === 'dental'
+                          ? 'DENTAL INSURANCE'
+                          : plan.type === 'vision'
+                          ? 'VISION INSURANCE'
+                          : plan.type === 'cancer'
+                          ? 'CANCER PROTECTION'
+                          : plan.type === 'heart'
+                          ? 'HEART ATTACK & STROKE PROTECTION'
+                          : plan.type === 'disability'
+                          ? 'SHORT-TERM DISABILITY'
+                          : plan.name.toUpperCase()}
                       </span>
                     </div>
 
@@ -195,15 +232,21 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
 
               {/* Monthly Total */}
               <div className="border-t-2 border-gray-200 pt-4 mb-4 text-center">
-                <div className="text-lg font-semibold text-gray-700 mb-1">Your Monthly Payment:</div>
-                <div className="text-3xl font-bold text-gray-900">${pkg.totalMonthlyPremium.toLocaleString()}</div>
+                <div className="text-lg font-semibold text-gray-700 mb-1">
+                  Your Monthly Payment:
+                </div>
+                <div className="text-3xl font-bold text-gray-900">
+                  ${pkg.totalMonthlyPremium.toLocaleString()}
+                </div>
               </div>
 
               {/* Button */}
               <div className="flex justify-center mt-2 mb-4">
                 <Button
                   onClick={() => onPackageSelect && onPackageSelect(pkg.id)}
-                  className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r text-white ${getPackageColor(index)} hover:opacity-90 transition-opacity`}
+                  className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r text-white ${getPackageColor(
+                    index
+                  )} hover:opacity-90 transition-opacity`}
                   variant={selectedPackageId === pkg.id ? 'default' : 'outline'}
                 >
                   I want this package
