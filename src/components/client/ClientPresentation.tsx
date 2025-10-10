@@ -63,11 +63,16 @@ export function ClientPresentation({ quote, onPackageSelect, selectedPackageId }
     if (plan.coinsurance !== undefined) details.push(`Coinsurance: ${plan.coinsurance}%`);
 
     if (plan.type === 'health' || plan.type === 'catastrophic') {
-      if (plan.primaryCareCopay !== undefined) details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
-      if (plan.specialistCopay !== undefined) details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
-      if (plan.genericDrugCopay !== undefined) details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
-      if (plan.outOfPocketMax !== undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-    }
+  if (plan.primaryCareCopay !== undefined) details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
+  
+  // Only show specialist copay if NOT catastrophic
+  if (plan.type !== 'catastrophic' && plan.specialistCopay !== undefined) {
+    details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
+  }
+
+  if (plan.genericDrugCopay !== undefined) details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
+  if (plan.outOfPocketMax !== undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+}
 
     if (plan.coverage) details.push(`Coverage: ${plan.coverage}`);
     if (plan.details) details.push(plan.details);
