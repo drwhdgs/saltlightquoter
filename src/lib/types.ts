@@ -15,40 +15,43 @@ export interface Client {
 }
 
 export interface InsurancePlan {
-  id?: string;
-  type:
-    | "health"
-    | "konnect"
-    | "dental"
-    | "catastrophic"
-    | "vision"
-    | "life"
-    | "cancer"
-    | "heart"
-    | "outOfPocket"
-    | "breeze"
-    | "disability";
-  name: string;
-  provider: string;
-  monthlyPremium: number;
-  deductible?: number;
-  outOfPocket?: number; // general out-of-pocket
-  outOfPocketMax?: number; // health-specific max
-coverage: string | string[];
-details?: string;
+  id?: string;
+  type:
+    | "health"
+    | "konnect"
+    | "dental"
+    | "catastrophic"
+    | "vision"
+    | "life"
+    | "cancer"
+    | "heart"
+    | "outOfPocket"
+    | "breeze"
+    | "disability";
+  name: string;
+  provider: string;
+  monthlyPremium: number;
+  deductible?: number;
+  outOfPocket?: number; // general out-of-pocket
+  outOfPocketMax?: number; // health-specific max
 
-  // Health plan–specific copays
-  primaryCareCopay?: number;
-  specialistCopay?: number;
-  genericDrugCopay?: number;
+  // ✅ Make coverage optional (fixes build error)
+  coverage?: string | string[];
 
-  // NEW: Health plan-specific coinsurance
-  coinsurance?: number;
+  details?: string;
 
-  effectiveDate?: string; // ISO string
+  // Health plan–specific copays
+  primaryCareCopay?: number;
+  specialistCopay?: number;
+  genericDrugCopay?: number;
 
-  // NEW: optional brochure link
-  brochureUrl?: string;
+  // Health plan-specific coinsurance
+  coinsurance?: number;
+
+  effectiveDate?: string; // ISO string
+
+  // Optional brochure link
+  brochureUrl?: string;
 }
 
 export interface Package {
