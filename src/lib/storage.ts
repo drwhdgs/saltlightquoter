@@ -82,7 +82,8 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
       Silver: 1,
       Gold: 2,
       'Healthy Bundle': 3,
-      HealthShare: 4,
+      // FIX: Changed "HealthShare" to "Health Share" to match the Package type
+      'Health Share': 4, 
     };
 
     const packageIndices = data.packages.map(pkg => packageMap[pkg.name] ?? -1).filter(i => i >= 0);
@@ -107,8 +108,6 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
 
         fields.forEach(key => {
           if (plan[key] !== defaultPlan[key]) {
-            // FIX: Disable the ESLint "no-explicit-any" rule for this line only.
-            // This is necessary to bypass the complex TypeScript error while satisfying the linter.
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (planDiff[key as keyof Partial<InsurancePlan>] as any) = plan[key];
           }
@@ -169,7 +168,8 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
       additionalInfo: compressed.c[5]
     };
 
-    const packageNames = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle', 'HealthShare'] as const;
+    // FIX: Changed "HealthShare" to "Health Share" to match the Package type
+    const packageNames = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle', 'Health Share'] as const;
 
     const packages: Package[] = compressed.p.map((pkgIndex, idx) => {
       const templateName = packageNames[pkgIndex];
