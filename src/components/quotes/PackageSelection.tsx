@@ -53,7 +53,7 @@ export function PackageSelection({
     Breeze: "/logos/breeze.png",
     "United Healthcare": "/logos/uhc.png",
     "Health Share": "/logos/healthshare.png",
-    "Sedera Health": "/logos/sedera.png",
+    "Sedera Health": "/logos/sedera.jpg",
   };
 
   useEffect(() => {
