@@ -41,7 +41,7 @@ export function PackageSelection({
   const [editingPlan, setEditingPlan] = useState<{ packageId: string; planId: string } | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<InsurancePlan>>({});
 
-  // ✅ Added Health Share logo
+  // ✅ Carrier logos
   const carrierLogos: Record<string, string> = {
     Ameritas: "/logos/ameritas.png",
     Transamerica: "/logos/transamerica.png",
@@ -136,7 +136,6 @@ export function PackageSelection({
     onSubmit(selectedPackages);
   };
 
-  // ✅ Added custom icon for Health Share
   const getPlanIcon = (type: InsurancePlan["type"]) => {
     switch (type) {
       case "health":
@@ -333,7 +332,6 @@ export function PackageSelection({
                   setEditFormData((p) => ({ ...p, monthlyPremium: Number(e.target.value) }))
                 }
               />
-              {/* Editable for health + healthshare */}
               {(editFormData.type === "health" || editFormData.type === "healthshare") && (
                 <>
                   <Label>Deductible / IUA</Label>
@@ -392,19 +390,11 @@ export function PackageSelection({
         </Card>
       )}
 
+      {/* Actions */}
       <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button onClick={handleSubmit}>Continue</Button>
-      </div>
-    </div>
-  );
-}
-
-      {/* Actions */}
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onBack}>Back</Button>
         <Button onClick={handleSubmit}>Continue</Button>
       </div>
     </div>
