@@ -436,15 +436,16 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         brochureUrl:
           "https://assets.ctfassets.net/01zqqfy0bb2m/4zhy5ey63Lpwhw6xCjNefg/4a5d2b1fed45991e7cf632fb7ef51f83/02-03-0003_A_MembershipSummary__080125_.pdf",
       }),
-     withEffectiveDate({
+      withEffectiveDate({
         type: "konnect",
-        name: "KonnectMD",
+        name: "KonnectMD Membership",
         provider: "KonnectMD",
         monthlyPremium: 99.99,
         deductible: 0,
         coverage:
-          "$0 virtual primary/urgent care, $0 on a wide range of medications, $0 annual exam, $0 labs, $0 counseling, Discounts on dental & chiropractic",
-        details: "Covers up to 7 family members",
+          "$0 virtual primary/urgent care, $0 labs, $0 mental health, $0 medications for most generics, discounts on dental & chiropractic.",
+        details:
+          "Access for up to 7 household members.",
         brochureUrl:
           "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf",
       }),
