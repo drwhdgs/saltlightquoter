@@ -136,11 +136,12 @@ export function PackageSelection({
     onSubmit(selectedPackages);
   };
 
+ // ✅ Fixed: healthShare matches type union in InsurancePlan
   const getPlanIcon = (type: InsurancePlan["type"]) => {
     switch (type) {
       case "health":
         return <Shield className="w-4 h-4" />;
-      case "healthshare":
+      case "healthShare":
         return <Heart className="w-4 h-4 text-orange-500" />;
       case "catastrophic":
         return <AlertTriangle className="w-4 h-4" />;
