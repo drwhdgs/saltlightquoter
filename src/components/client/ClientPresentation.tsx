@@ -33,13 +33,17 @@ export function ClientPresentation({
     KonnectMD: '/logos/konnect.png',
     Breeze: '/logos/breeze.png',
     ACA: '/logos/aca.png',
-    'United Healthcare': '/logos/uhc.png'
+    'United Healthcare': '/logos/uhc.png',
+    'Health Share': '/logos/healthshare.png',
+    'Sedera Health': '/logos/sedera.png'
   };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {
     switch (type) {
       case 'health':
         return <Shield className="w-4 h-4 text-blue-600" />;
+      case 'healthShare':
+        return <Heart className="w-4 h-4 text-orange-500" />;
       case 'catastrophic':
         return <Shield className="w-4 h-4 text-red-600" />;
       case 'dental':
@@ -70,32 +74,39 @@ export function ClientPresentation({
   const formatPlanDetails = (plan: InsurancePlan) => {
     const details: (string | string[])[] = [];
 
-    // Basic plan info
+    // --- Health Share Plans ---
+    if (plan.type === 'healthShare') {
+      if (plan.coinsurance !== undefined)
+        details.push(`Member Share: ${plan.coinsurance}%`);
+      if (plan.deductible !== undefined)
+        details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
+      if (plan.outOfPocketMax !== undefined)
+        details.push(`Max Share Amount: $${plan.outOfPocketMax.toLocaleString()}`);
+      if (plan.details) details.push(plan.details);
+      return details;
+    }
+
+    // --- Normal Health / Other Plans ---
     if (plan.deductible !== undefined)
       details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
     if (plan.coinsurance !== undefined)
       details.push(`Coinsurance: ${plan.coinsurance}%`);
 
-    // Health / catastrophic specifics
     if (plan.type === 'health' || plan.type === 'catastrophic') {
-      if (plan.type !== 'catastrophic') {
-        if (plan.primaryCareCopay !== undefined)
-          details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
-        if (plan.specialistCopay !== undefined)
-          details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
-        if (plan.genericDrugCopay !== undefined)
-          details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
-      }
+      if (plan.primaryCareCopay !== undefined)
+        details.push(`Primary Care Co-Pay: $${plan.primaryCareCopay}`);
+      if (plan.specialistCopay !== undefined)
+        details.push(`Specialist Co-Pay: $${plan.specialistCopay}`);
+      if (plan.genericDrugCopay !== undefined)
+        details.push(`Generic Drug Co-Pay: $${plan.genericDrugCopay}`);
       if (plan.outOfPocketMax !== undefined)
         details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
     }
 
-    // Out-of-Pocket Max for any outOfPocket plan (always inline)
-    if (plan.type === 'outOfPocket' && plan.outOfPocketMax !== undefined) {
+    if (plan.type === 'outOfPocket' && plan.outOfPocketMax !== undefined)
       details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-    }
 
-    // Bullet coverage for KonnectMD or outOfPocket plans
+    // --- Coverage Formatting ---
     if (plan.provider === 'KonnectMD' || plan.type === 'outOfPocket') {
       if (Array.isArray(plan.coverage)) {
         details.push(['Coverage:', ...plan.coverage]);
@@ -203,7 +214,14 @@ export function ClientPresentation({
               {/* Plans */}
               <div className="p-4 flex-1 overflow-y-auto max-h-[400px] space-y-4">
                 {pkg.plans.map(plan => (
-                  <div key={plan.id} className="border-l-4 border-gray-200 pl-3">
+                  <div
+                    key={plan.id}
+                    className={`border-l-4 pl-3 ${
+                      plan.type === 'healthShare'
+                        ? 'border-orange-400 bg-orange-50'
+                        : 'border-gray-200'
+                    } rounded`}
+                  >
                     <div className="flex items-center gap-2 mb-1">
                       {carrierLogos[plan.provider] ? (
                         <Image
@@ -217,7 +235,9 @@ export function ClientPresentation({
                         getPlanIcon(plan.type)
                       )}
                       <span className="font-semibold text-gray-900 uppercase tracking-wide text-sm">
-                        {plan.type === 'outOfPocket'
+                        {plan.type === 'healthShare'
+                          ? 'HEALTH SHARE MEMBERSHIP'
+                          : plan.type === 'outOfPocket'
                           ? 'OUT-OF-POCKET PROTECTION'
                           : plan.type === 'life'
                           ? 'LIFE INSURANCE'
