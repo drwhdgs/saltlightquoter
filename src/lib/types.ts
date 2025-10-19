@@ -443,7 +443,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 99.99,
         deductible: 0,
         coverage:
-          "$0 virtual primary/urgent care, $0 labs, $0 mental health, $0 medications for most generics, discounts on dental & chiropractic.",
+          "$0 virtual primary/urgent care, $0 labs, $0 mental health, $0 medications for most generics, Discounts on dental & chiropractic.",
         details:
           "Access for up to 7 household members.",
         brochureUrl:
