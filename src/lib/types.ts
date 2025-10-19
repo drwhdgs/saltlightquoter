@@ -445,7 +445,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         coverage:
           "$0 virtual primary/urgent care, $0 labs, $0 mental health, $0 medications for most generics, discounts on dental & chiropractic.",
         details:
-          "Includes unlimited virtual consultations and access for up to 7 household members with $0 virtual care.",
+          "Includes unlimited virtual consultations and access for up to 7 household members.",
         brochureUrl:
           "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf",
       }),
