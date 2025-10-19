@@ -38,7 +38,9 @@ export function PackageSelection({
   const [availablePackages] = useState<Package[]>(generateAllPackages());
   const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(new Set());
   const [customizedPackages, setCustomizedPackages] = useState<Map<string, Package>>(new Map());
-  const [editingPlan, setEditingPlan] = useState<{ packageId: string; planId: string } | null>(null);
+  const [editingPlan, setEditingPlan] = useState<{ packageId: string; planId: string } | null>(
+    null
+  );
   const [editFormData, setEditFormData] = useState<Partial<InsurancePlan>>({});
 
   // ✅ Carrier logos
@@ -136,7 +138,7 @@ export function PackageSelection({
     onSubmit(selectedPackages);
   };
 
- // ✅ Fixed: healthShare matches type union in InsurancePlan
+  // ✅ Fixed: healthShare matches type union in InsurancePlan
   const getPlanIcon = (type: InsurancePlan["type"]) => {
     switch (type) {
       case "health":
@@ -165,13 +167,11 @@ export function PackageSelection({
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900">Package Selection</h2>
         <p className="text-gray-600 mt-2">Choose insurance packages for {client.name}</p>
       </div>
 
-      {/* Package List */}
       <div className="grid gap-6">
         {availablePackages.map((pkg) => {
           const isSelected = selectedPackageIds.has(pkg.id);
@@ -261,8 +261,8 @@ export function PackageSelection({
                           )}
                         </div>
 
-                        {/* Health Share Plan Layout */}
-                        {plan.type === "healthshare" && (
+                        {/* ✅ Health Share Layout */}
+                        {plan.type === "healthShare" && (
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-3 text-sm">
                             {plan.coinsurance !== undefined && (
                               <div>
@@ -333,7 +333,7 @@ export function PackageSelection({
                   setEditFormData((p) => ({ ...p, monthlyPremium: Number(e.target.value) }))
                 }
               />
-              {(editFormData.type === "health" || editFormData.type === "healthshare") && (
+              {(editFormData.type === "health" || editFormData.type === "healthShare") && (
                 <>
                   <Label>Deductible / IUA</Label>
                   <Input
@@ -376,7 +376,6 @@ export function PackageSelection({
         </div>
       )}
 
-      {/* Summary */}
       {selectedPackageIds.size > 0 && (
         <Card>
           <CardHeader>
@@ -391,7 +390,6 @@ export function PackageSelection({
         </Card>
       )}
 
-      {/* Actions */}
       <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={onBack}>
           Back
