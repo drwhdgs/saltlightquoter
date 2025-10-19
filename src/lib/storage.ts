@@ -109,9 +109,9 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         ];
 
         fields.forEach((key) => {
-          const planValue = plan[key];
-          const defaultValue = defaultPlan[key];
-          if (planValue !== defaultValue) planDiff[key] = planValue as any; // safe assignment
+          const planValue = plan[key] as string | number | string[] | undefined;
+          const defaultValue = defaultPlan[key] as string | number | string[] | undefined;
+          if (planValue !== defaultValue) planDiff[key] = planValue;
         });
 
         if (Object.keys(planDiff).length > 0) modifications[modKey] = planDiff;
