@@ -80,7 +80,6 @@ export const generateId = (): string => {
 // -------------------- Ultra-Compact Compression --------------------
 const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; createdAt: string }): string => {
   try {
-    // Added "HealthShare" support here 👇
     const packageMap: { [key: string]: number } = {
       Bronze: 0,
       Silver: 1,
@@ -101,7 +100,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         if (!defaultPlan) return;
 
         const modKey = `${pkgIndex}_${planIndex}`;
-        const planDiff: Partial<Omit<InsurancePlan, 'id'>> = {};
+        const planDiff: Partial<Record<keyof Omit<InsurancePlan, 'id'>, string | number | string[] | undefined>> = {};
 
         const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
           'monthlyPremium', 'deductible', 'coinsurance',
@@ -112,7 +111,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         fields.forEach((key) => {
           const planValue = plan[key];
           const defaultValue = defaultPlan[key];
-          if (planValue !== defaultValue) planDiff[key] = planValue;
+          if (planValue !== defaultValue) planDiff[key] = planValue as any; // safe assignment
         });
 
         if (Object.keys(planDiff).length > 0) modifications[modKey] = planDiff;
@@ -168,7 +167,6 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
       additionalInfo: compressed.c[5],
     };
 
-    // Added "HealthShare" support here 👇
     const packageNames = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle', 'HealthShare'] as const;
 
     const packages: Package[] = compressed.p.map((index, pkgIndex) => {
