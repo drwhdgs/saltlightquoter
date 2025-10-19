@@ -42,7 +42,6 @@ export function ClientPresentation({
     switch (type) {
       case 'health':
         return <Shield className="w-4 h-4 text-blue-600" />;
-      // FIX: Changed icon color from text-orange-500 to text-blue-600
       case 'healthShare':
         return <Heart className="w-4 h-4 text-blue-600" />;
       case 'catastrophic':
@@ -62,14 +61,23 @@ export function ClientPresentation({
     }
   };
 
-  const getPackageColor = (index: number) => {
-    const colors = [
-      'from-blue-500 to-blue-600',
-      'from-slate-600 to-slate-700',
-      'from-amber-500 to-amber-600',
-      'from-emerald-500 to-emerald-600'
-    ];
-    return colors[index % colors.length];
+  // FIX: Updated to use package name for specific colors
+  const getPackageColor = (packageName: string) => {
+    switch (packageName) {
+      case 'Bronze':
+        return 'from-amber-700 to-yellow-800'; // Deep bronze
+      case 'Silver':
+        return 'from-slate-400 to-gray-500'; // Silvery gray
+      case 'Gold':
+        return 'from-yellow-400 to-yellow-600'; // Classic gold
+      case 'Healthy Bundle':
+        return 'from-emerald-500 to-emerald-600'; // Green
+      case 'Health Share':
+        return 'from-gray-500 to-gray-600'; // Neutral gray
+      default:
+        // Fallback for any other package names or unexpected values
+        return 'from-blue-500 to-blue-600';
+    }
   };
 
   const formatPlanDetails = (plan: InsurancePlan) => {
@@ -205,7 +213,7 @@ export function ClientPresentation({
               {/* Header */}
               <div
                 className={`bg-gradient-to-r ${getPackageColor(
-                  index
+                  pkg.name // FIX: Pass package name to getPackageColor
                 )} text-white p-4 text-center`}
               >
                 <h2 className="text-xl font-bold">Package #{index + 1}</h2>
@@ -217,7 +225,6 @@ export function ClientPresentation({
                 {pkg.plans.map(plan => (
                   <div
                     key={plan.id}
-                    // FIX: Removed the conditional orange border/bg and applied the default gray border
                     className={`border-l-4 pl-3 border-gray-200 rounded`}
                   >
                     <div className="flex items-center gap-2 mb-1">
@@ -312,7 +319,7 @@ export function ClientPresentation({
                 <Button
                   onClick={() => onPackageSelect && onPackageSelect(pkg.id)}
                   className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r text-white ${getPackageColor(
-                    index
+                    pkg.name // FIX: Pass package name to getPackageColor
                   )} hover:opacity-90 transition-opacity`}
                   variant={selectedPackageId === pkg.id ? 'default' : 'outline'}
                 >
