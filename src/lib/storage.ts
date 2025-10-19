@@ -1,5 +1,5 @@
 import { Agent, Quote, Client, Package, InsurancePlan, PACKAGE_TEMPLATES } from './types';
-import pako from 'pako'; // Import the pako library
+import pako from 'pako';
 
 interface UltraCompressedQuote {
   c: [string, string, string, string, string, string?];
@@ -80,14 +80,16 @@ export const generateId = (): string => {
 // -------------------- Ultra-Compact Compression --------------------
 const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; createdAt: string }): string => {
   try {
+    // Added "HealthShare" support here 👇
     const packageMap: { [key: string]: number } = {
       Bronze: 0,
       Silver: 1,
       Gold: 2,
       'Healthy Bundle': 3,
+      HealthShare: 4,
     };
 
-    const packageIndices = data.packages.map(pkg => packageMap[pkg.name]);
+    const packageIndices = data.packages.map(pkg => packageMap[pkg.name] ?? -1).filter(i => i >= 0);
     const modifications: { [key: string]: Partial<InsurancePlan> } = {};
 
     data.packages.forEach((pkg, pkgIndex) => {
@@ -110,9 +112,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         fields.forEach((key) => {
           const planValue = plan[key];
           const defaultValue = defaultPlan[key];
-          if (planValue !== defaultValue) {
-            Object.assign(planDiff, { [key]: planValue });
-          }
+          if (planValue !== defaultValue) planDiff[key] = planValue;
         });
 
         if (Object.keys(planDiff).length > 0) modifications[modKey] = planDiff;
@@ -153,11 +153,8 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
     while (base64.length % 4) base64 += '=';
 
     const binaryString = atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
 
     const uncompressed = pako.ungzip(bytes, { to: 'string' });
     const compressed: UltraCompressedQuote = JSON.parse(uncompressed);
@@ -171,7 +168,9 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
       additionalInfo: compressed.c[5],
     };
 
-    const packageNames = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle'] as const;
+    // Added "HealthShare" support here 👇
+    const packageNames = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle', 'HealthShare'] as const;
+
     const packages: Package[] = compressed.p.map((index, pkgIndex) => {
       const templateName = packageNames[index];
       const template = PACKAGE_TEMPLATES.find(t => t.name === templateName);
@@ -181,15 +180,10 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
         const modKey = `${pkgIndex}_${planIndex}`;
         const customData = compressed.m?.[modKey] ?? {};
 
-        let effectiveDate: string;
-        if (customData.effectiveDate) {
-          effectiveDate = customData.effectiveDate;
-        } else {
-          const today = new Date();
-          effectiveDate = defaultPlan.type === 'health'
-            ? new Date(today.getFullYear(), today.getMonth() + 1, 1).toISOString()
-            : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toISOString();
-        }
+        const today = new Date();
+        const effectiveDate = customData.effectiveDate
+          ? customData.effectiveDate
+          : new Date(today.getFullYear(), today.getMonth() + (defaultPlan.type === 'health' ? 1 : 0), defaultPlan.type === 'health' ? 1 : today.getDate() + 1).toISOString();
 
         return {
           ...defaultPlan,
@@ -260,17 +254,15 @@ Plans Included: ${pkg.plans.map(plan => plan.name).join(', ')}
 Total Monthly Premium: $${totalMonthly.toLocaleString()}
 Total Annual Premium: $${totalAnnual.toLocaleString()}
 
-To view your complete quote with detailed plan information, please click the link below:
+To view your complete quote, click the link below:
 ${shareableLink}
 
-This link contains your personalized quote and can be accessed from any device. If you have any questions or would like to discuss your coverage options, please don't hesitate to contact me.
+This quote is valid for 30 days.
 
 Best regards,
 Your Insurance Agent
 Phone: (555) 123-INSURANCE
-Email: quotes@insurance.com
-
-This quote is valid for 30 days from the date generated.`);
+Email: quotes@insurance.com`);
 
   return `mailto:${quote.client.email}?subject=${subject}&body=${emailBody}`;
 };
