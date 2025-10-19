@@ -42,8 +42,9 @@ export function ClientPresentation({
     switch (type) {
       case 'health':
         return <Shield className="w-4 h-4 text-blue-600" />;
+      // FIX: Changed icon color from text-orange-500 to text-blue-600
       case 'healthShare':
-        return <Heart className="w-4 h-4 text-orange-500" />;
+        return <Heart className="w-4 h-4 text-blue-600" />;
       case 'catastrophic':
         return <Shield className="w-4 h-4 text-red-600" />;
       case 'dental':
@@ -216,11 +217,8 @@ export function ClientPresentation({
                 {pkg.plans.map(plan => (
                   <div
                     key={plan.id}
-                    className={`border-l-4 pl-3 ${
-                      plan.type === 'healthShare'
-                        ? 'border-orange-400 bg-orange-50'
-                        : 'border-gray-200'
-                    } rounded`}
+                    // FIX: Removed the conditional orange border/bg and applied the default gray border
+                    className={`border-l-4 pl-3 border-gray-200 rounded`}
                   >
                     <div className="flex items-center gap-2 mb-1">
                       {carrierLogos[plan.provider] ? (
