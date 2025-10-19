@@ -97,7 +97,9 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         if (!defaultPlan) return;
 
         const modKey = `${pkgIndex}_${planIndex}`;
-        const planDiff: Partial<Omit<InsurancePlan, 'id'>> = {};
+        // FIX: Changed type to Partial<InsurancePlan> to resolve the TypeScript error.
+        // Omit<'id'> is no longer needed as the fix is applied here.
+        const planDiff: Partial<InsurancePlan> = {}; 
 
         const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
           'monthlyPremium', 'deductible', 'coinsurance',
@@ -106,7 +108,11 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         ];
 
         fields.forEach(key => {
-          if (plan[key] !== defaultPlan[key]) planDiff[key] = plan[key];
+          // The issue was here: plan[key] is a union type that includes string/number/array/undefined, 
+          // but TypeScript couldn't guarantee that planDiff[key] would accept all those types 
+          // when planDiff was initialized as an empty object.
+          // Explicitly typing planDiff as Partial<InsurancePlan> fixes this assignment.
+          if (plan[key] !== defaultPlan[key]) planDiff[key as keyof Partial<InsurancePlan>] = plan[key];
         });
 
         if (Object.keys(planDiff).length > 0) modifications[modKey] = planDiff;
@@ -142,7 +148,8 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
 const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: Package[]; createdAt: string } => {
   try {
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) base64 += '=';
+    // Ensure padding is correct for base64 decoding
+    while (base64.length % 4) base64 += '='; 
 
     const binary = atob(base64);
     const bytes = new Uint8Array(binary.length);
@@ -150,6 +157,11 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
 
     const decompressed = pako.ungzip(bytes, { to: 'string' });
     const compressed: UltraCompressedQuote = JSON.parse(decompressed);
+
+    // Optional: Add a check for minimal data integrity before proceeding
+    if (compressed.c.length < 5 || compressed.p.length === 0) {
+        throw new Error('Incomplete quote data.');
+    }
 
     const client: Client = {
       name: compressed.c[0],
@@ -207,7 +219,9 @@ export const generateShareableLink = (quote: Quote): string => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
   try {
     const encoded = ultraCompressAndEncode({ client: quote.client, packages: quote.packages, createdAt: quote.createdAt });
-    return `${baseUrl}/quote/${encoded}`;
+    // IMPORTANT: Make sure your Next.js project has a dynamic route 
+    // at /quote/[encoded] (e.g., src/app/quote/[encoded]/page.tsx) to handle this link.
+    return `${baseUrl}/quote/${encoded}`; 
   } catch {
     return `${baseUrl}/quote/error`;
   }
