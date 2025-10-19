@@ -35,7 +35,7 @@ export function ClientPresentation({
     ACA: '/logos/aca.png',
     'United Healthcare': '/logos/uhc.png',
     'Health Share': '/logos/healthshare.png',
-    'Sedera Health': '/logos/sedera.png'
+    'Sedera Health': '/logos/sedera.jpg'
   };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {
