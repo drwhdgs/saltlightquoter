@@ -437,18 +437,16 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
           "https://assets.ctfassets.net/01zqqfy0bb2m/4zhy5ey63Lpwhw6xCjNefg/4a5d2b1fed45991e7cf632fb7ef51f83/02-03-0003_A_MembershipSummary__080125_.pdf",
       }),
      withEffectiveDate({
-  type: "konnect",
-  name: "TRU-Virtual First Membership",
-  provider: "TRUVirtual",
-  monthlyPremium: 99.99,
-  deductible: 500,
-  coverage:
-    "800 + Rx at $0, Virtual Urgent, Primary, & Specialty Care, $5000 IUA Healthshare Membership, $0 labs, In Person Urgent Care Visits, Discount Dental, Vision, & Wellness, Lifestyle Discounts",
-  details:
-    "Comprehensive virtual-first healthcare with $0 virtual visits, $0 prescriptions on over 800 medications, and a $5000 IUA healthshare for large medical events.",
-  brochureUrl:
-    "https://www.1enrollment.com/media/1518/TRU-Virtual/TRU-04-02-0002-TRU_Virtual%20First_Healthshare_Brochure%20_8-29-24.pdf",
-}),
+        type: "konnect",
+        name: "TRU-Virtual First Membership",
+        provider: "TRUVirtual",
+        monthlyPremium: 99.99,
+        deductible: 0,
+        coverage: "800 + Rx at $0, Virtual Urgent, Primary, & Specialty Care, $5000 IUA Healthshare Membership, $0 labs, In Person Urgent Care Visits, Discount Dental, Vision, & Wellness, Lifestyle Discounts",
+        details: "Covers up to 7 family members",
+        brochureUrl:
+        "https://www.1enrollment.com/media/1518/TRU-Virtual/TRU-04-02-0002-TRU_Virtual%20First_Healthshare_Brochure%20_8-29-24.pdf",
+      }),
   ],
 },
 ];
