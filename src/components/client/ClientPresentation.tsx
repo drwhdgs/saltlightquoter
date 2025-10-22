@@ -83,10 +83,6 @@ export function ClientPresentation({
         details.push(
           `Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`
         );
-      if (plan.outOfPocketMax !== undefined)
-        details.push(
-          `Max Share Amount: $${plan.outOfPocketMax.toLocaleString()}`
-        );
       if (plan.details) details.push(plan.details);
       return details;
     }
