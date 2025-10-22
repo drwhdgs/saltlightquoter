@@ -442,7 +442,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "TRUVirtual",
         monthlyPremium: 99.99,
         deductible: 0,
-        coverage: "800 + Rx at $0, Virtual Urgent, Primary, & Specialty Care, $5000 IUA Healthshare Membership, $0 labs, In Person Urgent Care Visits, Discount Dental, Vision, & Wellness, Lifestyle Discounts",
+        coverage: 
+          "800 + Rx at $0, Virtual Urgent, Primary, & Specialty Care, $5000 IUA Healthshare Membership, $0 labs, In Person Urgent Care Visits, Discount Dental, Vision, & Wellness, Lifestyle Discounts",
         details: "Covers up to 7 family members",
         brochureUrl:
         "https://www.1enrollment.com/media/1518/TRU-Virtual/TRU-04-02-0002-TRU_Virtual%20First_Healthshare_Brochure%20_8-29-24.pdf",
