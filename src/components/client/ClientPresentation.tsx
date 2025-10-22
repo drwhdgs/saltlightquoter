@@ -118,6 +118,22 @@ export function ClientPresentation({
       details.push(`Coverage: ${plan.coverage}`);
     }
 
+        // --- Coverage Formatting ---
+    if (plan.provider === 'TRUVirtual' || plan.type === 'outOfPocket') {
+      if (Array.isArray(plan.coverage)) {
+        details.push(['Coverage:', ...plan.coverage]);
+      } else if (typeof plan.coverage === 'string') {
+        const items = plan.coverage
+          .replace(/and /gi, '')
+          .split(/[,]+/)
+          .map(i => i.trim())
+          .filter(i => i.length > 0);
+        details.push(['Coverage:', ...items]);
+      }
+    } else if (plan.coverage) {
+      details.push(`Coverage: ${plan.coverage}`);
+    }
+
     if (plan.details) details.push(plan.details);
 
     if (plan.effectiveDate) {
