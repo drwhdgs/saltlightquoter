@@ -443,14 +443,14 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       monthlyPremium: 99.99,
       deductible: 0,
       coverage: [
-        "800 + Rx at $0",
-        "Virtual Urgent, Primary, & Specialty Care",
-        "$5000 IUA Healthshare Membership",
-        "$0 labs",
-        "In Person Urgent Care Visits",
-        "Discount Dental, Vision, & Wellness",
-        "Lifestyle Discounts"
-      ],
+  "800 + Rx at $0",
+  "Virtual Urgent, Primary, & Specialty Care",
+  "$5000 IUA Healthshare Membership",
+  "$0 labs",
+  "In Person Urgent Care Visits",
+  "Discount Dental, Vision, & Wellness",
+  "Lifestyle Discounts"
+],
       details:
         "Comprehensive virtual-first healthcare with $0 virtual visits, $0 prescriptions on over 800 medications, and a $5000 IUA healthshare for large medical events.",
       brochureUrl:
