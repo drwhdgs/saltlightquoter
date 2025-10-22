@@ -74,76 +74,61 @@ export function ClientPresentation({
   };
 
   const formatPlanDetails = (plan: InsurancePlan) => {
-    const details: (string | string[])[] = [];
+  const details: (string | string[])[] = [];
 
-    // --- Health Share Plans ---
-    if (plan.type === 'healthShare') {
-      if (plan.coinsurance !== undefined)
-        details.push(`Member Share: ${plan.coinsurance}%`);
-      if (plan.deductible !== undefined)
-        details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
-      if (plan.outOfPocketMax !== undefined)
-        details.push(`Max Share Amount: $${plan.outOfPocketMax.toLocaleString()}`);
-      if (plan.details) details.push(plan.details);
-      return details;
-    }
-
-    // --- Normal Health / Other Plans ---
-    if (plan.deductible !== undefined)
-      details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+  // --- Health Share Plans ---
+  if (plan.type === 'healthShare') {
     if (plan.coinsurance !== undefined)
-      details.push(`Coinsurance: ${plan.coinsurance}%`);
-
-    if (plan.type === 'health' || plan.type === 'catastrophic') {
-      if (plan.outOfPocketMax !== undefined)
-        details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-    }
-
-    if (plan.type === 'outOfPocket' && plan.outOfPocketMax !== undefined)
-      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-
-    // --- Coverage Formatting ---
-    if (plan.provider === 'KonnectMD' || plan.type === 'outOfPocket') {
-      if (Array.isArray(plan.coverage)) {
-        details.push(['Coverage:', ...plan.coverage]);
-      } else if (typeof plan.coverage === 'string') {
-        const items = plan.coverage
-          .replace(/and /gi, '')
-          .split(/[,]+/)
-          .map(i => i.trim())
-          .filter(i => i.length > 0);
-        details.push(['Coverage:', ...items]);
-      }
-    } else if (plan.coverage) {
-      details.push(`Coverage: ${plan.coverage}`);
-    }
-
-        // --- Coverage Formatting ---
-    if (plan.provider === 'TRUVirtual' || plan.type === 'outOfPocket') {
-      if (Array.isArray(plan.coverage)) {
-        details.push(['Coverage:', ...plan.coverage]);
-      } else if (typeof plan.coverage === 'string') {
-        const items = plan.coverage
-          .replace(/and /gi, '')
-          .split(/[,]+/)
-          .map(i => i.trim())
-          .filter(i => i.length > 0);
-        details.push(['Coverage:', ...items]);
-      }
-    } else if (plan.coverage) {
-      details.push(`Coverage: ${plan.coverage}`);
-    }
-
+      details.push(`Member Share: ${plan.coinsurance}%`);
+    if (plan.deductible !== undefined)
+      details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
+    if (plan.outOfPocketMax !== undefined)
+      details.push(`Max Share Amount: $${plan.outOfPocketMax.toLocaleString()}`);
     if (plan.details) details.push(plan.details);
-
-    if (plan.effectiveDate) {
-      const effectiveDate = new Date(plan.effectiveDate);
-      details.push(`Effective Date: ${effectiveDate.toLocaleDateString('en-US')}`);
-    }
-
     return details;
-  };
+  }
 
+  // --- Normal Health / Other Plans ---
+  if (plan.deductible !== undefined)
+    details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+  if (plan.coinsurance !== undefined)
+    details.push(`Coinsurance: ${plan.coinsurance}%`);
+
+  if (plan.type === 'health' || plan.type === 'catastrophic') {
+    if (plan.outOfPocketMax !== undefined)
+      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+  }
+
+  if (plan.type === 'outOfPocket' && plan.outOfPocketMax !== undefined)
+    details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+
+  // --- Coverage Formatting for TRUVirtual ---
+  if (plan.provider === 'TRUVirtual' || plan.provider === 'KonnectMD') {
+    if (Array.isArray(plan.coverage)) {
+      details.push(['Coverage:', ...plan.coverage]);
+    } else if (typeof plan.coverage === 'string') {
+      // Split only on commas followed by space to preserve phrases
+      const items = plan.coverage
+        .split(/, /)
+        .map(i => i.trim())
+        .filter(i => i.length > 0);
+      details.push(['Coverage:', ...items]);
+    }
+  } else if (plan.coverage) {
+    details.push(`Coverage: ${plan.coverage}`);
+  }
+
+  // --- Include details only once ---
+  if (plan.details) details.push(plan.details);
+
+  if (plan.effectiveDate) {
+    const effectiveDate = new Date(plan.effectiveDate);
+    details.push(`Effective Date: ${effectiveDate.toLocaleDateString('en-US')}`);
+  }
+
+  return details;
+};
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
