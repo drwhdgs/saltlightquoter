@@ -73,7 +73,7 @@ export function ClientPresentation({
     return colors[index % colors.length];
   };
 
-  const formatPlanDetails = (plan: InsurancePlan) => {
+const formatPlanDetails = (plan: InsurancePlan) => {
   const details: (string | string[])[] = [];
 
   // --- Health Share Plans ---
@@ -81,17 +81,33 @@ export function ClientPresentation({
     if (plan.coinsurance !== undefined)
       details.push(`Member Share: ${plan.coinsurance}%`);
     if (plan.deductible !== undefined)
-      details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
+      details.push(
+        `Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`
+      );
     if (plan.outOfPocketMax !== undefined)
-      details.push(`Max Share Amount: $${plan.outOfPocketMax.toLocaleString()}`);
+      details.push(
+        `Max Share Amount: $${plan.outOfPocketMax.toLocaleString()}`
+      );
     if (plan.details) details.push(plan.details);
     return details;
   }
 
-     // --- Health Share Plans ---
-  if (plan.provider === 'TRUVirtual'
+  // --- TRUVirtual Membership ---
+  if (plan.provider === 'TRUVirtual') {
     if (plan.deductible !== undefined)
-      details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
+      details.push(
+        `Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`
+      );
+    if (plan.coverage) {
+      const items =
+        typeof plan.coverage === 'string'
+          ? plan.coverage
+              .split(/, /)
+              .map(i => i.trim())
+              .filter(i => i.length > 0)
+          : plan.coverage;
+      details.push(['Coverage:', ...items]);
+    }
     if (plan.details) details.push(plan.details);
     return details;
   }
@@ -104,24 +120,26 @@ export function ClientPresentation({
 
   if (plan.type === 'health' || plan.type === 'catastrophic') {
     if (plan.outOfPocketMax !== undefined)
-      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+      details.push(
+        `Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`
+      );
   }
 
   if (plan.type === 'outOfPocket' && plan.outOfPocketMax !== undefined)
-    details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+    details.push(
+      `Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`
+    );
 
-  // --- Coverage Formatting for TRUVirtual ---
-  if (plan.provider === 'TRUVirtual' || plan.provider === 'KonnectMD') {
-    if (Array.isArray(plan.coverage)) {
-      details.push(['Coverage:', ...plan.coverage]);
-    } else if (typeof plan.coverage === 'string') {
-      // Split only on commas followed by space to preserve phrases
-      const items = plan.coverage
-        .split(/, /)
-        .map(i => i.trim())
-        .filter(i => i.length > 0);
-      details.push(['Coverage:', ...items]);
-    }
+  // --- Coverage Formatting for KonnectMD ---
+  if (plan.provider === 'KonnectMD') {
+    const items =
+      typeof plan.coverage === 'string'
+        ? plan.coverage
+            .split(/, /)
+            .map(i => i.trim())
+            .filter(i => i.length > 0)
+        : plan.coverage;
+    details.push(['Coverage:', ...items]);
   } else if (plan.coverage) {
     details.push(`Coverage: ${plan.coverage}`);
   }
