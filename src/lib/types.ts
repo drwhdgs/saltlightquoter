@@ -438,8 +438,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
       type: "konnect",
-      name: "Virtual Care Membership",
-      provider: "KonnectMD",
+      name: "TRU-Virtual First Membership",
+      provider: "TRU-Virtual",
       monthlyPremium: 99.99,
       deductible: 0,
       coverage: [
