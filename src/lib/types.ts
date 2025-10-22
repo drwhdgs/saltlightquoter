@@ -437,18 +437,24 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
           "https://assets.ctfassets.net/01zqqfy0bb2m/4zhy5ey63Lpwhw6xCjNefg/4a5d2b1fed45991e7cf632fb7ef51f83/02-03-0003_A_MembershipSummary__080125_.pdf",
       }),
       withEffectiveDate({
-        type: "konnect",
-        name: "KonnectMD Membership",
-        provider: "KonnectMD",
-        monthlyPremium: 99.99,
-        deductible: 0,
-        coverage:
-          "$0 virtual primary/urgent care, $0 labs, $0 mental health, $0 medications for most generics, Discounts on dental & chiropractic.",
-        details:
-          "Access for up to 7 household members.",
-        brochureUrl:
-          "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf",
-      }),
-    ],
-  },
+      type: "konnect",
+      name: "Virtual Care Membership",
+      provider: "KonnectMD",
+      monthlyPremium: 99.99,
+      deductible: 0,
+      coverage: [
+        "Virtual Primary Care: 24/7 virtual care access, including virtual primary care, urgent care, chronic condition management, virtual mental care, and virtual specialty care.",
+        "In-Person Urgent Care: $0 per visit for immediate in-person care for conditions like the flu, COVID-19, sinus infections, and migraines.",
+        "Rx Membership: $0 copays for generic medications and access to mail-order refills.",
+        "Healthshare Membership: A cost-sharing community approach for large medical expenses such as surgery, hospitalization, emergency care, and maternity needs.",
+        "Free Lab Work: $0 fee on most basic lab services through QuestSelect™.",
+        "Lifestyle and Health Discounts: Savings on dental (20–50%), vision (5–30%), chiropractic services, gym memberships, travel, and entertainment."
+      ],
+      details:
+        "The Virtual Care plan offers a complete digital-first health solution with no-cost access to primary, urgent, mental, and specialty virtual visits, plus in-person urgent care, pharmacy benefits, and health discounts.",
+      brochureUrl:
+        "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf",
+    }),
+  ],
+},
 ];
