@@ -441,12 +441,24 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: "TRU-Virtual First Membership",
         provider: "TRUVirtual",
         monthlyPremium: 99.99,
-        deductible: 0,
+        deductible: 2500,
         coverage: 
           "Over 800 Medications for $0, Virtual Urgent Primary & Specialty Care, $0 labs, In Person Urgent Care Visits, Discount Dental & Vision, Wellness & Lifestyle Discounts",
         details: "Get your care needs where you want it at your home or work. Avoid long wait times to see your doctor and avoid additional illness in the waiting room.",
         brochureUrl:
         "https://www.1enrollment.com/media/1518/TRU-Virtual/TRU-04-02-0002-TRU_Virtual%20First_Healthshare_Brochure%20_8-29-24.pdf",
+      }),
+      withEffectiveDate({
+        type: "outOfPocket",
+        name: "Manhattan Life Out-of-Pocket Protection",
+        provider: "Manhattan Life",
+        monthlyPremium: 0,
+        coverage:
+          "$200/day Inpatient Hospital Confinement Benefit, $6350 Hospital Admission Benefit",
+        details:
+          "An Out-of-Pocket policy can help the costs associated with a hospital stay from becoming an unnecessary burden.",
+        brochureUrl:
+          "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf",
       }),
   ],
 },
