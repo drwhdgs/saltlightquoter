@@ -428,7 +428,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: "Sedera Access+ Medical Cost Sharing",
         provider: "Sedera Health",
         monthlyPremium: 215,
-        deductible: 500,
+        deductible: 2500,
         coverage:
           "Community-based cost sharing for medical needs. Members share expenses above an Initial Unshareable Amount (IUA) per medical need.",
         details:
@@ -441,7 +441,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         name: "TRU-Virtual First Membership",
         provider: "TRUVirtual",
         monthlyPremium: 99.99,
-        deductible: 2500,
         coverage: 
           "Over 800 Medications for $0, Virtual Urgent Primary & Specialty Care, $0 labs, In Person Urgent Care Visits, Discount Dental & Vision, Wellness & Lifestyle Discounts",
         details: "Get your care needs where you want it at your home or work. Avoid long wait times to see your doctor and avoid additional illness in the waiting room.",
