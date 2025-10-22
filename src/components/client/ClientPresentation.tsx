@@ -31,7 +31,7 @@ export function ClientPresentation({
     Transamerica: '/logos/transamerica.png',
     'Manhattan Life': '/logos/manhattan-life.png',
     KonnectMD: '/logos/konnect.png',
-    Virtual: '/logos/virtual.png',
+    TRUVirtual: '/logos/virtual.png',
     Breeze: '/logos/breeze.png',
     ACA: '/logos/aca.png',
     'United Healthcare': '/logos/uhc.png',
