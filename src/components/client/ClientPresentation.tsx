@@ -88,6 +88,14 @@ export function ClientPresentation({
     return details;
   }
 
+     // --- Health Share Plans ---
+  if (plan.provider === 'TRUVirtual'
+    if (plan.deductible !== undefined)
+      details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
+    if (plan.details) details.push(plan.details);
+    return details;
+  }
+
   // --- Normal Health / Other Plans ---
   if (plan.deductible !== undefined)
     details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
