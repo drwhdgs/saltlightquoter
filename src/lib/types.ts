@@ -444,7 +444,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         deductible: 0,
         coverage: 
           "800 + Rx at $0, Virtual Urgent, Primary, & Specialty Care, $5000 IUA Healthshare Membership, $0 labs, In Person Urgent Care Visits, Discount Dental, Vision, & Wellness, Lifestyle Discounts",
-        details: "Covers up to 7 family members",
+        details: "Get your care needs where you want it at your home or work. Avoid long wait times to see your doctor and avoid additional illness in the waiting room. Included are discount labs and over 800 prescriptions at no additional cost.",
         brochureUrl:
         "https://www.1enrollment.com/media/1518/TRU-Virtual/TRU-04-02-0002-TRU_Virtual%20First_Healthshare_Brochure%20_8-29-24.pdf",
       }),
