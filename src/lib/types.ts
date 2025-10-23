@@ -221,38 +221,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf",
       }),
-      withEffectiveDate({
-        type: "cancer",
-        name: "Manhattan Life Cancer Protection",
-        provider: "Manhattan Life",
-        monthlyPremium: 0,
-        coverage: "$10,000 Benefit",
-        details:
-          "Lump-sum cash benefit paid upon diagnosis of cancer, regardless of other coverage.",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/paiGfNlyK9QsGs0yyXr0XP9rmeRnwDLbKu8M8iPS.pdf",
-      }),
-      withEffectiveDate({
-        type: "heart",
-        name: "Manhattan Life Heart Attack & Stroke Protection",
-        provider: "Manhattan Life",
-        monthlyPremium: 0,
-        coverage: "$10,000 Benefit",
-        details:
-          "Lump-sum cash benefit upon diagnosis of heart attack or stroke, in addition to any other plan.",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/paiGfNlyK9QsGs0yyXr0XP9rmeRnwDLbKu8M8iPS.pdf",
-      }),
-      withEffectiveDate({
-        type: "disability",
-        name: "Breeze Short-Term Disability",
-        provider: "Breeze",
-        monthlyPremium: 0,
-        coverage: "$200/week short-term disability income for 26 weeks",
-        details: "Income replacement for temporary disabilities",
-        brochureUrl:
-          "https://www.meetbreeze.com/disability-insurance/short-term-disability-insurance/",
-      }),
     ],
   },
   {
@@ -327,37 +295,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         details: "20-year level term life insurance",
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf",
-      }),
-      withEffectiveDate({
-        type: "cancer",
-        name: "Manhattan Life Cancer Protection",
-        provider: "Manhattan Life",
-        monthlyPremium: 0,
-        coverage: "$10,000 Benefit",
-        details: "Lump-sum cash benefit paid upon diagnosis of cancer.",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/paiGfNlyK9QsGs0yyXr0XP9rmeRnwDLbKu8M8iPS.pdf",
-      }),
-      withEffectiveDate({
-        type: "heart",
-        name: "Manhattan Life Heart Attack & Stroke Protection",
-        provider: "Manhattan Life",
-        monthlyPremium: 0,
-        coverage: "$10,000 Benefit",
-        details:
-          "Lump-sum cash benefit paid upon diagnosis of heart attack or stroke.",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/paiGfNlyK9QsGs0yyXr0XP9rmeRnwDLbKu8M8iPS.pdf",
-      }),
-      withEffectiveDate({
-        type: "disability",
-        name: "Breeze Short-Term Disability",
-        provider: "Breeze",
-        monthlyPremium: 0,
-        coverage: "$200/week short-term disability income for 26 weeks",
-        details: "Income replacement for temporary disabilities",
-        brochureUrl:
-          "https://www.meetbreeze.com/disability-insurance/short-term-disability-insurance/",
       }),
     ],
   },
