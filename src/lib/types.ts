@@ -135,25 +135,14 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Care Boost Dental",
+        name: "Ameritas PrimeStar Care Dental & Vision",
         provider: "Ameritas",
-        monthlyPremium: 25.95,
+        monthlyPremium: 39.02,
         deductible: 50,
         details:
-          "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
+          "Preventive and basic dental and vision care",
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
-      }),
-      withEffectiveDate({
-        type: "vision",
-        name: "Ameritas PrimeStar Select Vision",
-        provider: "Ameritas",
-        monthlyPremium: 13.07,
-        deductible: 0,
-        details:
-          "Preventive and basic vision care protecting your eyes starts with routine eye exams!",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
       }),
       withEffectiveDate({
         type: "life",
@@ -199,27 +188,16 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         brochureUrl:
           "https://www.uhone.com/api/supplysystem/?FileName=52405E-G202510.pdf",
       }),
-      withEffectiveDate({
+       withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Care Boost Dental",
+        name: "Ameritas PrimeStar Care Dental & Vision",
         provider: "Ameritas",
-        monthlyPremium: 25.95,
+        monthlyPremium: 39.02,
         deductible: 50,
         details:
-          "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
+          "Preventive and basic dental and vision care",
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
-      }),
-      withEffectiveDate({
-        type: "vision",
-        name: "Ameritas PrimeStar Select Vision",
-        provider: "Ameritas",
-        monthlyPremium: 13.07,
-        deductible: 0,
-        details:
-          "Preventive and basic vision care protecting your eyes starts with routine eye exams!",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
       }),
      withEffectiveDate({
         type: "life",
@@ -264,27 +242,16 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         brochureUrl:
           "https://www.1enrollment.com/media/1518/TRU-Virtual/TRU-04-02-0002-TRU_Virtual%20First_Healthshare_Brochure%20_8-29-24.pdf",
       }),
-      withEffectiveDate({
+       withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Care Boost Dental",
+        name: "Ameritas PrimeStar Care Dental & Vision",
         provider: "Ameritas",
-        monthlyPremium: 25.95,
+        monthlyPremium: 39.02,
         deductible: 50,
         details:
-          "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
+          "Preventive and basic dental and vision care",
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
-      }),
-      withEffectiveDate({
-        type: "vision",
-        name: "Ameritas PrimeStar Select Vision",
-        provider: "Ameritas",
-        monthlyPremium: 13.07,
-        deductible: 0,
-        details:
-          "Preventive and basic vision care protecting your eyes starts with routine eye exams!",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
       }),
       withEffectiveDate({
         type: "life",
