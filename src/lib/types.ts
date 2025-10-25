@@ -50,7 +50,7 @@ export interface InsurancePlan {
 
 export type PackageName =
   | "Bronze"
-  | "Silver"
+  | "ACA Silver"
   | "Gold"
   | "Healthy Bundle"
   | "Health Share"
