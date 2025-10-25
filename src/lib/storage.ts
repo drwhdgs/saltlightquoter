@@ -82,8 +82,9 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
       Silver: 1,
       Gold: 2,
       'Healthy Bundle': 3,
-      // FIX: Changed "HealthShare" to "Health Share" to match the Package type
-      'Health Share': 4, 
+      'Health Share': 4,
+      'Private Health': 5,
+      'Catastrophic': 6,
     };
 
     const packageIndices = data.packages.map(pkg => packageMap[pkg.name] ?? -1).filter(i => i >= 0);
@@ -98,7 +99,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         if (!defaultPlan) return;
 
         const modKey = `${pkgIndex}_${planIndex}`;
-        const planDiff: Partial<InsurancePlan> = {}; 
+        const planDiff: Partial<InsurancePlan> = {};
 
         const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
           'monthlyPremium', 'deductible', 'coinsurance',
@@ -108,7 +109,6 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
 
         fields.forEach(key => {
           if (plan[key] !== defaultPlan[key]) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (planDiff[key as keyof Partial<InsurancePlan>] as any) = plan[key];
           }
         });
@@ -146,7 +146,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
 const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: Package[]; createdAt: string } => {
   try {
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) base64 += '='; 
+    while (base64.length % 4) base64 += '=';
 
     const binary = atob(base64);
     const bytes = new Uint8Array(binary.length);
@@ -156,7 +156,7 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
     const compressed: UltraCompressedQuote = JSON.parse(decompressed);
 
     if (compressed.c.length < 5 || compressed.p.length === 0) {
-        throw new Error('Incomplete quote data.');
+      throw new Error('Incomplete quote data.');
     }
 
     const client: Client = {
@@ -168,8 +168,15 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
       additionalInfo: compressed.c[5]
     };
 
-    // FIX: Changed "HealthShare" to "Health Share" to match the Package type
-    const packageNames = ['Bronze', 'Silver', 'Gold', 'Healthy Bundle', 'Health Share'] as const;
+    const packageNames = [
+      'Bronze',
+      'Silver',
+      'Gold',
+      'Healthy Bundle',
+      'Health Share',
+      'Private Health',
+      'Catastrophic'
+    ] as const;
 
     const packages: Package[] = compressed.p.map((pkgIndex, idx) => {
       const templateName = packageNames[pkgIndex];
@@ -180,7 +187,11 @@ const ultraDecodeAndDecompress = (encoded: string): { client: Client; packages: 
         const key = `${idx}_${planIndex}`;
         const customData = compressed.m?.[key] ?? {};
         const today = new Date();
-        const effectiveDate = customData.effectiveDate || new Date(today.getFullYear(), today.getMonth() + (plan.type === 'health' ? 1 : 0), plan.type === 'health' ? 1 : today.getDate() + 1).toISOString();
+        const effectiveDate = customData.effectiveDate || new Date(
+          today.getFullYear(),
+          today.getMonth() + (plan.type === 'health' ? 1 : 0),
+          plan.type === 'health' ? 1 : today.getDate() + 1
+        ).toISOString();
 
         return { ...plan, ...customData, effectiveDate, id: generateId() };
       });
@@ -216,7 +227,7 @@ export const generateShareableLink = (quote: Quote): string => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
   try {
     const encoded = ultraCompressAndEncode({ client: quote.client, packages: quote.packages, createdAt: quote.createdAt });
-    return `${baseUrl}/quote/${encoded}`; 
+    return `${baseUrl}/quote/${encoded}`;
   } catch {
     return `${baseUrl}/quote/error`;
   }
