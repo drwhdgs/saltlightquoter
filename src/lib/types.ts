@@ -102,62 +102,6 @@ export const formatEffectiveDateUS = (isoDate?: string) => {
 // --- PACKAGE TEMPLATES ---
 export const PACKAGE_TEMPLATES: PackageTemplate[] = [
   {
-    name: "Bronze",
-    description:
-      "Essential coverage with ACA health, dental, and out-of-pocket protection",
-    planTypes: ["health", "dental", "vision", "outOfPocket"],
-    defaultPlans: [
-      withEffectiveDate({
-        type: "health",
-        name: "Molina Bronze 8 - HMO",
-        provider: "ACA",
-        monthlyPremium: 0,
-        deductible: 0,
-        outOfPocketMax: 5000,
-        coinsurance: 50,
-        details:
-          "Covers essential health benefits and protects against major medical expenses, with lower premiums but higher out-of-pocket costs.",
-        primaryCareCopay: 0,
-        specialistCopay: 0,
-        genericDrugCopay: 0,
-      }),
-      withEffectiveDate({
-        type: "dental",
-        name: "Ameritas PrimeStar Care Lite Dental",
-        provider: "Ameritas",
-        monthlyPremium: 25.95,
-        deductible: 50,
-        details:
-          "Affordable plan for those with a healthy mouth. Preventive care such as exams and cleanings, with increasing coverage after the first year.",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
-      }),
-      withEffectiveDate({
-        type: "vision",
-        name: "Ameritas PrimeStar Select Vision",
-        provider: "Ameritas",
-        monthlyPremium: 13.07,
-        deductible: 0,
-        details:
-          "Preventive and basic vision care protecting your eyes starts with routine eye exams!",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
-      }),
-      withEffectiveDate({
-        type: "outOfPocket",
-        name: "Manhattan Life Out-of-Pocket Protection",
-        provider: "Manhattan Life",
-        monthlyPremium: 0,
-        coverage:
-          "$100/day Inpatient Hospital Confinement Benefit, $6350 Hospital Admission Benefit",
-        details:
-          "An Out-of-Pocket policy helps the costs associated with a hospital stay from becoming an unnecessary burden.",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf",
-      }),
-    ],
-  },
-  {
     name: "Silver",
     description:
       "Comprehensive coverage including health, dental, vision, and life insurance",
@@ -181,7 +125,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: "dental",
         name: "Ameritas PrimeStar Care Boost Dental",
         provider: "Ameritas",
-        monthlyPremium: 46.89,
+        monthlyPremium: 25.95,
         deductible: 50,
         details:
           "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
@@ -200,23 +144,11 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
           "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
       }),
       withEffectiveDate({
-        type: "outOfPocket",
-        name: "Manhattan Life Out-of-Pocket Protection",
-        provider: "Manhattan Life",
-        monthlyPremium: 0,
-        coverage:
-          "$200/day Inpatient Hospital Confinement Benefit, $5000 Hospital Admission Benefit",
-        details:
-          "An Out-of-Pocket policy helps the costs associated with a hospital stay from becoming an unnecessary burden.",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf",
-      }),
-      withEffectiveDate({
         type: "life",
         name: "Transamerica Trendsetter Super Term Life",
         provider: "Transamerica",
         monthlyPremium: 0,
-        coverage: "$100,000 term life insurance",
+        coverage: "$25,000 term life insurance",
         details: "20-year level term life insurance",
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf",
@@ -224,82 +156,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     ],
   },
   {
-    name: "Gold",
-    description:
-      "Premium coverage with all health plans plus supplemental protection",
-    planTypes: [
-      "health",
-      "dental",
-      "vision",
-      "life",
-      "cancer",
-      "heart",
-      "outOfPocket",
-      "disability",
-    ],
-    defaultPlans: [
-      withEffectiveDate({
-        type: "health",
-        name: "Molina Gold 1 - HMO",
-        provider: "ACA",
-        monthlyPremium: 550,
-        deductible: 2500,
-        outOfPocketMax: 3000,
-        coinsurance: 20,
-        details:
-          "Offers premium coverage with higher monthly premiums but lower out-of-pocket costs, ideal for frequent medical care and prescriptions.",
-        primaryCareCopay: 0,
-        specialistCopay: 0,
-        genericDrugCopay: 0,
-      }),
-      withEffectiveDate({
-        type: "dental",
-        name: "Ameritas PrimeStar Care Complete Dental",
-        provider: "Ameritas",
-        monthlyPremium: 53.85,
-        deductible: 50,
-        details:
-          "Extensive dental plan with high annual maximum, implant coverage, and hearing benefits. Expands after first year.",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
-      }),
-      withEffectiveDate({
-        type: "vision",
-        name: "Ameritas PrimeStar Choice Vision",
-        provider: "Ameritas",
-        monthlyPremium: 13.07,
-        deductible: 0,
-        details:
-          "Enhanced vision benefits with eye exams, frames, lenses, contact coverage",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
-      }),
-      withEffectiveDate({
-        type: "outOfPocket",
-        name: "Manhattan Life Out-of-Pocket Protection",
-        provider: "Manhattan Life",
-        monthlyPremium: 0,
-        coverage:
-          "$200/day Inpatient Hospital Confinement Benefit, $2500 Hospital Admission Benefit",
-        details:
-          "An Out-of-Pocket policy helps the costs associated with a hospital stay from becoming an unnecessary burden.",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf",
-      }),
-      withEffectiveDate({
-        type: "life",
-        name: "Transamerica Trendsetter Super Term Life",
-        provider: "Transamerica",
-        monthlyPremium: 0,
-        coverage: "$100,000 term life insurance",
-        details: "20-year level term life insurance",
-        brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf",
-      }),
-    ],
-  },
-  {
-    name: "Healthy Bundle",
+    name: "Private Health",
     description:
       "Complete protection package with all available plans including disability",
     planTypes: [
@@ -317,7 +174,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "catastrophic",
-        name: "UHC TriTerm Medical Catastrophic Coverage",
+        name: "UHC TriTerm Co-Pay Medical Catastrophic Coverage",
         provider: "United Healthcare",
         monthlyPremium: 0,
         deductible: 15000,
@@ -329,28 +186,36 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
           "https://www.uhone.com/api/supplysystem/?FileName=45747C1-G202509.pdf",
       }),
       withEffectiveDate({
-        type: "konnect",
-        name: "KonnectMD",
-        provider: "KonnectMD",
-        monthlyPremium: 99.99,
-        deductible: 0,
-        coverage:
-          "$0 virtual primary/urgent care, $0 on a wide range of medications, $0 annual exam, $0 labs, $0 counseling, Discounts on dental & chiropractic",
-        details: "Covers up to 7 family members",
+        type: "dental",
+        name: "Ameritas PrimeStar Care Boost Dental",
+        provider: "Ameritas",
+        monthlyPremium: 25.95,
+        deductible: 50,
+        details:
+          "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
         brochureUrl:
-          "https://cdnc.heyzine.com/files/uploaded/fbf531cd075008861aa3aa397dca046e365acefc.pdf",
+          "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
       }),
       withEffectiveDate({
-        type: "outOfPocket",
-        name: "Manhattan Life Out-of-Pocket Protection",
-        provider: "Manhattan Life",
-        monthlyPremium: 0,
-        coverage:
-          "$200/day Inpatient Hospital Confinement Benefit, $6350 Hospital Admission Benefit",
+        type: "vision",
+        name: "Ameritas PrimeStar Select Vision",
+        provider: "Ameritas",
+        monthlyPremium: 13.07,
+        deductible: 0,
         details:
-          "An Out-of-Pocket policy can help the costs associated with a hospital stay from becoming an unnecessary burden.",
+          "Preventive and basic vision care protecting your eyes starts with routine eye exams!",
         brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf",
+          "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
+      }),
+      withEffectiveDate({
+        type: "life",
+        name: "Transamerica Trendsetter Super Term Life",
+        provider: "Transamerica",
+        monthlyPremium: 0,
+        coverage: "$25,000 term life insurance",
+        details: "20-year level term life insurance",
+        brochureUrl:
+          "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf",
       }),
     ],
   },
@@ -364,7 +229,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: "healthShare",
         name: "Sedera Access+ Medical Cost Sharing",
         provider: "Sedera Health",
-        monthlyPremium: 215,
+        monthlyPremium: 0,
         deductible: 2500,
         coverage:
           "Community-based cost sharing for medical needs. Members share expenses above an Initial Unshareable Amount (IUA) per medical need.",
@@ -385,16 +250,36 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         "https://www.1enrollment.com/media/1518/TRU-Virtual/TRU-04-02-0002-TRU_Virtual%20First_Healthshare_Brochure%20_8-29-24.pdf",
       }),
       withEffectiveDate({
-        type: "outOfPocket",
-        name: "Manhattan Life Out-of-Pocket Protection",
-        provider: "Manhattan Life",
-        monthlyPremium: 0,
-        coverage:
-          "$200/day Inpatient Hospital Confinement Benefit, $6350 Hospital Admission Benefit",
+        type: "dental",
+        name: "Ameritas PrimeStar Care Boost Dental",
+        provider: "Ameritas",
+        monthlyPremium: 25.95,
+        deductible: 50,
         details:
-          "An Out-of-Pocket policy can help the costs associated with a hospital stay from becoming an unnecessary burden.",
+          "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
         brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/aHB0RFsyM9OfQQ6aOgPWSBLP6tFBIs4miR11QMzE.pdf",
+          "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
+      }),
+      withEffectiveDate({
+        type: "vision",
+        name: "Ameritas PrimeStar Select Vision",
+        provider: "Ameritas",
+        monthlyPremium: 13.07,
+        deductible: 0,
+        details:
+          "Preventive and basic vision care protecting your eyes starts with routine eye exams!",
+        brochureUrl:
+          "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
+      }),
+      withEffectiveDate({
+        type: "life",
+        name: "Transamerica Trendsetter Super Term Life",
+        provider: "Transamerica",
+        monthlyPremium: 0,
+        coverage: "$25,000 term life insurance",
+        details: "20-year level term life insurance",
+        brochureUrl:
+          "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf",
       }),
   ],
 },
