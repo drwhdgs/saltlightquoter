@@ -204,72 +204,75 @@ export function ClientPresentation({
                 <div className="text-xs sm:text-sm opacity-90 mt-1">{pkg.name}</div>
               </div>
 
-              <div className="p-3 sm:p-4 flex-1 overflow-y-auto max-h-[400px] sm:max-h-[450px] space-y-4">
-                {pkg.plans.map((plan) => (
-                  <div key={plan.id} className="border-l-4 pl-3 border-gray-200 rounded">
-                    <div className="flex items-start sm:items-center gap-2 mb-2 flex-wrap">
-                      {carrierLogos[plan.provider] ? (
-                        <Image
-                          src={carrierLogos[plan.provider]}
-                          alt={plan.provider}
-                          width={20}
-                          height={20}
-                          className="object-contain"
-                        />
-                      ) : (
-                        getPlanIcon(plan.type)
-                      )}
-                      <div>
-                        <div className="text-sm sm:text-base font-semibold text-gray-900 leading-tight">
-                          {plan.name}
-                        </div>
-                        {plan.title && (
-                          <div className="text-xs sm:text-sm text-gray-600 italic">
-                            {plan.title}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+              <div
+  className="p-3 sm:p-4 flex-1 space-y-4
+             max-h-auto sm:overflow-y-auto sm:max-h-[450px]"
+>
+  {pkg.plans.map((plan) => (
+    <div key={plan.id} className="border-l-4 pl-3 border-gray-200 rounded">
+      <div className="flex items-start sm:items-center gap-2 mb-2 flex-wrap">
+        {carrierLogos[plan.provider] ? (
+          <Image
+            src={carrierLogos[plan.provider]}
+            alt={plan.provider}
+            width={20}
+            height={20}
+            className="object-contain"
+          />
+        ) : (
+          getPlanIcon(plan.type)
+        )}
+        <div>
+          <div className="text-sm sm:text-base font-semibold text-gray-900 leading-tight">
+            {plan.name}
+          </div>
+          {plan.title && (
+            <div className="text-xs sm:text-sm text-gray-600 italic">
+              {plan.title}
+            </div>
+          )}
+        </div>
+      </div>
 
-                    <div className="text-xs sm:text-sm text-gray-600 space-y-1">
-                      {formatPlanDetails(plan).map((detail, idx) =>
-                        Array.isArray(detail) ? (
-                          <div key={idx}>
-                            <div className="font-semibold text-gray-800">{detail[0]}</div>
-                            <ul className="list-disc list-inside text-gray-600 ml-3">
-                              {detail.slice(1).map((item, i) => (
-                                <li key={i}>{item}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        ) : (
-                          <div key={idx}>• {detail}</div>
-                        )
-                      )}
-
-                      <div className="text-blue-600 font-medium">
-                        Monthly Premium: ${plan.monthlyPremium.toLocaleString()}{" "}
-                        <span className="text-gray-600 text-xs sm:text-sm">
-                          (${(plan.monthlyPremium / 30).toFixed(2)} per day)
-                        </span>
-                      </div>
-
-                      {plan.brochureUrl && (
-                        <div className="mt-1">
-                          <a
-                            href={plan.brochureUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-indigo-600 underline text-xs sm:text-sm"
-                          >
-                            View Brochure
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+      <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+        {formatPlanDetails(plan).map((detail, idx) =>
+          Array.isArray(detail) ? (
+            <div key={idx}>
+              <div className="font-semibold text-gray-800">{detail[0]}</div>
+              <ul className="list-disc list-inside text-gray-600 ml-3">
+                {detail.slice(1).map((item, i) => (
+                  <li key={i}>{item}</li>
                 ))}
-              </div>
+              </ul>
+            </div>
+          ) : (
+            <div key={idx}>• {detail}</div>
+          )
+        )}
+
+        <div className="text-blue-600 font-medium">
+          Monthly Premium: ${plan.monthlyPremium.toLocaleString()}{" "}
+          <span className="text-gray-600 text-xs sm:text-sm">
+            (${(plan.monthlyPremium / 30).toFixed(2)} per day)
+          </span>
+        </div>
+
+        {plan.brochureUrl && (
+          <div className="mt-1">
+            <a
+              href={plan.brochureUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-indigo-600 underline text-xs sm:text-sm"
+            >
+              View Brochure
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
 
               <div className="border-t-2 border-gray-200 pt-3 sm:pt-4 mb-3 sm:mb-4 text-center">
                 <div className="text-base sm:text-lg font-semibold text-gray-700 mb-1">
