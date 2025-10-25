@@ -168,7 +168,7 @@ export function QuoteReview({
                 <div>
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     {pkg.name}
-                    {pkg.name === 'Silver' && <Badge variant="secondary">Recommended</Badge>}
+                    {pkg.name === 'ACA Silver' && <Badge variant="secondary">Recommended</Badge>}
                   </h3>
                   <p className="text-sm text-gray-600">{pkg.description}</p>
                 </div>
