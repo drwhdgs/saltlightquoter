@@ -157,13 +157,13 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "life",
-        name: "Transamerica Trendsetter Super Term Life",
-        provider: "Transamerica",
+        name: "American Amicable Term Made Simple",
+        provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
         details: "20-year level term life insurance",
         brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf",
+          "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
       }),
     ],
   },
@@ -221,15 +221,15 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
       }),
-      withEffectiveDate({
+     withEffectiveDate({
         type: "life",
-        name: "Transamerica Trendsetter Super Term Life",
-        provider: "Transamerica",
+        name: "American Amicable Term Made Simple",
+        provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
         details: "20-year level term life insurance",
         brochureUrl:
-          "https://apps.topbrokercrm.com/storage/files/qBPOKuq4TgR9pyHs3USH3IG9uDRosSnRPbpCdrpc.pdf",
+          "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
       }),
     ],
   },
@@ -263,6 +263,38 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
           "Get your care needs where you want it at your home or work. Avoid long wait times to see your doctor and avoid additional illness in the waiting room.",
         brochureUrl:
           "https://www.1enrollment.com/media/1518/TRU-Virtual/TRU-04-02-0002-TRU_Virtual%20First_Healthshare_Brochure%20_8-29-24.pdf",
+      }),
+      withEffectiveDate({
+        type: "dental",
+        name: "Ameritas PrimeStar Care Boost Dental",
+        provider: "Ameritas",
+        monthlyPremium: 25.95,
+        deductible: 50,
+        details:
+          "Robust dental coverage with whitening, child orthodontics, implants, and higher benefits after the first year.",
+        brochureUrl:
+          "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
+      }),
+      withEffectiveDate({
+        type: "vision",
+        name: "Ameritas PrimeStar Select Vision",
+        provider: "Ameritas",
+        monthlyPremium: 13.07,
+        deductible: 0,
+        details:
+          "Preventive and basic vision care protecting your eyes starts with routine eye exams!",
+        brochureUrl:
+          "https://apps.topbrokercrm.com/storage/files/dW7PpnFCIqGKjSR0wRuv9P9tlUbOzBQ9694KIXwH.pdf",
+      }),
+      withEffectiveDate({
+        type: "life",
+        name: "American Amicable Term Made Simple",
+        provider: "AmericanAmicable",
+        monthlyPremium: 0,
+        coverage: "$25,000 term life insurance",
+        details: "20-year level term life insurance",
+        brochureUrl:
+          "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
       }),
     ],
   },
