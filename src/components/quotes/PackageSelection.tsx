@@ -49,6 +49,7 @@ export function PackageSelection({
     AmericanAmicable: "/logos/AmericanAmicable.jpeg",
     "Manhattan Life": "/logos/manhattan-life.png",
     ACA: "/logos/aca.png",
+    TRUVirtual: "/logos/virtual.png",
     KonnectMD: "/logos/konnect.png",
     Breeze: "/logos/breeze.png",
     "United Healthcare": "/logos/uhc.png",
