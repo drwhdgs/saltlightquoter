@@ -182,7 +182,7 @@ const ultraDecodeAndDecompress = (
 
     const packageNames = [
       'Bronze',
-      'Silver',
+      'ACA Silver',
       'Gold',
       'Healthy Bundle',
       'Health Share',
