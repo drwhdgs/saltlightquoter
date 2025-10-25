@@ -121,7 +121,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "health",
-        name: "Molina Silver 12 150 - HMO",
+        name: "Molina Silver - HMO",
         provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
