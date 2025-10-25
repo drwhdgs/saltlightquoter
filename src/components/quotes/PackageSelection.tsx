@@ -56,6 +56,7 @@ export function PackageSelection({
     "Sedera Health": "/logos/sedera.jpg",
   };
 
+  // ✅ Load initial package selections
   useEffect(() => {
     if (initialPackages?.length) {
       const initialIds = new Set(
@@ -67,13 +68,14 @@ export function PackageSelection({
 
       const customizations = new Map<string, Package>();
       initialPackages.forEach((pkg) => {
-        const matchingPkg = availablePackages.find((ap) => ap.name === pkg.name);
-        if (matchingPkg) customizations.set(matchingPkg.id, pkg);
+        const match = availablePackages.find((ap) => ap.name === pkg.name);
+        if (match) customizations.set(match.id, pkg);
       });
       setCustomizedPackages(customizations);
     }
   }, [initialPackages, availablePackages]);
 
+  // ✅ Toggle package selection
   const handlePackageToggle = (packageId: string, checked: boolean) => {
     const newSelected = new Set(selectedPackageIds);
     if (checked) newSelected.add(packageId);
@@ -86,9 +88,10 @@ export function PackageSelection({
     setSelectedPackageIds(newSelected);
   };
 
-  const getPackageToDisplay = (packageId: string): Package =>
-    customizedPackages.get(packageId) || availablePackages.find((p) => p.id === packageId)!;
+  const getPackageToDisplay = (id: string): Package =>
+    customizedPackages.get(id) || availablePackages.find((p) => p.id === id)!;
 
+  // ✅ Edit a plan
   const handleEditPlan = (packageId: string, planId: string) => {
     const pkg = getPackageToDisplay(packageId);
     const plan = pkg.plans.find((pl) => pl.id === planId);
@@ -98,35 +101,35 @@ export function PackageSelection({
     }
   };
 
+  // ✅ Save plan changes
   const handleSavePlanEdit = () => {
     if (!editingPlan) return;
-    const originalPackage = availablePackages.find((p) => p.id === editingPlan.packageId);
-    if (!originalPackage) return;
+    const original = availablePackages.find((p) => p.id === editingPlan.packageId);
+    if (!original) return;
 
-    const currentPackage = customizedPackages.get(editingPlan.packageId) || originalPackage;
-    const updatedPlans = currentPackage.plans.map((plan) =>
-      plan.id === editingPlan.planId ? { ...plan, ...editFormData } : plan
-    );
-
-    const totalMonthlyPremium = updatedPlans.reduce(
-      (sum, plan) => sum + (plan.monthlyPremium ?? 0),
-      0
+    const current = customizedPackages.get(editingPlan.packageId) || original;
+    const updatedPlans = current.plans.map((pl) =>
+      pl.id === editingPlan.planId ? { ...pl, ...editFormData } : pl
     );
 
     const updatedPackage: Package = {
-      ...currentPackage,
+      ...current,
       plans: updatedPlans,
-      totalMonthlyPremium,
+      totalMonthlyPremium: updatedPlans.reduce(
+        (sum, plan) => sum + (plan.monthlyPremium ?? 0),
+        0
+      ),
     };
 
-    const newCustomizations = new Map(customizedPackages);
-    newCustomizations.set(editingPlan.packageId, updatedPackage);
-    setCustomizedPackages(newCustomizations);
+    const updatedMap = new Map(customizedPackages);
+    updatedMap.set(editingPlan.packageId, updatedPackage);
+    setCustomizedPackages(updatedMap);
 
     setEditingPlan(null);
     setEditFormData({});
   };
 
+  // ✅ Submit selected packages
   const handleSubmit = () => {
     if (selectedPackageIds.size === 0) {
       alert("Please select at least one package before continuing.");
@@ -138,7 +141,7 @@ export function PackageSelection({
     onSubmit(selectedPackages);
   };
 
-  // ✅ Fixed: healthShare matches type union in InsurancePlan
+  // ✅ Icons for plan types
   const getPlanIcon = (type: InsurancePlan["type"]) => {
     switch (type) {
       case "health":
@@ -169,9 +172,12 @@ export function PackageSelection({
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900">Package Selection</h2>
-        <p className="text-gray-600 mt-2">Choose insurance packages for {client.name}</p>
+        <p className="text-gray-600 mt-2">
+          Choose insurance packages for {client.name}
+        </p>
       </div>
 
+      {/* --- Package Grid --- */}
       <div className="grid gap-6">
         {availablePackages.map((pkg) => {
           const isSelected = selectedPackageIds.has(pkg.id);
@@ -189,7 +195,9 @@ export function PackageSelection({
                   <div className="flex items-center space-x-3">
                     <Checkbox
                       checked={isSelected}
-                      onCheckedChange={(checked) => handlePackageToggle(pkg.id, !!checked)}
+                      onCheckedChange={(checked) =>
+                        handlePackageToggle(pkg.id, Boolean(checked))
+                      }
                       className="scale-125"
                     />
                     <div>
@@ -210,6 +218,7 @@ export function PackageSelection({
                 </div>
               </CardHeader>
 
+              {/* --- Expanded package details --- */}
               {isSelected && (
                 <CardContent className="pt-0">
                   <Separator className="mb-4" />
@@ -260,48 +269,6 @@ export function PackageSelection({
                             </div>
                           )}
                         </div>
-
-                        {/* ✅ Health Share Layout */}
-                        {plan.type === "healthShare" && (
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-3 text-sm">
-                            {plan.coinsurance !== undefined && (
-                              <div>
-                                <p className="text-gray-600">Member Share (%)</p>
-                                <p className="font-medium">{plan.coinsurance}%</p>
-                              </div>
-                            )}
-                            {plan.outOfPocketMax !== undefined && (
-                              <div>
-                                <p className="text-gray-600">Max Share Amount</p>
-                                <p className="font-medium">${plan.outOfPocketMax}</p>
-                              </div>
-                            )}
-                            {plan.details && (
-                              <div className="col-span-full">
-                                <p className="text-gray-600">Program Details</p>
-                                <p className="font-medium">{plan.details}</p>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Normal Health Layout */}
-                        {plan.type === "health" && (
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-3 text-sm">
-                            {plan.deductible && (
-                              <div>
-                                <p className="text-gray-600">Deductible</p>
-                                <p className="font-medium">${plan.deductible}</p>
-                              </div>
-                            )}
-                            {plan.coinsurance && (
-                              <div>
-                                <p className="text-gray-600">Coinsurance</p>
-                                <p className="font-medium">{plan.coinsurance}%</p>
-                              </div>
-                            )}
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
@@ -312,7 +279,7 @@ export function PackageSelection({
         })}
       </div>
 
-      {/* Edit Modal */}
+      {/* --- Edit Plan Modal --- */}
       {editingPlan && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <Card className="w-full max-w-md">
@@ -333,37 +300,21 @@ export function PackageSelection({
                   setEditFormData((p) => ({ ...p, monthlyPremium: Number(e.target.value) }))
                 }
               />
-              {(editFormData.type === "health" || editFormData.type === "healthShare") && (
-                <>
-                  <Label>Deductible / IUA</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.deductible ?? ""}
-                    onChange={(e) =>
-                      setEditFormData((p) => ({ ...p, deductible: Number(e.target.value) }))
-                    }
-                  />
-                  <Label>Coinsurance / Member Share (%)</Label>
-                  <Input
-                    type="number"
-                    value={editFormData.coinsurance ?? ""}
-                    onChange={(e) =>
-                      setEditFormData((p) => ({ ...p, coinsurance: Number(e.target.value) }))
-                    }
-                  />
-                </>
-              )}
               <Label>Effective Date</Label>
               <Input
                 type="date"
                 value={editFormData.effectiveDate ?? ""}
-                onChange={(e) => setEditFormData((p) => ({ ...p, effectiveDate: e.target.value }))}
+                onChange={(e) =>
+                  setEditFormData((p) => ({ ...p, effectiveDate: e.target.value }))
+                }
               />
               <Label>Additional Details</Label>
               <Textarea
                 rows={3}
                 value={editFormData.details ?? ""}
-                onChange={(e) => setEditFormData((p) => ({ ...p, details: e.target.value }))}
+                onChange={(e) =>
+                  setEditFormData((p) => ({ ...p, details: e.target.value }))
+                }
               />
             </CardContent>
             <div className="flex justify-end space-x-2 p-4 border-t">
@@ -376,6 +327,7 @@ export function PackageSelection({
         </div>
       )}
 
+      {/* --- Quote Summary --- */}
       {selectedPackageIds.size > 0 && (
         <Card>
           <CardHeader>
@@ -390,6 +342,7 @@ export function PackageSelection({
         </Card>
       )}
 
+      {/* --- Navigation Buttons --- */}
       <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={onBack}>
           Back
