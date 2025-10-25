@@ -110,7 +110,6 @@ export function ClientPresentation({
     if (plan.type === "outOfPocket" && plan.outOfPocketMax !== undefined)
       details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
 
-    // ✅ Combined logic for KonnectMD, TRUVirtual, and UHC TriTerm Co-Pay
     if (
       plan.provider === "KonnectMD" ||
       plan.provider === "TRUVirtual" ||
@@ -253,7 +252,10 @@ export function ClientPresentation({
                       )}
 
                       <div className="text-blue-600 font-medium">
-                        Monthly Premium: ${plan.monthlyPremium.toLocaleString()}
+                        Monthly Premium: ${plan.monthlyPremium.toLocaleString()}{" "}
+                        <span className="text-gray-600 text-sm">
+                          (${(plan.monthlyPremium / 30).toFixed(2)} per day)
+                        </span>
                       </div>
 
                       {plan.brochureUrl && (
@@ -278,7 +280,10 @@ export function ClientPresentation({
                   Your Monthly Payment:
                 </div>
                 <div className="text-3xl font-bold text-gray-900">
-                  ${pkg.totalMonthlyPremium.toLocaleString()}
+                  ${pkg.totalMonthlyPremium.toLocaleString()}{" "}
+                  <span className="text-gray-600 text-sm">
+                    (${(pkg.totalMonthlyPremium / 30).toFixed(2)} per day)
+                  </span>
                 </div>
               </div>
 
