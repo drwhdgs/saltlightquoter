@@ -56,7 +56,7 @@ export const getRecommendedPackage = (packages: Package[]): Package | null => {
   if (packages.length === 0) return null;
 
   // Return Silver package as default recommendation, or the middle option
-  const silverPackage = packages.find(p => p.name === 'Silver');
+  const silverPackage = packages.find(p => p.name === 'ACA Silver');
   if (silverPackage) return silverPackage;
 
   // Fallback to middle package by price
