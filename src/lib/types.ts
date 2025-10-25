@@ -187,16 +187,17 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "catastrophic",
-        name: "UHC TriTerm Co-Pay Medical Catastrophic Coverage",
+        name: "UHC Short Term Medical - TriTerm Co-Pay",
         provider: "United Healthcare",
         monthlyPremium: 0,
-        deductible: 15000,
+        deductible: 12500,
         coinsurance: 70,
-        outOfPocketMax: 10000,
-        coverage: "$2 Million lifetime benefit per person",
-        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for nearly 3 years with one application.`,
+        outOfPocketMax: 4500,
+        coverage:
+          "$50 copay for first 4 visits, Urgent care $75 copay, Preventative care $50 copay, Emergency room 30% after deductible, Impatient hospital services outpatient surgery labs and X-rays 30% after deductible",
+        details: `$2 Million lifetime benefit per person. Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for 3 years.`,
         brochureUrl:
-          "https://www.uhone.com/api/supplysystem/?FileName=45747C1-G202509.pdf",
+          "https://www.uhone.com/api/supplysystem/?FileName=52405E-G202510.pdf",
       }),
       withEffectiveDate({
         type: "dental",
@@ -273,14 +274,14 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "catastrophic",
-        name: "UHC TriTerm Co-Pay Medical Catastrophic Coverage",
+        name: "UHC Short Term Medical - TriTerm Value",
         provider: "United Healthcare",
         monthlyPremium: 0,
         deductible: 15000,
         coinsurance: 70,
         outOfPocketMax: 10000,
         coverage: "$2 Million lifetime benefit per person",
-        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for nearly 3 years with one application.`,
+        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for 3 years.`,
         brochureUrl:
           "https://www.uhone.com/api/supplysystem/?FileName=45747C1-G202509.pdf",
       }),
