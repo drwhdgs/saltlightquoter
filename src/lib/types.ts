@@ -150,7 +150,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: "life",
         name: "Life Insurance - American Amicable",
         title: "Life Insurance - American Amicable",
-        provider: "American Amicable",
+        provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
         details:
@@ -209,7 +209,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: "life",
         name: "Life Insurance - American Amicable",
         title: "Life Insurance - American Amicable",
-        provider: "American Amicable",
+        provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
         details:
@@ -267,7 +267,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         type: "life",
         name: "Life Insurance - American Amicable",
         title: "Life Insurance - American Amicable",
-        provider: "American Amicable",
+        provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
         details:
