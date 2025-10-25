@@ -1,19 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Eye,
-  Heart,
-  Activity,
-  Phone,
-  Mail,
-  DollarSign,
-  Shield,
-} from "lucide-react";
-import { Quote, Package, InsurancePlan } from "@/lib/types";
+import { Phone, Mail, DollarSign, Shield, Eye, Heart, Activity } from "lucide-react";
+import { Quote, InsurancePlan } from "@/lib/types";
 
 interface ClientPresentationProps {
   quote: Quote;
@@ -102,10 +92,7 @@ export function ClientPresentation({
           .filter((i) => i.length > 0);
       }
 
-      if (items.length > 0) {
-        details.push(["Coverage:", ...items]);
-      }
-
+      if (items.length > 0) details.push(["Coverage:", ...items]);
       if (plan.details) details.push(plan.details);
       return details;
     }
@@ -117,30 +104,29 @@ export function ClientPresentation({
 
     if (plan.type === "health" || plan.type === "catastrophic") {
       if (plan.outOfPocketMax !== undefined)
-        details.push(
-          `Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`
-        );
+        details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
     }
 
     if (plan.type === "outOfPocket" && plan.outOfPocketMax !== undefined)
-      details.push(
-        `Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`
-      );
+      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
 
-    if (plan.provider === "KonnectMD") {
+    // ✅ Combined logic for KonnectMD, TRUVirtual, and UHC TriTerm Co-Pay
+    if (
+      plan.provider === "KonnectMD" ||
+      plan.provider === "TRUVirtual" ||
+      plan.name === "UHC Short Term Medical - TriTerm Co-Pay"
+    ) {
       let items: string[] = [];
       if (Array.isArray(plan.coverage)) {
         items = plan.coverage;
       } else if (typeof plan.coverage === "string") {
         items = plan.coverage
-          .split(/, /)
+          .split(/, |\n|;/)
           .map((i) => i.trim())
           .filter((i) => i.length > 0);
       }
 
-      if (items.length > 0) {
-        details.push(["Coverage:", ...items]);
-      }
+      if (items.length > 0) details.push(["Coverage:", ...items]);
     } else if (plan.coverage) {
       details.push(`Coverage: ${plan.coverage}`);
     }
@@ -149,9 +135,7 @@ export function ClientPresentation({
 
     if (plan.effectiveDate) {
       const effectiveDate = new Date(plan.effectiveDate);
-      details.push(
-        `Effective Date: ${effectiveDate.toLocaleDateString("en-US")}`
-      );
+      details.push(`Effective Date: ${effectiveDate.toLocaleDateString("en-US")}`);
     }
 
     return details;
@@ -222,14 +206,9 @@ export function ClientPresentation({
           } gap-6`}
         >
           {quote.packages.map((pkg, index) => (
-            <div
-              key={pkg.id}
-              className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
-            >
+            <div key={pkg.id} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
               <div
-                className={`bg-gradient-to-r ${getPackageColor(
-                  index
-                )} text-white p-4 text-center`}
+                className={`bg-gradient-to-r ${getPackageColor(index)} text-white p-4 text-center`}
               >
                 <h2 className="text-xl font-bold">Package #{index + 1}</h2>
                 <div className="text-sm opacity-90 mt-1">{pkg.name}</div>
@@ -237,10 +216,7 @@ export function ClientPresentation({
 
               <div className="p-4 flex-1 overflow-y-auto max-h-[400px] space-y-4">
                 {pkg.plans.map((plan) => (
-                  <div
-                    key={plan.id}
-                    className="border-l-4 pl-3 border-gray-200 rounded"
-                  >
+                  <div key={plan.id} className="border-l-4 pl-3 border-gray-200 rounded">
                     <div className="flex items-center gap-2 mb-1">
                       {carrierLogos[plan.provider] ? (
                         <Image
@@ -254,40 +230,17 @@ export function ClientPresentation({
                         getPlanIcon(plan.type)
                       )}
                       <span className="font-semibold text-gray-900 uppercase tracking-wide text-sm">
-                        {plan.type === "healthShare"
-                          ? "HEALTH SHARE MEMBERSHIP"
-                          : plan.type === "outOfPocket"
-                          ? "OUT-OF-POCKET PROTECTION"
-                          : plan.type === "life"
-                          ? "LIFE INSURANCE"
-                          : plan.type === "health"
-                          ? "ACA HEALTH INSURANCE"
-                          : plan.type === "catastrophic"
-                          ? "CATASTROPHIC HEALTH PLAN"
-                          : plan.type === "dental"
-                          ? "DENTAL INSURANCE"
-                          : plan.type === "vision"
-                          ? "VISION INSURANCE"
-                          : plan.type === "cancer"
-                          ? "CANCER PROTECTION"
-                          : plan.type === "heart"
-                          ? "HEART ATTACK & STROKE PROTECTION"
-                          : plan.type === "disability"
-                          ? "SHORT-TERM DISABILITY"
-                          : plan.name.toUpperCase()}
+                        {plan.name.toUpperCase()}
                       </span>
                     </div>
 
-                    <div className="text-sm text-gray-800 mb-2">
-                      {plan.name}
-                    </div>
+                    <div className="text-sm text-gray-800 mb-2">{plan.name}</div>
+
                     <div className="text-xs text-gray-600 space-y-1">
                       {formatPlanDetails(plan).map((detail, idx) =>
                         Array.isArray(detail) ? (
                           <div key={idx}>
-                            <div className="font-semibold text-gray-800">
-                              {detail[0]}
-                            </div>
+                            <div className="font-semibold text-gray-800">{detail[0]}</div>
                             <ul className="list-disc list-inside text-gray-600 ml-3">
                               {detail.slice(1).map((item, i) => (
                                 <li key={i}>{item}</li>
@@ -335,9 +288,7 @@ export function ClientPresentation({
                   className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r text-white ${getPackageColor(
                     index
                   )} hover:opacity-90 transition-opacity`}
-                  variant={
-                    selectedPackageId === pkg.id ? "default" : "outline"
-                  }
+                  variant={selectedPackageId === pkg.id ? "default" : "outline"}
                 >
                   I want this package
                 </Button>
