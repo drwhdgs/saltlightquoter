@@ -204,7 +204,7 @@ export function PackageSelection({
                     <div>
                       <CardTitle className="flex items-center gap-2">
                         {pkg.name}
-                        {pkg.name === "Silver" && (
+                        {pkg.name === "ACA Silver" && (
                           <Badge variant="secondary">Recommended</Badge>
                         )}
                       </CardTitle>
