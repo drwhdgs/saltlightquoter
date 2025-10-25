@@ -114,7 +114,7 @@ export const formatEffectiveDateUS = (isoDate?: string) => {
 // ✅ --- PACKAGE TEMPLATES ---
 export const PACKAGE_TEMPLATES: PackageTemplate[] = [
   {
-    name: "Silver",
+    name: "ACA Silver",
     description:
       "Comprehensive coverage including health, dental, vision, and life insurance",
     planTypes: ["health", "dental", "vision", "life", "outOfPocket"],
@@ -194,8 +194,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         coinsurance: 70,
         outOfPocketMax: 4500,
         coverage:
-          "$50 copay for first 4 visits, Urgent care $75 copay, Preventative care $50 copay, Emergency room 30% after deductible, Impatient hospital services outpatient surgery labs and X-rays 30% after deductible",
-        details: `$2 Million lifetime benefit per person. Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for 3 years.`,
+          "$2 Million lifetime benefit per person, $50 copay for first 4 visits, Urgent care $75 copay, Preventative care $50 copay, Emergency room: 30% after deductible, Impatient hospital services & outpatient surgery: 30% after deductible, Labs and X-rays: 30% after deductible",
+        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for 3 years.`,
         brochureUrl:
           "https://www.uhone.com/api/supplysystem/?FileName=52405E-G202510.pdf",
       }),
