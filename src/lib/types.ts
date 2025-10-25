@@ -32,19 +32,20 @@ export type InsuranceType =
 export interface InsurancePlan {
   id?: string;
   type: InsuranceType;
-  name: string;
+  name: string; // internal short name
+  title: string; // display name for UI
   provider: string;
   monthlyPremium: number;
   deductible?: number;
-  outOfPocket?: number; // general out-of-pocket
-  outOfPocketMax?: number; // health-specific max
+  outOfPocket?: number;
+  outOfPocketMax?: number;
   coverage?: string | string[];
   details?: string;
   primaryCareCopay?: number;
   specialistCopay?: number;
   genericDrugCopay?: number;
   coinsurance?: number;
-  effectiveDate?: string; // ISO string
+  effectiveDate?: string;
   brochureUrl?: string;
 }
 
@@ -121,7 +122,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "health",
-        name: "Molina Silver - HMO",
+        name: "molina_silver_hmo",
+        title: "Molina Silver - HMO",
         provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
@@ -135,22 +137,24 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "dental",
-        name: "Dental & Vision - Ameritas",
+        name: "ameritas_dental_vision",
+        title: "Dental & Vision - Ameritas",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
-        details:
-          "Preventive and basic dental and vision care",
+        details: "Preventive and basic dental and vision care",
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
       }),
       withEffectiveDate({
         type: "life",
-        name: "Life Insurance - American Amicable",
-        provider: "AmericanAmicable",
+        name: "american_amicable_life",
+        title: "Life Insurance - American Amicable",
+        provider: "American Amicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
-        details: "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
+        details:
+          "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
         brochureUrl:
           "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
       }),
@@ -176,36 +180,40 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "catastrophic",
-        name: "Short Term Medical - UHC TriTerm Co-Pay",
+        name: "uhc_triterm_copay",
+        title: "Short Term Medical - UHC TriTerm Co-Pay",
         provider: "United Healthcare",
         monthlyPremium: 0,
         deductible: 12500,
         coinsurance: 70,
         outOfPocketMax: 4500,
         coverage:
-          "$2 Million lifetime benefit per person, $50 copay for first 4 visits, Urgent care $75 copay, Preventative care $50 copay, Emergency room: 30% after deductible, Impatient hospital services & outpatient surgery: 30% after deductible, Labs and X-rays: 30% after deductible",
-        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for 3 years.`,
+          "$2 Million lifetime benefit per person, $50 copay for first 4 visits, Urgent care $75 copay, Preventative care $50 copay, Emergency room: 30% after deductible, Inpatient hospital services & outpatient surgery: 30% after deductible, Labs and X-rays: 30% after deductible",
+        details:
+          "Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for 3 years.",
         brochureUrl:
           "https://www.uhone.com/api/supplysystem/?FileName=52405E-G202510.pdf",
       }),
-       withEffectiveDate({
+      withEffectiveDate({
         type: "dental",
-        name: "Dental & Vision - Ameritas",
+        name: "ameritas_dental_vision",
+        title: "Dental & Vision - Ameritas",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
-        details:
-          "Preventive and basic dental and vision care",
+        details: "Preventive and basic dental and vision care",
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
       }),
-     withEffectiveDate({
+      withEffectiveDate({
         type: "life",
-        name: "Life Insurance - American Amicable",
-        provider: "AmericanAmicable",
+        name: "american_amicable_life",
+        title: "Life Insurance - American Amicable",
+        provider: "American Amicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
-        details: "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
+        details:
+          "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
         brochureUrl:
           "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
       }),
@@ -219,7 +227,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "healthShare",
-        name: "Sedera Access+ Medical Cost Sharing",
+        name: "sedera_access_plus",
+        title: "Sedera Access+ Medical Cost Sharing",
         provider: "Sedera Health",
         monthlyPremium: 0,
         deductible: 2500,
@@ -232,7 +241,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "konnect",
-        name: "TRU-Virtual First Membership",
+        name: "tru_virtual_first",
+        title: "TRU-Virtual First Membership",
         provider: "TRUVirtual",
         monthlyPremium: 0,
         coverage:
@@ -242,24 +252,26 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         brochureUrl:
           "https://www.1enrollment.com/media/1518/TRU-Virtual/TRU-04-02-0002-TRU_Virtual%20First_Healthshare_Brochure%20_8-29-24.pdf",
       }),
-       withEffectiveDate({
+      withEffectiveDate({
         type: "dental",
-        name: "Dental & Vision - Ameritas",
+        name: "ameritas_dental_vision",
+        title: "Dental & Vision - Ameritas",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
-        details:
-          "Preventive and basic dental and vision care",
+        details: "Preventive and basic dental and vision care",
         brochureUrl:
           "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
       }),
       withEffectiveDate({
         type: "life",
-        name: "Life Insurance - American Amicable",
-        provider: "AmericanAmicable",
+        name: "american_amicable_life",
+        title: "Life Insurance - American Amicable",
+        provider: "American Amicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
-        details: "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
+        details:
+          "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
         brochureUrl:
           "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
       }),
@@ -273,14 +285,16 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "catastrophic",
-        name: "Short Term Medical - UHC TriTerm Value",
+        name: "uhc_triterm_value",
+        title: "Short Term Medical - UHC TriTerm Value",
         provider: "United Healthcare",
         monthlyPremium: 0,
         deductible: 15000,
         coinsurance: 70,
         outOfPocketMax: 10000,
         coverage: "$2 Million lifetime benefit per person",
-        details: `Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for 3 years.`,
+        details:
+          "Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care. Continuous protection for 3 years.",
         brochureUrl:
           "https://www.uhone.com/api/supplysystem/?FileName=45747C1-G202509.pdf",
       }),
