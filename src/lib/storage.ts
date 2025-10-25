@@ -79,7 +79,7 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
   try {
     const packageMap: Record<string, number> = {
       Bronze: 0,
-      Silver: 1,
+      'ACA Silver': 1,
       Gold: 2,
       'Healthy Bundle': 3,
       'Health Share': 4,
