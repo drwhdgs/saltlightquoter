@@ -69,27 +69,20 @@ export function ClientPresentation({
       if (plan.coinsurance !== undefined)
         details.push(`Member Share: ${plan.coinsurance}%`);
       if (plan.deductible !== undefined)
-        details.push(
-          `Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`
-        );
+        details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
       if (plan.details) details.push(plan.details);
       return details;
     }
 
     if (plan.provider === "TRUVirtual") {
       if (plan.deductible !== undefined)
-        details.push(
-          `Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`
-        );
+        details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
 
       let items: string[] = [];
       if (Array.isArray(plan.coverage)) {
         items = plan.coverage;
       } else if (typeof plan.coverage === "string") {
-        items = plan.coverage
-          .split(/, /)
-          .map((i) => i.trim())
-          .filter((i) => i.length > 0);
+        items = plan.coverage.split(/, /).map((i) => i.trim()).filter((i) => i.length > 0);
       }
 
       if (items.length > 0) details.push(["Coverage:", ...items]);
@@ -119,10 +112,7 @@ export function ClientPresentation({
       if (Array.isArray(plan.coverage)) {
         items = plan.coverage;
       } else if (typeof plan.coverage === "string") {
-        items = plan.coverage
-          .split(/, |\n|;/)
-          .map((i) => i.trim())
-          .filter((i) => i.length > 0);
+        items = plan.coverage.split(/, |\n|;/).map((i) => i.trim()).filter((i) => i.length > 0);
       }
 
       if (items.length > 0) details.push(["Coverage:", ...items]);
@@ -147,12 +137,8 @@ export function ClientPresentation({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Packages Prepared For:
-              </h1>
-              <div className="text-2xl font-semibold text-gray-800 mb-1">
-                {quote.client.name}
-              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Packages Prepared For:</h1>
+              <div className="text-2xl font-semibold text-gray-800 mb-1">{quote.client.name}</div>
               <div className="text-lg text-gray-600">
                 <a href={`tel:${quote.client.phone}`} className="hover:underline">
                   {quote.client.phone}
@@ -169,9 +155,7 @@ export function ClientPresentation({
                 />
               </div>
               <div>
-                <div className="font-semibold text-gray-900">
-                  Salt & Light Insurance Group
-                </div>
+                <div className="font-semibold text-gray-900">Salt & Light Insurance Group</div>
                 <div className="text-sm text-gray-600">
                   <Phone className="w-3 h-3 inline mr-1" />
                   <a href="tel:+16624603656" className="hover:underline">
@@ -180,10 +164,7 @@ export function ClientPresentation({
                 </div>
                 <div className="text-sm text-gray-600">
                   <Mail className="w-3 h-3 inline mr-1" />
-                  <a
-                    href="mailto:support@saltlightinsurancegroup.com"
-                    className="hover:underline"
-                  >
+                  <a href="mailto:support@saltlightinsurancegroup.com" className="hover:underline">
                     support@saltlightinsurancegroup.com
                   </a>
                 </div>
@@ -216,7 +197,7 @@ export function ClientPresentation({
               <div className="p-4 flex-1 overflow-y-auto max-h-[400px] space-y-4">
                 {pkg.plans.map((plan) => (
                   <div key={plan.id} className="border-l-4 pl-3 border-gray-200 rounded">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-2">
                       {carrierLogos[plan.provider] ? (
                         <Image
                           src={carrierLogos[plan.provider]}
@@ -228,12 +209,15 @@ export function ClientPresentation({
                       ) : (
                         getPlanIcon(plan.type)
                       )}
-                      <span className="font-semibold text-gray-900 uppercase tracking-wide text-sm">
-                        {plan.name.toUpperCase()}
-                      </span>
+                      <div>
+                        <div className="text-base font-semibold text-gray-900 leading-tight">
+                          {plan.name}
+                        </div>
+                        {plan.title && (
+                          <div className="text-sm text-gray-600 italic">{plan.title}</div>
+                        )}
+                      </div>
                     </div>
-
-                    <div className="text-sm text-gray-800 mb-2">{plan.name}</div>
 
                     <div className="text-xs text-gray-600 space-y-1">
                       {formatPlanDetails(plan).map((detail, idx) =>
