@@ -135,7 +135,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Dental & Vision",
+        name: "Dental & Vision - Ameritas",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -146,7 +146,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "life",
-        name: "American Amicable Term Made Simple",
+        name: "Life Insurance - American Amicable",
         provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
@@ -176,7 +176,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "catastrophic",
-        name: "UHC Short Term Medical - TriTerm Co-Pay",
+        name: "Short Term Medical - UHC TriTerm Co-Pay",
         provider: "United Healthcare",
         monthlyPremium: 0,
         deductible: 12500,
@@ -190,7 +190,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
        withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Dental & Vision",
+        name: "Dental & Vision - Ameritas",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -201,7 +201,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
      withEffectiveDate({
         type: "life",
-        name: "American Amicable Term Made Simple",
+        name: "Life Insurance - American Amicable",
         provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
@@ -244,7 +244,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
        withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Dental & Vision",
+        name: "Dental & Vision - Ameritas",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -255,7 +255,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "life",
-        name: "American Amicable Term Made Simple",
+        name: "Life Insurance - American Amicable",
         provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
@@ -273,7 +273,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "catastrophic",
-        name: "UHC Short Term Medical - TriTerm Value",
+        name: "Short Term Medical - UHC TriTerm Value",
         provider: "United Healthcare",
         monthlyPremium: 0,
         deductible: 15000,
