@@ -46,7 +46,7 @@ export function PackageSelection({
   // ✅ Carrier logos
   const carrierLogos: Record<string, string> = {
     Ameritas: "/logos/ameritas.png",
-    Transamerica: "/logos/transamerica.png",
+    AmericanAmicable: "/logos/AmericanAmicable.jpeg",
     "Manhattan Life": "/logos/manhattan-life.png",
     ACA: "/logos/aca.png",
     KonnectMD: "/logos/konnect.png",
