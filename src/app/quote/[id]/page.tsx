@@ -69,7 +69,7 @@ export default function ClientQuotePage() {
 
       setQuote(reconstructedQuote);
 
-      const defaultPackage = reconstructedQuote.packages.find(pkg => pkg.name === 'Silver')
+      const defaultPackage = reconstructedQuote.packages.find(pkg => pkg.name === 'ACA Silver')
         || reconstructedQuote.packages[0];
 
       if (defaultPackage) setSelectedPackageId(defaultPackage.id);
