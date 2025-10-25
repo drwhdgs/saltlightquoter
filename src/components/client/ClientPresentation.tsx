@@ -135,56 +135,58 @@ export function ClientPresentation({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
-            <div className="text-center sm:text-left w-full sm:w-auto">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
-                Packages Prepared For:
-              </h1>
-              <div className="text-xl sm:text-2xl font-semibold text-gray-800 mb-1">
-                {quote.client.name}
-              </div>
-              <div className="text-base sm:text-lg text-gray-600 break-all">
-                <a href={`tel:${quote.client.phone}`} className="hover:underline">
-                  {quote.client.phone}
-                </a>
-              </div>
-            </div>
+{/* Header */}
+<div className="bg-white border-b shadow-sm">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+      {/* Client Info */}
+      <div className="w-full sm:w-auto">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
+          Packages Prepared For:
+        </h1>
+        <div className="text-xl sm:text-2xl font-semibold text-gray-800 mb-1">
+          {quote.client.name}
+        </div>
+        <div className="text-base sm:text-lg text-gray-600 break-all">
+          <a href={`tel:${quote.client.phone}`} className="hover:underline">
+            {quote.client.phone}
+          </a>
+        </div>
+      </div>
 
-            <div className="flex items-center gap-3 sm:gap-4 bg-gray-50 p-3 sm:p-4 rounded-lg w-full sm:w-auto justify-center sm:justify-start">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-                <img
-                  src="https://i.ibb.co/gbLRKXn3/662-815-0033-removebg-preview.png"
-                  alt="Company Logo"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="text-center sm:text-left">
-                <div className="font-semibold text-gray-900 text-sm sm:text-base">
-                  Salt & Light Insurance Group
-                </div>
-                <div className="text-xs sm:text-sm text-gray-600">
-                  <Phone className="w-3 h-3 inline mr-1" />
-                  <a href="tel:+16624603656" className="hover:underline">
-                    (662) 460-3656
-                  </a>
-                </div>
-                <div className="text-xs sm:text-sm text-gray-600">
-                  <Mail className="w-3 h-3 inline mr-1" />
-                  <a
-                    href="mailto:support@saltlightinsurancegroup.com"
-                    className="hover:underline"
-                  >
-                    support@saltlightinsurancegroup.com
-                  </a>
-                </div>
-              </div>
-            </div>
+      {/* Company Info */}
+      <div className="flex items-center gap-3 bg-gray-50 p-3 sm:p-4 rounded-lg w-full sm:w-auto">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+          <img
+            src="https://i.ibb.co/gbLRKXn3/662-815-0033-removebg-preview.png"
+            alt="Company Logo"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="text-sm sm:text-base">
+          <div className="font-semibold text-gray-900">
+            Salt & Light Insurance Group
+          </div>
+          <div className="text-gray-600">
+            <Phone className="w-3 h-3 inline mr-1" />
+            <a href="tel:+16624603656" className="hover:underline">
+              (662) 460-3656
+            </a>
+          </div>
+          <div className="text-gray-600">
+            <Mail className="w-3 h-3 inline mr-1" />
+            <a
+              href="mailto:support@saltlightinsurancegroup.com"
+              className="hover:underline"
+            >
+              support@saltlightinsurancegroup.com
+            </a>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
       {/* Packages */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
