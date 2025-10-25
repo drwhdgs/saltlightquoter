@@ -40,44 +40,70 @@ export function ClientPresentation({ quote, onPackageSelect }: ClientPresentatio
   };
 
   const getPackageColor = (index: number) => {
-    const colors = ["from-blue-500 to-blue-600","from-slate-600 to-slate-700","from-amber-500 to-amber-600","from-emerald-500 to-emerald-600"];
+    const colors = [
+      "from-blue-500 to-blue-600",
+      "from-slate-600 to-slate-700",
+      "from-amber-500 to-amber-600",
+      "from-emerald-500 to-emerald-600"
+    ];
     return colors[index % colors.length];
   };
 
   const formatPlanDetails = (plan: InsurancePlan) => {
     const details: (string | string[])[] = [];
+
     if (plan.type === "healthShare") {
       if (plan.coinsurance !== undefined) details.push(`Member Share: ${plan.coinsurance}%`);
       if (plan.deductible !== undefined) details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
       if (plan.details) details.push(plan.details);
       return details;
     }
+
     if (plan.provider === "TRUVirtual") {
       if (plan.deductible !== undefined) details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
-      let items: string[] = Array.isArray(plan.coverage) ? plan.coverage : typeof plan.coverage === "string" ? plan.coverage.split(/, /).map(i=>i.trim()).filter(Boolean) : [];
-      if(items.length) details.push(["Coverage:", ...items]);
-      if(plan.details) details.push(plan.details);
+      const items: string[] = Array.isArray(plan.coverage)
+        ? plan.coverage
+        : typeof plan.coverage === "string"
+        ? plan.coverage.split(/, /).map(i => i.trim()).filter(Boolean)
+        : [];
+      if (items.length) details.push(["Coverage:", ...items]);
+      if (plan.details) details.push(plan.details);
       return details;
     }
-    if(plan.type==="catastrophic"){
-      if(plan.deductible!==undefined) details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
-      if(plan.coinsurance!==undefined) details.push(`Coinsurance: ${plan.coinsurance}%`);
-      if(plan.outOfPocketMax!==undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-      let items: string[] = Array.isArray(plan.coverage)?plan.coverage:typeof plan.coverage==="string"?plan.coverage.split(/, |\n|;/).map(i=>i.trim()).filter(Boolean):[];
-      if(items.length) details.push(["Coverage:", ...items]);
-      if(plan.details) details.push(plan.details);
+
+    if (plan.type === "catastrophic") {
+      if (plan.deductible !== undefined) details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+      if (plan.coinsurance !== undefined) details.push(`Coinsurance: ${plan.coinsurance}%`);
+      if (plan.outOfPocketMax !== undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+      const items: string[] = Array.isArray(plan.coverage)
+        ? plan.coverage
+        : typeof plan.coverage === "string"
+        ? plan.coverage.split(/, |\n|;/).map(i => i.trim()).filter(Boolean)
+        : [];
+      if (items.length) details.push(["Coverage:", ...items]);
+      if (plan.details) details.push(plan.details);
       return details;
     }
-    if(plan.deductible!==undefined) details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
-    if(plan.coinsurance!==undefined) details.push(`Coinsurance: ${plan.coinsurance}%`);
-    if(plan.type==="health" && plan.outOfPocketMax!==undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-    if(plan.type==="outOfPocket" && plan.outOfPocketMax!==undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-    if(plan.provider==="KonnectMD" || plan.provider==="TRUVirtual" || plan.name==="UHC Short Term Medical - TriTerm Co-Pay"){
-      let items: string[] = Array.isArray(plan.coverage)?plan.coverage:typeof plan.coverage==="string"?plan.coverage.split(/, |\n|;/).map(i=>i.trim()).filter(Boolean):[];
-      if(items.length) details.push(["Coverage:", ...items]);
-    } else if(plan.coverage) details.push(`Coverage: ${plan.coverage}`);
-    if(plan.details) details.push(plan.details);
-    if(plan.effectiveDate) details.push(`Effective Date: ${new Date(plan.effectiveDate).toLocaleDateString("en-US")}`);
+
+    if (plan.deductible !== undefined) details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+    if (plan.coinsurance !== undefined) details.push(`Coinsurance: ${plan.coinsurance}%`);
+    if (plan.type === "health" && plan.outOfPocketMax !== undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+    if (plan.type === "outOfPocket" && plan.outOfPocketMax !== undefined) details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+
+    if (plan.provider === "KonnectMD" || plan.provider === "TRUVirtual" || plan.name === "UHC Short Term Medical - TriTerm Co-Pay") {
+      const items: string[] = Array.isArray(plan.coverage)
+        ? plan.coverage
+        : typeof plan.coverage === "string"
+        ? plan.coverage.split(/, |\n|;/).map(i => i.trim()).filter(Boolean)
+        : [];
+      if (items.length) details.push(["Coverage:", ...items]);
+    } else if (plan.coverage) {
+      details.push(`Coverage: ${plan.coverage}`);
+    }
+
+    if (plan.details) details.push(plan.details);
+    if (plan.effectiveDate) details.push(`Effective Date: ${new Date(plan.effectiveDate).toLocaleDateString("en-US")}`);
+
     return details;
   };
 
@@ -117,7 +143,7 @@ export function ClientPresentation({ quote, onPackageSelect }: ClientPresentatio
 
       {/* Packages */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${quote.packages.length>=3?"3":"2"} gap-4 sm:gap-6`}>
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${quote.packages.length >= 3 ? "3" : "2"} gap-4 sm:gap-6`}>
           {quote.packages.map((pkg,index)=>(
             <div key={pkg.id} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
               <div className={`bg-gradient-to-r ${getPackageColor(index)} text-white p-3 sm:p-4 text-center`}>
@@ -131,7 +157,7 @@ export function ClientPresentation({ quote, onPackageSelect }: ClientPresentatio
                     <div className="flex items-start sm:items-center gap-2 mb-2 flex-wrap">
                       {carrierLogos[plan.provider] ? (
                         <Image src={carrierLogos[plan.provider]} alt={plan.provider} width={20} height={20} className="object-contain"/>
-                      ):getPlanIcon(plan.type)}
+                      ) : getPlanIcon(plan.type)}
                       <div>
                         <div className="text-sm sm:text-base font-semibold text-gray-900 leading-tight">{plan.name}</div>
                         {plan.title && <div className="text-xs sm:text-sm text-gray-600 italic">{plan.title}</div>}
@@ -146,7 +172,7 @@ export function ClientPresentation({ quote, onPackageSelect }: ClientPresentatio
                             {detail.slice(1).map((item,i)=><li key={i}>{item}</li>)}
                           </ul>
                         </div>
-                      ):<div key={idx}>• {detail}</div>)}
+                      ) : <div key={idx}>• {detail}</div>)}
 
                       <div className="text-blue-600 font-medium">
                         Monthly Premium: ${plan.monthlyPremium.toLocaleString()}{" "}
