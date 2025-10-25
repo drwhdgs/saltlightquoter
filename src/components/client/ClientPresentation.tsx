@@ -18,7 +18,7 @@ export function ClientPresentation({
 }: ClientPresentationProps) {
   const carrierLogos: Record<string, string> = {
     Ameritas: "/logos/ameritas.png",
-    Transamerica: "/logos/transamerica.png",
+    AmericanAmicable: "/logos/AmericanAmicable.png",
     "Manhattan Life": "/logos/manhattan-life.png",
     KonnectMD: "/logos/konnect.png",
     TRUVirtual: "/logos/virtual.png",
