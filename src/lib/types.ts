@@ -122,7 +122,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "health",
-        name: "Molina Silver - HMO",
+        name: "ACA Health Insurance",
         title: "Molina Silver - HMO",
         provider: "ACA",
         monthlyPremium: 0,
@@ -137,8 +137,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "dental",
-        name: "Dental & Vision - Ameritas",
-        title: "Dental & Vision - Ameritas",
+        name: "Dental & Vision",
+        title: "Ameritas - Primestar",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -148,8 +148,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "life",
-        name: "Life Insurance - American Amicable",
-        title: "Life Insurance - American Amicable",
+        name: "Life Insurance",
+        title: "American Amicable - Term Made Simple",
         provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
@@ -180,8 +180,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "catastrophic",
-        name: "Short Term Medical - UHC TriTerm Co-Pay",
-        title: "Short Term Medical - UHC TriTerm Co-Pay",
+        name: "Short Term Medical Health Insurance",
+        title: "UHC TriTerm Co-Pay",
         provider: "United Healthcare",
         monthlyPremium: 0,
         deductible: 12500,
@@ -194,10 +194,10 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         brochureUrl:
           "https://www.uhone.com/api/supplysystem/?FileName=52405E-G202510.pdf",
       }),
-      withEffectiveDate({
+     withEffectiveDate({
         type: "dental",
-        name: "Dental & Vision - Ameritas",
-        title: "Dental & Vision - Ameritas",
+        name: "Dental & Vision",
+        title: "Ameritas - Primestar",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -207,8 +207,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "life",
-        name: "Life Insurance - American Amicable",
-        title: "Life Insurance - American Amicable",
+        name: "Life Insurance",
+        title: "American Amicable - Term Made Simple",
         provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
@@ -227,8 +227,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "healthShare",
-        name: "Sedera Access+ Medical Cost Sharing",
-        title: "Sedera Access+ Medical Cost Sharing",
+        name: "Medical Cost Sharing",
+        title: "Sedera Access+",
         provider: "Sedera Health",
         monthlyPremium: 0,
         deductible: 2500,
@@ -241,7 +241,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "konnect",
-        name: "TRU-Virtual First Membership",
+        name: "Virtual Care",
         title: "TRU-Virtual First Membership",
         provider: "TRUVirtual",
         monthlyPremium: 0,
@@ -254,8 +254,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "dental",
-        name: "Dental & Vision - Ameritas",
-        title: "Dental & Vision - Ameritas",
+        name: "Dental & Vision",
+        title: "Ameritas - Primestar",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -265,8 +265,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "life",
-        name: "Life Insurance - American Amicable",
-        title: "Life Insurance - American Amicable",
+        name: "Life Insurance",
+        title: "American Amicable - Term Made Simple",
         provider: "AmericanAmicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
@@ -285,8 +285,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
     defaultPlans: [
       withEffectiveDate({
         type: "catastrophic",
-        name: "Short Term Medical - UHC TriTerm Value",
-        title: "Short Term Medical - UHC TriTerm Value",
+        name: "Short Term Medical Health Insurance",
+        title: "UHC TriTerm Value",
         provider: "United Healthcare",
         monthlyPremium: 0,
         deductible: 15000,
