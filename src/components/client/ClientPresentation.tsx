@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Eye,
   Heart,
@@ -11,9 +11,9 @@ import {
   Phone,
   Mail,
   DollarSign,
-  Shield
-} from 'lucide-react';
-import { Quote, Package, InsurancePlan } from '@/lib/types';
+  Shield,
+} from "lucide-react";
+import { Quote, Package, InsurancePlan } from "@/lib/types";
 
 interface ClientPresentationProps {
   quote: Quote;
@@ -24,38 +24,38 @@ interface ClientPresentationProps {
 export function ClientPresentation({
   quote,
   onPackageSelect,
-  selectedPackageId
+  selectedPackageId,
 }: ClientPresentationProps) {
   const carrierLogos: Record<string, string> = {
-    Ameritas: '/logos/ameritas.png',
-    Transamerica: '/logos/transamerica.png',
-    'Manhattan Life': '/logos/manhattan-life.png',
-    KonnectMD: '/logos/konnect.png',
-    TRUVirtual: '/logos/virtual.png',
-    Breeze: '/logos/breeze.png',
-    ACA: '/logos/aca.png',
-    'United Healthcare': '/logos/uhc.png',
-    'Health Share': '/logos/healthshare.png',
-    'Sedera Health': '/logos/sedera.jpg'
+    Ameritas: "/logos/ameritas.png",
+    Transamerica: "/logos/transamerica.png",
+    "Manhattan Life": "/logos/manhattan-life.png",
+    KonnectMD: "/logos/konnect.png",
+    TRUVirtual: "/logos/virtual.png",
+    Breeze: "/logos/breeze.png",
+    ACA: "/logos/aca.png",
+    "United Healthcare": "/logos/uhc.png",
+    "Health Share": "/logos/healthshare.png",
+    "Sedera Health": "/logos/sedera.jpg",
   };
 
-  const getPlanIcon = (type: InsurancePlan['type']) => {
+  const getPlanIcon = (type: InsurancePlan["type"]) => {
     switch (type) {
-      case 'health':
+      case "health":
         return <Shield className="w-4 h-4 text-blue-600" />;
-      case 'healthShare':
+      case "healthShare":
         return <Heart className="w-4 h-4 text-blue-600" />;
-      case 'catastrophic':
+      case "catastrophic":
         return <Shield className="w-4 h-4 text-red-600" />;
-      case 'dental':
+      case "dental":
         return <Activity className="w-4 h-4 text-green-600" />;
-      case 'vision':
+      case "vision":
         return <Eye className="w-4 h-4 text-purple-600" />;
-      case 'life':
+      case "life":
         return <Heart className="w-4 h-4 text-red-600" />;
-      case 'heart':
+      case "heart":
         return <Heart className="w-4 h-4 text-pink-600" />;
-      case 'outOfPocket':
+      case "outOfPocket":
         return <DollarSign className="w-4 h-4 text-indigo-600" />;
       default:
         return <Shield className="w-4 h-4 text-gray-600" />;
@@ -64,10 +64,10 @@ export function ClientPresentation({
 
   const getPackageColor = (index: number) => {
     const colors = [
-      'from-blue-500 to-blue-600',
-      'from-slate-600 to-slate-700',
-      'from-amber-500 to-amber-600',
-      'from-emerald-500 to-emerald-600'
+      "from-blue-500 to-blue-600",
+      "from-slate-600 to-slate-700",
+      "from-amber-500 to-amber-600",
+      "from-emerald-500 to-emerald-600",
     ];
     return colors[index % colors.length];
   };
@@ -75,8 +75,7 @@ export function ClientPresentation({
   const formatPlanDetails = (plan: InsurancePlan) => {
     const details: (string | string[])[] = [];
 
-    // --- Health Share Plans ---
-    if (plan.type === 'healthShare') {
+    if (plan.type === "healthShare") {
       if (plan.coinsurance !== undefined)
         details.push(`Member Share: ${plan.coinsurance}%`);
       if (plan.deductible !== undefined)
@@ -87,8 +86,7 @@ export function ClientPresentation({
       return details;
     }
 
-    // --- TRUVirtual Membership ---
-    if (plan.provider === 'TRUVirtual') {
+    if (plan.provider === "TRUVirtual") {
       if (plan.deductible !== undefined)
         details.push(
           `Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`
@@ -97,65 +95,62 @@ export function ClientPresentation({
       let items: string[] = [];
       if (Array.isArray(plan.coverage)) {
         items = plan.coverage;
-      } else if (typeof plan.coverage === 'string') {
+      } else if (typeof plan.coverage === "string") {
         items = plan.coverage
           .split(/, /)
-          .map(i => i.trim())
-          .filter(i => i.length > 0);
+          .map((i) => i.trim())
+          .filter((i) => i.length > 0);
       }
 
       if (items.length > 0) {
-        details.push(['Coverage:', ...items]);
+        details.push(["Coverage:", ...items]);
       }
 
       if (plan.details) details.push(plan.details);
       return details;
     }
 
-    // --- Normal Health / Other Plans ---
     if (plan.deductible !== undefined)
       details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
     if (plan.coinsurance !== undefined)
       details.push(`Coinsurance: ${plan.coinsurance}%`);
 
-    if (plan.type === 'health' || plan.type === 'catastrophic') {
+    if (plan.type === "health" || plan.type === "catastrophic") {
       if (plan.outOfPocketMax !== undefined)
         details.push(
           `Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`
         );
     }
 
-    if (plan.type === 'outOfPocket' && plan.outOfPocketMax !== undefined)
+    if (plan.type === "outOfPocket" && plan.outOfPocketMax !== undefined)
       details.push(
         `Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`
       );
 
-    // --- Coverage Formatting for KonnectMD ---
-    if (plan.provider === 'KonnectMD') {
+    if (plan.provider === "KonnectMD") {
       let items: string[] = [];
       if (Array.isArray(plan.coverage)) {
         items = plan.coverage;
-      } else if (typeof plan.coverage === 'string') {
+      } else if (typeof plan.coverage === "string") {
         items = plan.coverage
           .split(/, /)
-          .map(i => i.trim())
-          .filter(i => i.length > 0);
+          .map((i) => i.trim())
+          .filter((i) => i.length > 0);
       }
 
       if (items.length > 0) {
-        details.push(['Coverage:', ...items]);
+        details.push(["Coverage:", ...items]);
       }
     } else if (plan.coverage) {
       details.push(`Coverage: ${plan.coverage}`);
     }
 
-    // --- Include details only once ---
     if (plan.details) details.push(plan.details);
 
     if (plan.effectiveDate) {
       const effectiveDate = new Date(plan.effectiveDate);
       details.push(
-        `Effective Date: ${effectiveDate.toLocaleDateString('en-US')}`
+        `Effective Date: ${effectiveDate.toLocaleDateString("en-US")}`
       );
     }
 
@@ -220,10 +215,10 @@ export function ClientPresentation({
         <div
           className={`grid grid-cols-1 ${
             quote.packages.length === 2
-              ? 'lg:grid-cols-2'
+              ? "lg:grid-cols-2"
               : quote.packages.length === 3
-              ? 'lg:grid-cols-3'
-              : 'lg:grid-cols-2 xl:grid-cols-4'
+              ? "lg:grid-cols-3"
+              : "lg:grid-cols-2 xl:grid-cols-4"
           } gap-6`}
         >
           {quote.packages.map((pkg, index) => (
@@ -231,7 +226,6 @@ export function ClientPresentation({
               key={pkg.id}
               className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
             >
-              {/* Header */}
               <div
                 className={`bg-gradient-to-r ${getPackageColor(
                   index
@@ -241,9 +235,8 @@ export function ClientPresentation({
                 <div className="text-sm opacity-90 mt-1">{pkg.name}</div>
               </div>
 
-              {/* Plans */}
               <div className="p-4 flex-1 overflow-y-auto max-h-[400px] space-y-4">
-                {pkg.plans.map(plan => (
+                {pkg.plans.map((plan) => (
                   <div
                     key={plan.id}
                     className="border-l-4 pl-3 border-gray-200 rounded"
@@ -261,31 +254,33 @@ export function ClientPresentation({
                         getPlanIcon(plan.type)
                       )}
                       <span className="font-semibold text-gray-900 uppercase tracking-wide text-sm">
-                        {plan.type === 'healthShare'
-                          ? 'HEALTH SHARE MEMBERSHIP'
-                          : plan.type === 'outOfPocket'
-                          ? 'OUT-OF-POCKET PROTECTION'
-                          : plan.type === 'life'
-                          ? 'LIFE INSURANCE'
-                          : plan.type === 'health'
-                          ? 'ACA HEALTH INSURANCE'
-                          : plan.type === 'catastrophic'
-                          ? 'CATASTROPHIC HEALTH PLAN'
-                          : plan.type === 'dental'
-                          ? 'DENTAL INSURANCE'
-                          : plan.type === 'vision'
-                          ? 'VISION INSURANCE'
-                          : plan.type === 'cancer'
-                          ? 'CANCER PROTECTION'
-                          : plan.type === 'heart'
-                          ? 'HEART ATTACK & STROKE PROTECTION'
-                          : plan.type === 'disability'
-                          ? 'SHORT-TERM DISABILITY'
+                        {plan.type === "healthShare"
+                          ? "HEALTH SHARE MEMBERSHIP"
+                          : plan.type === "outOfPocket"
+                          ? "OUT-OF-POCKET PROTECTION"
+                          : plan.type === "life"
+                          ? "LIFE INSURANCE"
+                          : plan.type === "health"
+                          ? "ACA HEALTH INSURANCE"
+                          : plan.type === "catastrophic"
+                          ? "CATASTROPHIC HEALTH PLAN"
+                          : plan.type === "dental"
+                          ? "DENTAL INSURANCE"
+                          : plan.type === "vision"
+                          ? "VISION INSURANCE"
+                          : plan.type === "cancer"
+                          ? "CANCER PROTECTION"
+                          : plan.type === "heart"
+                          ? "HEART ATTACK & STROKE PROTECTION"
+                          : plan.type === "disability"
+                          ? "SHORT-TERM DISABILITY"
                           : plan.name.toUpperCase()}
                       </span>
                     </div>
 
-                    <div className="text-sm text-gray-800 mb-2">{plan.name}</div>
+                    <div className="text-sm text-gray-800 mb-2">
+                      {plan.name}
+                    </div>
                     <div className="text-xs text-gray-600 space-y-1">
                       {formatPlanDetails(plan).map((detail, idx) =>
                         Array.isArray(detail) ? (
@@ -325,7 +320,6 @@ export function ClientPresentation({
                 ))}
               </div>
 
-              {/* Monthly Total */}
               <div className="border-t-2 border-gray-200 pt-4 mb-4 text-center">
                 <div className="text-lg font-semibold text-gray-700 mb-1">
                   Your Monthly Payment:
@@ -335,14 +329,15 @@ export function ClientPresentation({
                 </div>
               </div>
 
-              {/* Button */}
               <div className="flex justify-center mt-2 mb-4">
                 <Button
                   onClick={() => onPackageSelect && onPackageSelect(pkg.id)}
                   className={`px-6 py-3 text-lg font-semibold bg-gradient-to-r text-white ${getPackageColor(
                     index
                   )} hover:opacity-90 transition-opacity`}
-                  variant={selectedPackageId === pkg.id ? 'default' : 'outline'}
+                  variant={
+                    selectedPackageId === pkg.id ? "default" : "outline"
+                  }
                 >
                   I want this package
                 </Button>
