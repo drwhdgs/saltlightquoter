@@ -65,6 +65,7 @@ export function ClientPresentation({
   const formatPlanDetails = (plan: InsurancePlan) => {
     const details: (string | string[])[] = [];
 
+    // --- Health Share Plans ---
     if (plan.type === "healthShare") {
       if (plan.coinsurance !== undefined)
         details.push(`Member Share: ${plan.coinsurance}%`);
@@ -74,6 +75,7 @@ export function ClientPresentation({
       return details;
     }
 
+    // --- TRUVirtual Plans ---
     if (plan.provider === "TRUVirtual") {
       if (plan.deductible !== undefined)
         details.push(`Initial Unshareable Amount (IUA): $${plan.deductible.toLocaleString()}`);
@@ -90,15 +92,34 @@ export function ClientPresentation({
       return details;
     }
 
+    // --- Catastrophic Plans (NEW BULLETED COVERAGE) ---
+    if (plan.type === "catastrophic") {
+      if (plan.deductible !== undefined)
+        details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
+      if (plan.coinsurance !== undefined)
+        details.push(`Coinsurance: ${plan.coinsurance}%`);
+      if (plan.outOfPocketMax !== undefined)
+        details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
+
+      let items: string[] = [];
+      if (Array.isArray(plan.coverage)) {
+        items = plan.coverage;
+      } else if (typeof plan.coverage === "string") {
+        items = plan.coverage.split(/, |\n|;/).map((i) => i.trim()).filter((i) => i.length > 0);
+      }
+
+      if (items.length > 0) details.push(["Coverage:", ...items]);
+      if (plan.details) details.push(plan.details);
+      return details;
+    }
+
+    // --- General Plans ---
     if (plan.deductible !== undefined)
       details.push(`Deductible: $${plan.deductible.toLocaleString()}`);
     if (plan.coinsurance !== undefined)
       details.push(`Coinsurance: ${plan.coinsurance}%`);
-
-    if (plan.type === "health" || plan.type === "catastrophic") {
-      if (plan.outOfPocketMax !== undefined)
-        details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
-    }
+    if (plan.type === "health" && plan.outOfPocketMax !== undefined)
+      details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
 
     if (plan.type === "outOfPocket" && plan.outOfPocketMax !== undefined)
       details.push(`Out-of-Pocket Max: $${plan.outOfPocketMax.toLocaleString()}`);
@@ -121,7 +142,6 @@ export function ClientPresentation({
     }
 
     if (plan.details) details.push(plan.details);
-
     if (plan.effectiveDate) {
       const effectiveDate = new Date(plan.effectiveDate);
       details.push(`Effective Date: ${effectiveDate.toLocaleDateString("en-US")}`);
@@ -187,9 +207,7 @@ export function ClientPresentation({
         >
           {quote.packages.map((pkg, index) => (
             <div key={pkg.id} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-              <div
-                className={`bg-gradient-to-r ${getPackageColor(index)} text-white p-4 text-center`}
-              >
+              <div className={`bg-gradient-to-r ${getPackageColor(index)} text-white p-4 text-center`}>
                 <h2 className="text-xl font-bold">Package #{index + 1}</h2>
                 <div className="text-sm opacity-90 mt-1">{pkg.name}</div>
               </div>
