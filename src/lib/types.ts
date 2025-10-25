@@ -135,7 +135,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
       withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Care Dental & Vision",
+        name: "Ameritas PrimeStar Dental & Vision",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -190,7 +190,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
        withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Care Dental & Vision",
+        name: "Ameritas PrimeStar Dental & Vision",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -244,7 +244,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       }),
        withEffectiveDate({
         type: "dental",
-        name: "Ameritas PrimeStar Care Dental & Vision",
+        name: "Ameritas PrimeStar Dental & Vision",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
