@@ -1,3 +1,4 @@
+// fileName: MainDashboard.tsx
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -21,7 +22,7 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [selectedQuoteId, setSelectedQuoteId] = useState<string | null>(null);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
 
   const loadQuotes = useCallback(() => {
     const agentQuotes = getQuotes(agent.id);
@@ -54,7 +55,11 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
 
   const handleQuoteComplete = (quote: Quote) => {
     loadQuotes();
-    setActiveView('quotes');
+    // --- UPDATED LOGIC ---
+    // Instead of going to the list, go directly to the new quote's details.
+    setSelectedQuoteId(quote.id);
+    setActiveView('view-quote');
+    // --- END UPDATE ---
   };
 
   const handleQuoteSelect = (quoteId: string) => {
@@ -67,6 +72,15 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
       }
     }
   };
+
+  // Add this inside MainDashboard component, after your other useEffects
+useEffect(() => {
+  if (activeView === 'view-quote') {
+    // Scroll to top whenever the view is quote details
+    // FIX: Changed to instant scroll (window.scrollTo(0, 0)) to ensure the page always loads at the top.
+    window.scrollTo(0, 0);
+  }
+}, [activeView, selectedQuoteId]);
 
   const handleViewChange = (view: string) => {
     setActiveView(view as DashboardView);
