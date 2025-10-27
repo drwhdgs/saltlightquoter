@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge'; // <-- FIX: Added missing import for Badge
+import { Badge } from '@/components/ui/badge';
 import { Edit, Plus, Trash2 } from 'lucide-react';
 import { Package, InsurancePlan, Client, InsuranceType, PACKAGE_TEMPLATES, PackageTemplate } from '@/lib/types';
 import { generateAllPackages, createPackageFromTemplate, updatePackagePricing } from '@/lib/packages';
@@ -230,7 +230,8 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     if (!packageBeingCustomEdited) return;
     const currentPlan = newPlanForCustomEditor;
 
-    if (!currentPlan.title || !currentPlan.provider || currentPlan.monthlyPremium <= 0) {
+    // FIX: Use optional chaining and default value (|| 0) to resolve the 'possibly undefined' error
+    if (!currentPlan.title || !currentPlan.provider || (currentPlan.monthlyPremium || 0) <= 0) {
       setPlanEditorError('Please fill in Plan Title, select a Carrier, and enter a Monthly Premium greater than $0.');
       return;
     }
@@ -530,6 +531,18 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       </div>
 
       <Separator className="my-8" />
+
+      {/* Quote Summary */}
+      <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
+        <h3 className="text-xl font-semibold mb-3 text-gray-800">Quote Summary</h3>
+        <p className="text-lg">
+          Packages Selected: <strong className="text-indigo-600">{selectedPackageIds.size}</strong>
+        </p>
+        <p className="text-2xl mt-1 font-bold">
+          Total Monthly Premium: 
+          <span className="text-green-600 ml-2">${totalSelectedValue.toLocaleString()}</span>/mo
+        </p>
+      </div>
 
       <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={onBack}>Back</Button>
@@ -838,7 +851,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                                   )}
 
                                   {/* Co-pays for Health Plans (New Fields) */}
-                                  {(plan.type === 'health') && (
+                                  {(plan.type === 'health' || plan.type === 'catastrophic' || plan.type === 'healthShare') && (
                                       <>
                                           {/* Primary Care Co-pay */}
                                           <div className="space-y-1">
