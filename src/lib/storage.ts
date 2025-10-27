@@ -2,10 +2,11 @@ import { Agent, Quote, Client, Package, InsurancePlan, PACKAGE_TEMPLATES } from 
 import pako from 'pako';
 
 interface UltraCompressedQuote {
-  c: [string, string, string, string, string, string?];
-  p: number[];
-  m?: Record<string, Partial<InsurancePlan>>;
-  t: number;
+  c: [string, string, string, string, string, string?]; // client
+  p: number[]; // template package indices
+  m?: Record<string, Partial<InsurancePlan>>; // modifications for template packages
+  cp?: Package[]; // full custom packages
+  t: number; // timestamp
 }
 
 const STORAGE_KEYS = {
@@ -75,56 +76,69 @@ export const generateId = (): string => {
 };
 
 // -------------------- Ultra-Compact Compression --------------------
+
+// Use the single source of truth for template names
+const TEMPLATE_NAMES = PACKAGE_TEMPLATES.map(t => t.name);
+
 const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; createdAt: string }): string => {
   try {
-    const packageMap: Record<string, number> = {
-      Bronze: 0,
-      'ACA Silver': 1,
-      Gold: 2,
-      'Healthy Bundle': 3,
-      'Health Share': 4,
-      'Private Health': 5,
-      Catastrophic: 6,
-    };
+    // Generate the map dynamically from the single source of truth
+    const packageMap: Record<string, number> = {};
+    TEMPLATE_NAMES.forEach((name, index) => {
+      packageMap[name] = index;
+    });
 
-    const packageIndices = data.packages.map((pkg) => packageMap[pkg.name] ?? -1).filter((i) => i >= 0);
+    const templatePackageIndices: number[] = [];
+    const customPackages: Package[] = [];
     const modifications: Record<string, Partial<InsurancePlan>> = {};
 
-    data.packages.forEach((pkg, pkgIndex) => {
-      const template = PACKAGE_TEMPLATES.find((t) => t.name === pkg.name);
-      if (!template) return;
+    data.packages.forEach((pkg) => {
+      const templateIndex = packageMap[pkg.name];
 
-      pkg.plans.forEach((plan, planIndex) => {
-        const defaultPlan = template.defaultPlans[planIndex];
-        if (!defaultPlan) return;
+      if (templateIndex !== undefined) {
+        // This is a template-based package
+        const templatePkgIndex = templatePackageIndices.length; // This is its index *in the compressed array*
+        templatePackageIndices.push(templateIndex);
 
-        const modKey = `${pkgIndex}_${planIndex}`;
-        const planDiff: Partial<InsurancePlan> = {};
+        const template = PACKAGE_TEMPLATES.find((t) => t.name === pkg.name);
+        if (!template) return; // Should not happen if maps are correct
 
-        const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
-          'monthlyPremium',
-          'deductible',
-          'coinsurance',
-          'primaryCareCopay',
-          'specialistCopay',
-          'genericDrugCopay',
-          'outOfPocketMax',
-          'coverage',
-          'details',
-          'effectiveDate',
-          'brochureUrl',
-        ];
+        pkg.plans.forEach((plan, planIndex) => {
+          const defaultPlan = template.defaultPlans[planIndex];
+          if (!defaultPlan) return;
 
-        fields.forEach((key) => {
-          if (plan[key] !== defaultPlan[key]) {
-            (planDiff[key] as unknown) = plan[key];
+          // The modification key must be based on its index in the *compressed* array
+          const modKey = `${templatePkgIndex}_${planIndex}`;
+          const planDiff: Partial<InsurancePlan> = {};
+
+          const fields: (keyof Omit<InsurancePlan, 'id'>)[] = [
+            'monthlyPremium',
+            'deductible',
+            'coinsurance',
+            'primaryCareCopay',
+            'specialistCopay',
+            'genericDrugCopay',
+            'outOfPocketMax',
+            'coverage',
+            'details',
+            'effectiveDate',
+            'brochureUrl',
+          ];
+
+          fields.forEach((key) => {
+            if (plan[key] !== defaultPlan[key]) {
+              (planDiff[key] as unknown) = plan[key];
+            }
+          });
+
+          if (Object.keys(planDiff).length > 0) {
+            modifications[modKey] = planDiff;
           }
         });
-
-        if (Object.keys(planDiff).length > 0) {
-          modifications[modKey] = planDiff;
-        }
-      });
+      } else {
+        // This is a custom package
+        customPackages.push(pkg);
+      }
     });
 
     const ultraCompressed: UltraCompressedQuote = {
@@ -136,8 +150,9 @@ const ultraCompressAndEncode = (data: { client: Client; packages: Package[]; cre
         data.client.phone,
         data.client.additionalInfo || undefined,
       ],
-      p: packageIndices,
+      p: templatePackageIndices, // Only template indices
       ...(Object.keys(modifications).length > 0 ? { m: modifications } : {}),
+      ...(customPackages.length > 0 ? { cp: customPackages } : {}), // Add full custom packages
       t: new Date(data.createdAt).getTime(),
     };
 
@@ -167,8 +182,9 @@ const ultraDecodeAndDecompress = (
     const decompressed = pako.ungzip(bytes, { to: 'string' });
     const compressed: UltraCompressedQuote = JSON.parse(decompressed);
 
-    if (compressed.c.length < 5 || compressed.p.length === 0) {
-      throw new Error('Incomplete quote data.');
+    // Only validate client data; package arrays can be empty
+    if (!compressed.c || compressed.c.length < 5) {
+      throw new Error('Incomplete client data.');
     }
 
     const client: Client = {
@@ -180,34 +196,41 @@ const ultraDecodeAndDecompress = (
       additionalInfo: compressed.c[5],
     };
 
-    const packageNames = [
-      'Bronze',
-      'ACA Silver',
-      'Gold',
-      'Healthy Bundle',
-      'Health Share',
-      'Private Health',
-      'Catastrophic',
-    ] as const;
+    // Use the dynamically generated template name list
+    const packageNames = TEMPLATE_NAMES;
 
-    const packages: Package[] = compressed.p.map((pkgIndex, idx) => {
-      const templateName = packageNames[pkgIndex];
+    const templatePackages: Package[] = (compressed.p || []).map((pkgIndex, idx) => {
+      const templateName = packageNames[pkgIndex] ?? 'Unknown Package';
       const template = PACKAGE_TEMPLATES.find((t) => t.name === templateName);
-      if (!template) throw new Error(`Template not found for index ${pkgIndex}`);
 
-      const plans = template.defaultPlans.map((plan, planIndex) => {
+      // 🔒 fallback to empty if template not found
+      const fallbackPlans: InsurancePlan[] =
+        template?.defaultPlans ?? [
+          {
+            id: generateId(),
+            name: templateName,
+            type: 'health',
+            monthlyPremium: 0,
+            deductible: 0,
+            coinsurance: 0,
+            coverage: 'N/A',
+          } as InsurancePlan,
+        ];
+
+      const plans = fallbackPlans.map((plan, planIndex) => {
         const key = `${idx}_${planIndex}`;
         const customData = compressed.m?.[key] ?? {};
-        const today = new Date();
-        const effectiveDate =
-          customData.effectiveDate ||
-          new Date(
-            today.getFullYear(),
-            today.getMonth() + (plan.type === 'health' ? 1 : 0),
-            plan.type === 'health' ? 1 : today.getDate() + 1
-          ).toISOString();
+        
+        // --- FIX: Removed the explicit, incorrect default effectiveDate calculation. ---
+        // The plan object already contains the correct default date from the template 
+        // (set via withEffectiveDate in types.ts).
+        // customData will contain an updated effectiveDate only if the user modified it.
 
-        return { ...plan, ...customData, effectiveDate, id: generateId() };
+        return {
+          ...plan,
+          ...customData,
+          id: generateId(),
+        };
       });
 
       const totalMonthlyPremium = plans.reduce(
@@ -218,16 +241,22 @@ const ultraDecodeAndDecompress = (
       return {
         id: generateId(),
         name: templateName,
-        description: template.description,
+        description: template?.description ?? 'Custom insurance package',
         plans,
         totalMonthlyPremium,
       };
     });
 
-    return { client, packages, createdAt: new Date(compressed.t).toISOString() };
+    // Get the full custom packages
+    const customPackages: Package[] = compressed.cp || [];
+
+    // Combine both lists
+    const allPackages = [...templatePackages, ...customPackages];
+
+    return { client, packages: allPackages, createdAt: new Date(compressed.t).toISOString() };
   } catch (err) {
     console.error('Decompression Error:', err);
-    throw err;
+    throw new Error('Failed to decompress quote data.');
   }
 };
 

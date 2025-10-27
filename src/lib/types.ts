@@ -1,4 +1,3 @@
-// ✅ --- TYPES ---
 export interface Agent {
   id: string;
   email: string;
@@ -32,19 +31,25 @@ export type InsuranceType =
 export interface InsurancePlan {
   id?: string;
   type: InsuranceType;
-  name: string; // internal short name
-  title: string; // display name for UI
+  name: string;
+  title: string;
   provider: string;
   monthlyPremium: number;
   deductible?: number;
   outOfPocket?: number;
   outOfPocketMax?: number;
-  coverage?: string | string[];
-  details?: string;
   primaryCareCopay?: number;
   specialistCopay?: number;
   genericDrugCopay?: number;
   coinsurance?: number;
+  annualMax?: number | string;
+  coPay?: number | string;
+  deathBenefit?: string;
+  coverageAmount?: number;
+  term?: string;
+  premium?: number;
+  coverage?: string | string[];
+  details?: string;
   effectiveDate?: string;
   brochureUrl?: string;
 }
@@ -60,7 +65,7 @@ export type PackageName =
 
 export interface Package {
   id: string;
-  name: PackageName;
+  name: PackageName | string;
   description: string;
   plans: InsurancePlan[];
   totalMonthlyPremium: number;
@@ -84,20 +89,20 @@ export interface PackageTemplate {
   defaultPlans: Omit<InsurancePlan, "id">[];
 }
 
-// ✅ --- HELPER FUNCTIONS ---
-const getNextDay = (): string => {
+// Helper functions for effective dates
+export const getNextDay = (): string => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   return tomorrow.toISOString().split("T")[0];
 };
 
-const getFirstOfNextMonth = (): string => {
+export const getFirstOfNextMonth = (): string => {
   const now = new Date();
   const firstNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   return firstNextMonth.toISOString().split("T")[0];
 };
 
-const withEffectiveDate = (
+export const withEffectiveDate = (
   plan: Omit<InsurancePlan, "id">
 ): Omit<InsurancePlan, "id"> => ({
   ...plan,
@@ -117,7 +122,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
   {
     name: "ACA Silver",
     description:
-      "Comprehensive coverage including health, dental, vision, and life insurance",
+      "",
     planTypes: ["health", "dental", "vision", "life", "outOfPocket"],
     defaultPlans: [
       withEffectiveDate({
@@ -138,7 +143,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       withEffectiveDate({
         type: "dental",
         name: "Dental & Vision",
-        title: "Ameritas - Primestar",
+        title: "Ameritas Primestar",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -149,8 +154,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       withEffectiveDate({
         type: "life",
         name: "Life Insurance",
-        title: "American Amicable - Term Made Simple",
-        provider: "AmericanAmicable",
+        title: "Term Made Simple",
+        provider: "American Amicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
         details:
@@ -163,7 +168,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
   {
     name: "Private Health",
     description:
-      "Complete protection package with all available plans including disability",
+      "",
     planTypes: [
       "health",
       "konnect",
@@ -194,10 +199,10 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         brochureUrl:
           "https://www.uhone.com/api/supplysystem/?FileName=52405E-G202510.pdf",
       }),
-     withEffectiveDate({
+      withEffectiveDate({
         type: "dental",
         name: "Dental & Vision",
-        title: "Ameritas - Primestar",
+        title: "Ameritas Primestar",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -208,8 +213,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       withEffectiveDate({
         type: "life",
         name: "Life Insurance",
-        title: "American Amicable - Term Made Simple",
-        provider: "AmericanAmicable",
+        title: "Term Made Simple",
+        provider: "American Amicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
         details:
@@ -222,7 +227,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
   {
     name: "Health Share",
     description:
-      "An alternative to traditional insurance combining Sedera Health cost sharing with KonnectMD direct virtual care for a complete healthcare solution.",
+      "",
     planTypes: ["healthShare", "konnect"],
     defaultPlans: [
       withEffectiveDate({
@@ -233,7 +238,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         monthlyPremium: 0,
         deductible: 2500,
         coverage:
-          "Community-based cost sharing for medical needs. Members share expenses above an Initial Unshareable Amount (IUA) per medical need.",
+          "",
         details:
           "Sedera Health provides an innovative alternative to traditional health insurance through community cost sharing. Members contribute monthly and share in each other’s eligible medical costs.",
         brochureUrl:
@@ -255,7 +260,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       withEffectiveDate({
         type: "dental",
         name: "Dental & Vision",
-        title: "Ameritas - Primestar",
+        title: "Ameritas Primestar",
         provider: "Ameritas",
         monthlyPremium: 39.02,
         deductible: 50,
@@ -266,8 +271,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       withEffectiveDate({
         type: "life",
         name: "Life Insurance",
-        title: "American Amicable - Term Made Simple",
-        provider: "AmericanAmicable",
+        title: "Term Made Simple",
+        provider: "American Amicable",
         monthlyPremium: 0,
         coverage: "$25,000 term life insurance",
         details:
@@ -280,7 +285,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
   {
     name: "Catastrophic",
     description:
-      "High-deductible catastrophic coverage designed for major illnesses and accidents.",
+      "",
     planTypes: ["catastrophic"],
     defaultPlans: [
       withEffectiveDate({
