@@ -23,6 +23,7 @@ interface PackageSelectionProps {
   onBack: () => void;
 }
 
+// FIX: Added missing 'vision' and 'breeze' keys to satisfy the Record<InsuranceType, string[]> type definition
 const CARRIERS: Record<InsuranceType, string[]> = {
   health: ['Molina', 'Blue Cross Blue Shield', 'Cigna'],
   healthShare: ['Sedera Health'],
@@ -34,6 +35,8 @@ const CARRIERS: Record<InsuranceType, string[]> = {
   heart: ['Some Carrier'],
   outOfPocket: ['Generic'],
   disability: ['Some Carrier'],
+  vision: ['VSP', 'EyeMed'], // Added missing vision type
+  breeze: ['Breeze'], // Added missing breeze type, using "Breeze" from logos as carrier
 };
 
 // NEW: Define carrier logos, using placeholders for missing images
@@ -47,6 +50,8 @@ const carrierLogos: Record<string, string> = {
   ACA: "/logos/aca.png",
   "United Healthcare": "/logos/uhc.png",
   "Sedera Health": "/logos/sedera.jpg",
+  VSP: "https://placehold.co/75x20/F0F4F8/3B82F6?text=VSP",
+  EyeMed: "https://placehold.co/75x20/F0F4F8/10B981?text=EyeMed",
   
   // Placeholders for carriers listed in CARRIERS object but not in the known logo map
   "Blue Cross Blue Shield": "https://placehold.co/75x20/F0F4F8/005A9C?text=BCBS",
@@ -85,7 +90,11 @@ const getPlanTypeLabel = (type: InsurancePlan['type']) => {
     case 'konnect':
       return 'Telemedicine';
     case 'dental':
-      return 'Dental & Vision';
+      return 'Dental';
+    case 'vision':
+      return 'Vision'; // Added label for vision
+    case 'breeze':
+        return 'Breeze Plan'; // Added label for breeze
     case 'life':
       return 'Life Insurance';
     case 'catastrophic':
@@ -250,7 +259,6 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
 
     const planToAdd: InsurancePlan = {
       // Cast currentPlan to InsurancePlan, relying on the state flow to ensure required fields (id, name, type, provider, monthlyPremium) are present.
-      // Note: We set 'name' explicitly below, as 'title' is temporary.
       ...(currentPlan as InsurancePlan),
       id: generateId(),
       name: currentPlan.title,
@@ -365,7 +373,6 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     setModifiedPlans(pkg.plans.map(p => ({ ...p })));
   };
 
-  // FIX: Line 363 Error: Replaced `value: any` with the type-safe `value: InsurancePlanValue`
   const handlePlanUpdate = (planId: string, field: keyof InsurancePlan, value: InsurancePlanValue) => {
     setModifiedPlans(prev => 
       prev.map(p => (p.id === planId ? { ...p, [field]: value } : p))
