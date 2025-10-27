@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { ClientPresentation } from '@/components/client/ClientPresentation';
+// FIX: Changed from named import ({ ClientPresentation }) to default import (ClientPresentation)
+// to match the default export structure in the ClientPresentation.tsx file.
+import ClientPresentation from '@/components/client/ClientPresentation';
 import { Quote, Package, InsurancePlan } from '@/lib/types';
 import { getQuoteDataByShortId, initializeStorage } from '@/lib/storage';
 
