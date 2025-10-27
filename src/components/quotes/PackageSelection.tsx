@@ -96,12 +96,12 @@ interface PackageSelectionProps {
   onBack: () => void;
 }
 
-type EditableInsurancePlan = Partial<InsurancePlan> & {
-  id: string;
+// Temporary type used for plans *inside the editor state* (packageBeingCustomEdited).
+// It extends InsurancePlan to enforce a string ID (if the original is optional) 
+// and adds the temporary `title` property used for editing the plan name.
+type PlanInEditor = InsurancePlan & {
+  id: string; // Enforce non-optional ID for editor use
   title: string;
-  provider: string;
-  type: InsuranceType;
-  monthlyPremium?: number;
 };
 
 // -------------------------------
@@ -113,7 +113,7 @@ const PlanEditorCard = ({
   plan,
   onUpdate,
 }: {
-  plan: EditableInsurancePlan;
+  plan: PlanInEditor;
   onUpdate: (field: keyof InsurancePlan, value: string | number | boolean) => void;
 }) => (
   <Card className="p-4 mb-2 bg-gray-50">
@@ -130,6 +130,7 @@ const PlanEditorCard = ({
         <Label>Title</Label>
         <Input
           value={plan.title}
+          // Update 'name' in the package state, which will automatically update 'title' via handlePlanUpdate
           onChange={(e) => onUpdate('name', e.target.value)}
         />
       </div>
@@ -197,17 +198,19 @@ export function PackageSelection({
     );
   });
 
+  // State now holds Package, but we cast the plans array when setting it
   const [packageBeingCustomEdited, setPackageBeingCustomEdited] =
     useState<Package | null>(null);
 
   const [newPlanForCustomEditor, setNewPlanForCustomEditor] =
-    useState<EditableInsurancePlan>({
+    useState<PlanInEditor>({
       id: generateId(),
       type: 'health',
       title: '',
+      name: '', // Required by InsurancePlan
       provider: '',
       monthlyPremium: 0,
-    });
+    } as PlanInEditor); // Cast to PlanInEditor
 
   const [planEditorError, setPlanEditorError] = useState<string | null>(null);
 
@@ -235,9 +238,10 @@ export function PackageSelection({
       id: generateId(),
       type: 'health',
       title: '',
+      name: '',
       provider: '',
       monthlyPremium: 0,
-    });
+    } as PlanInEditor);
     setPlanEditorError(null);
   };
 
@@ -245,15 +249,21 @@ export function PackageSelection({
   const handleStartCustomEdit = (pkg: Package) => {
     setPackageBeingCustomEdited({
       ...pkg,
-      plans: pkg.plans.map((p) => ({ ...p, title: p.name })), // Add title for easier editing
+      // Map plans to PlanInEditor type: ensure ID is defined and add title
+      plans: pkg.plans.map(p => ({ 
+        ...p, 
+        id: p.id || generateId(), // Ensure ID is present
+        title: p.name || 'Untitled Plan' 
+      })) as PlanInEditor[],
     });
     setNewPlanForCustomEditor({
       id: generateId(),
       type: 'health',
       title: '',
+      name: '',
       provider: '',
       monthlyPremium: 0,
-    });
+    } as PlanInEditor);
     setPlanEditorError(null);
   };
 
@@ -261,15 +271,21 @@ export function PackageSelection({
   const handleStartModificationEdit = (pkg: Package) => {
     setPackageBeingCustomEdited({
       ...pkg,
-      plans: pkg.plans.map((p) => ({ ...p, title: p.name })), // Add title for easier editing
+      // Map plans to PlanInEditor type: ensure ID is defined and add title
+      plans: pkg.plans.map(p => ({ 
+        ...p, 
+        id: p.id || generateId(), 
+        title: p.name || 'Untitled Plan' 
+      })) as PlanInEditor[],
     });
     setNewPlanForCustomEditor({
       id: generateId(), // This plan is not used for template mods
       type: 'health',
       title: '',
+      name: '',
       provider: '',
       monthlyPremium: 0,
-    });
+    } as PlanInEditor);
     setPlanEditorError(null);
   };
 
@@ -278,9 +294,10 @@ export function PackageSelection({
       id: generateId(),
       type,
       title: '',
+      name: '',
       provider: '',
       monthlyPremium: 0,
-    });
+    } as PlanInEditor);
     setPlanEditorError(null);
   };
 
@@ -295,16 +312,20 @@ export function PackageSelection({
         ? {
             ...prev,
             plans: prev.plans.map((p) => {
-              if (p.id === planId) {
-                // Handle the name/title update for display
-                const updatedPlan = { ...p, [field]: value };
+              // Cast to PlanInEditor for safe property access
+              const plan = p as PlanInEditor;
+              if (plan.id === planId) {
+                // Update the plan fields
+                const updatedPlan = { ...plan, [field]: value };
+                
+                // If 'name' is updated, update the temporary 'title' as well for the editor view
                 if (field === 'name') {
-                  (updatedPlan as any).title = value;
+                  updatedPlan.title = value as string;
                 }
                 return updatedPlan;
               }
-              return p;
-            }),
+              return plan;
+            }) as InsurancePlan[], // Cast back to the base array type (InsurancePlan[])
           }
         : null
     );
@@ -323,8 +344,8 @@ export function PackageSelection({
       return;
     }
 
+    // Create the final InsurancePlan object
     const planToAdd: InsurancePlan = {
-      ...plan,
       id: generateId(),
       name: plan.title, // Use title as the official name
       type: plan.type,
@@ -332,6 +353,7 @@ export function PackageSelection({
       details: plan.details || '',
       coverage: plan.coverage || '',
       monthlyPremium: plan.monthlyPremium || 0,
+      title: ''
     };
 
     const updatedPlans = [...packageBeingCustomEdited.plans, planToAdd];
@@ -351,9 +373,10 @@ export function PackageSelection({
       id: generateId(),
       type: 'health',
       title: '',
+      name: '',
       provider: '',
       monthlyPremium: 0,
-    });
+    } as PlanInEditor);
     setPlanEditorError(null);
   };
 
@@ -361,7 +384,6 @@ export function PackageSelection({
   const handleSaveModification = () => {
     if (!packageBeingCustomEdited) return;
 
-    // Find the original template to ensure we only update pricing on a template
     const originalTemplate = PACKAGE_TEMPLATES.find(
       (p) => p.name === packageBeingCustomEdited.name
     );
@@ -370,25 +392,25 @@ export function PackageSelection({
       setPlanEditorError("Cannot save modifications. The original template was not found.");
       return;
     }
+    
+    // FIX: Map plans to a type that guarantees 'id: string' for the utility function
+    const plansWithGuaranteedId = packageBeingCustomEdited.plans.map(p => ({
+      ...p,
+      id: p.id || generateId(), // Ensure ID is present
+    })) as (InsurancePlan & { id: string })[]; // Assert the resulting type array
+    
+    // The utility function updatePackagePricing must accept the type with guaranteed IDs
+    const updatedPkg = updatePackagePricing(
+      packageBeingCustomEdited, 
+      plansWithGuaranteedId // Pass the type-safe array
+    );
 
-    const planUpdates = packageBeingCustomEdited.plans.map((p) => ({
-      id: p.id!,
-      monthlyPremium: p.monthlyPremium,
-      name: p.name,
-      provider: p.provider,
-    }));
-
-    // Use the utility to generate the updated package based on the original template
-    const updatedPkg = updatePackagePricing(packageBeingCustomEdited, planUpdates);
-
-    // Update the list of available packages
     setAvailablePackages((prev) =>
       prev.map((pkg) =>
         pkg.name === updatedPkg.name ? updatedPkg : pkg
       )
     );
 
-    // Select the modified template automatically
     setSelectedPackageIds((prev) => new Set(prev).add(updatedPkg.id));
     
     setPackageBeingCustomEdited(null);
@@ -419,10 +441,14 @@ export function PackageSelection({
     const savedPackage: Package = {
       ...packageBeingCustomEdited,
       totalMonthlyPremium,
-      plans: packageBeingCustomEdited.plans.map(p => ({
-        ...p,
-        name: p.name || (p as any).title, // Ensure name is set
-      })),
+      plans: packageBeingCustomEdited.plans.map(p => {
+        const plan = p as PlanInEditor;
+        return {
+          ...p,
+          // Ensure 'name' is set, using the temporary 'title' if 'name' is missing
+          name: plan.name || plan.title, 
+        }
+      }) as InsurancePlan[], // Cast back to the base array type (InsurancePlan[])
     };
 
     setAvailablePackages((prev) => {
@@ -482,10 +508,11 @@ export function PackageSelection({
 
         <h3 className="text-lg font-semibold mb-3">Plans in Package</h3>
         
-        {packageBeingCustomEdited.plans.map((plan) => (
+        {/* Render existing plans, cast to PlanInEditor for the editor component */}
+        {(packageBeingCustomEdited.plans as PlanInEditor[]).map((plan) => (
           <PlanEditorCard
             key={plan.id}
-            plan={plan as EditableInsurancePlan}
+            plan={plan}
             onUpdate={(field, value) => handlePlanUpdate(plan.id!, field, value)}
           />
         ))}
@@ -525,7 +552,8 @@ export function PackageSelection({
                       setNewPlanForCustomEditor((p) => ({
                         ...p,
                         title: e.target.value,
-                      }))
+                        name: e.target.value, // Keep 'name' updated with 'title'
+                      } as PlanInEditor))
                     }
                   />
                 </div>
@@ -538,7 +566,7 @@ export function PackageSelection({
                       setNewPlanForCustomEditor((p) => ({
                         ...p,
                         provider: e.target.value,
-                      }))
+                      } as PlanInEditor))
                     }
                   >
                     <option value="">Select Carrier</option>
@@ -559,7 +587,7 @@ export function PackageSelection({
                       setNewPlanForCustomEditor((p) => ({
                         ...p,
                         monthlyPremium: parseFloat(e.target.value) || 0,
-                      }))
+                      } as PlanInEditor))
                     }
                   />
                 </div>
@@ -608,8 +636,8 @@ export function PackageSelection({
           const isSelected = selectedPackageIds.has(pkg.id);
           const isTemplate = isTemplatePackage(pkg);
 
-          // Use the template's name as the key if it's a template, otherwise use ID
-          const displayKey = isTemplate ? pkg.name : pkg.id;
+          // Use the package ID as the key for rendering stability
+          const displayKey = pkg.id;
 
           return (
             <Card
