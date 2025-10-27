@@ -1,6 +1,7 @@
+// fileName: PackageSelection.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,23 +11,17 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Plus } from 'lucide-react';
-import {
-  Package,
-  InsurancePlan,
-  Client,
-  InsuranceType,
-  PACKAGE_TEMPLATES,
-} from '@/lib/types';
-import {
-  generateAllPackages,
-  updatePackagePricing,
-} from '@/lib/packages';
+import { Edit, Plus, Trash2 } from 'lucide-react';
+import { Package, InsurancePlan, Client, InsuranceType, PACKAGE_TEMPLATES, PackageTemplate } from '@/lib/types';
+import { generateAllPackages, createPackageFromTemplate, updatePackagePricing } from '@/lib/packages';
 import { generateId } from '@/lib/storage';
 
-// -------------------------------
-// --- Helper & Static Data ---
-// -------------------------------
+interface PackageSelectionProps {
+  client: Client;
+  initialPackages?: Package[];
+  onSubmit: (packages: Package[]) => void;
+  onBack: () => void;
+}
 
 const CARRIERS: Record<InsuranceType, string[]> = {
   health: ['Molina', 'Blue Cross Blue Shield', 'Cigna'],
@@ -39,685 +34,912 @@ const CARRIERS: Record<InsuranceType, string[]> = {
   heart: ['Some Carrier'],
   outOfPocket: ['Generic'],
   disability: ['Some Carrier'],
-  vision: [],
-  breeze: [],
 };
 
+// NEW: Define carrier logos, using placeholders for missing images
 const carrierLogos: Record<string, string> = {
-  Ameritas: '/logos/ameritas.png',
-  'American Amicable': '/logos/AmericanAmicable.jpeg',
-  Transamerica: '/logos/transamerica.png',
-  KonnectMD: '/logos/konnect.png',
-  TRUVirtual: '/logos/virtual.png',
-  ACA: '/logos/aca.png',
-  'United Healthcare': '/logos/uhc.png',
-  'Sedera Health': '/logos/sedera.jpg',
-  'Blue Cross Blue Shield':
-    'https://placehold.co/75x20/F0F4F8/005A9C?text=BCBS',
-  Cigna: 'https://placehold.co/75x20/F0F4F8/D93737?text=CIGNA',
-  Molina: 'https://placehold.co/75x20/F0F4F8/1070A0?text=MOLINA',
-  'Some Carrier': 'https://placehold.co/75x20/F0F4F8/6B7280?text=CARRIER',
-  Generic: 'https://placehold.co/75x20/F0F4F8/6B7280?text=GENERIC',
+  Ameritas: "/logos/ameritas.png",
+  "American Amicable": "/logos/AmericanAmicable.jpeg",
+  Transamerica: "/logos/transamerica.png",
+  KonnectMD: "/logos/konnect.png",
+  TRUVirtual: "/logos/virtual.png",
+  Breeze: "/logos/breeze.png",
+  ACA: "/logos/aca.png",
+  "United Healthcare": "/logos/uhc.png",
+  "Sedera Health": "/logos/sedera.jpg",
+  
+  // Placeholders for carriers listed in CARRIERS object but not in the known logo map
+  "Blue Cross Blue Shield": "https://placehold.co/75x20/F0F4F8/005A9C?text=BCBS",
+  Cigna: "https://placehold.co/75x20/F0F4F8/D93737?text=CIGNA",
+  Molina: "https://placehold.co/75x20/F0F4F8/1070A0?text=MOLINA",
+  "Some Carrier": "https://placehold.co/75x20/F0F4F8/6B7280?text=CARRIER",
+  Generic: "https://placehold.co/75x20/F0F4F8/6B7280?text=GENERIC",
 };
 
-const getCarrierLogo = (carrierName: string) =>
-  carrierLogos[carrierName] ||
-  'https://placehold.co/75x20/F0F4F8/6B7280?text=LOGO';
+// --- Helper Functions ---
 
-const getPlanTypeLabel = (type: InsuranceType) => {
-  const labels: Record<InsuranceType, string> = {
-    health: 'ACA',
-    healthShare: 'Health Sharing',
-    konnect: 'Telemedicine',
-    dental: 'Dental & Vision',
-    life: 'Life Insurance',
-    catastrophic: 'Catastrophic',
-    cancer: 'Cancer',
-    heart: 'Heart',
-    outOfPocket: 'Out-of-Pocket',
-    disability: 'Disability',
-    vision: '',
-    breeze: '',
-  };
-  return labels[type] ?? type;
+// NEW: Helper function to retrieve logo or placeholder
+const getCarrierLogo = (carrierName: string) => {
+    return carrierLogos[carrierName] || 'https://placehold.co/75x20/F0F4F8/6B7280?text=LOGO';
 };
 
-const isTemplatePackage = (pkg: Package) =>
-  PACKAGE_TEMPLATES.some((t) => t.name === pkg.name);
-
-// -------------------------------
-// --- Types ---
-// -------------------------------
-
-interface PackageSelectionProps {
-  client: Client;
-  initialPackages?: Package[];
-  onSubmit: (packages: Package[]) => void;
-  onBack: () => void;
-}
-
-// Temporary type used for plans *inside the editor state* (packageBeingCustomEdited).
-// It extends InsurancePlan to enforce a string ID (if the original is optional) 
-// and adds the temporary `title` property used for editing the plan name.
-type PlanInEditor = InsurancePlan & {
-  id: string; // Enforce non-optional ID for editor use
-  title: string;
+// UPDATED: Wrap emoji in span for better vertical alignment
+const getPlanIcon = (type: InsurancePlan['type']) => {
+  let icon = '';
+  switch (type) {
+    // Only need the structure here, actual icon logic can be in separate file
+    default:
+        icon = ''; 
+        break;
+  }
+  // Use a span to ensure consistent vertical alignment with the Image component
+  return <span className="text-lg leading-none">{icon}</span>;
 };
 
-// -------------------------------
-// --- Component ---
-// -------------------------------
+const getPlanTypeLabel = (type: InsurancePlan['type']) => {
+  switch (type) {
+    case 'health':
+      return 'ACA';
+    case 'healthShare':
+      return 'Health Sharing';
+    case 'konnect':
+      return 'Telemedicine';
+    case 'dental':
+      return 'Dental & Vision';
+    case 'life':
+      return 'Life Insurance';
+    case 'catastrophic':
+      return 'Catastrophic';
+    default:
+      return type.charAt(0).toUpperCase() + type.slice(1);
+  }
+};
+const isTemplatePackage = (pkg: Package) => PACKAGE_TEMPLATES.some(t => t.name === pkg.name);
+// --- End Helper Functions ---
 
-// Renders the editor for plans within a package
-const PlanEditorCard = ({
-  plan,
-  onUpdate,
-}: {
-  plan: PlanInEditor;
-  onUpdate: (field: keyof InsurancePlan, value: string | number | boolean) => void;
-}) => (
-  <Card className="p-4 mb-2 bg-gray-50">
-    <div className="flex justify-between items-center mb-2">
-      <h4 className="font-semibold text-sm">
-        {plan.title || 'New Plan'}
-        <Badge variant="secondary" className="ml-2">
-          {getPlanTypeLabel(plan.type)}
-        </Badge>
-      </h4>
-    </div>
-    <div className="grid grid-cols-3 gap-2 text-sm">
-      <div>
-        <Label>Title</Label>
-        <Input
-          value={plan.title}
-          // Update 'name' in the package state, which will automatically update 'title' via handlePlanUpdate
-          onChange={(e) => onUpdate('name', e.target.value)}
-        />
-      </div>
-      <div>
-        <Label>Carrier/Provider</Label>
-        <Input
-          value={plan.provider}
-          onChange={(e) => onUpdate('provider', e.target.value)}
-        />
-      </div>
-      <div>
-        <Label>Premium</Label>
-        <Input
-          type="number"
-          step="0.01"
-          value={plan.monthlyPremium ?? 0}
-          onChange={(e) =>
-            onUpdate('monthlyPremium', parseFloat(e.target.value) || 0)
-          }
-        />
-      </div>
-    </div>
-  </Card>
-);
 
-export function PackageSelection({
-  client,
-  initialPackages,
-  onSubmit,
-  onBack,
-}: PackageSelectionProps) {
+export function PackageSelection({ client, initialPackages, onSubmit, onBack }: PackageSelectionProps) {
+  // All packages available to select (templates + custom ones added by user)
   const [availablePackages, setAvailablePackages] = useState<Package[]>(() => {
     const templates = generateAllPackages();
 
-    if (!initialPackages?.length) return templates;
+    if (!initialPackages || initialPackages.length === 0) {
+      return templates;
+    }
 
-    const packageMap = new Map<string, Package>(
-      templates.map((pkg) => [pkg.name, pkg])
-    );
+    // FIX: Correctly merge initialPackages (saved quote data) with fresh templates
+    // 1. Create a map of fresh templates, keyed by name
+    const packageMap = new Map<string, Package>(templates.map(pkg => [pkg.name, pkg]));
 
-    initialPackages.forEach((pkg) => {
+    // 2. Iterate through the saved packages (initialPackages)
+    initialPackages.forEach(pkg => {
+      // Check if the saved package corresponds to a template (using name)
       const isTemplate = isTemplatePackage(pkg);
-      // Use ID for custom packages, Name for templates (to allow overrides)
+      
       if (isTemplate) {
+        // If it's a template, overwrite the fresh template in the map with the saved version.
+        // This ensures the saved version, which has the ID used in selectedPackageIds, is kept.
         packageMap.set(pkg.name, pkg);
       } else {
-        packageMap.set(pkg.id, pkg);
+        // If it's a custom package, add it to the map keyed by its ID to ensure it is available.
+        // This relies on custom packages having unique names or IDs (using ID here is safer)
+        packageMap.set(pkg.id, pkg); 
       }
     });
 
+    // Return all package objects from the map.
     return Array.from(packageMap.values());
   });
-
+  
+  // Set of IDs for selected packages
   const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(() => {
-    // If a template package was overridden/modified, its ID might be from initialPackages,
-    // so we get all unique IDs from the final availablePackages list that match names
-    // or IDs in initialPackages.
-    const initialIds = new Set(initialPackages?.map((pkg) => pkg.id) || []);
-    const initialNames = new Set(initialPackages?.map((pkg) => pkg.name) || []);
-
-    return new Set(
-      availablePackages
-        .filter((pkg) => initialIds.has(pkg.id) || initialNames.has(pkg.name))
-        .map((pkg) => pkg.id)
-    );
+    // This remains correct: it uses the IDs from the saved quote.
+    return new Set(initialPackages?.map(pkg => pkg.id) || []);
   });
 
-  // State now holds Package, but we cast the plans array when setting it
-  const [packageBeingCustomEdited, setPackageBeingCustomEdited] =
-    useState<Package | null>(null);
+  // NEW STATE: State for the package being created or comprehensively edited (custom packages only)
+  const [packageBeingCustomEdited, setPackageBeingCustomEdited] = useState<Package | null>(null); 
+  
+  type EditableInsurancePlan = Partial<InsurancePlan> & {
+    id: string;
+    title: string;
+    provider: string;
+    type: InsuranceType;
+    monthlyPremium?: number;
+  };
 
-  const [newPlanForCustomEditor, setNewPlanForCustomEditor] =
-    useState<PlanInEditor>({
-      id: generateId(),
-      type: 'health',
-      title: '',
-      name: '', // Required by InsurancePlan
-      provider: '',
-      monthlyPremium: 0,
-    } as PlanInEditor); // Cast to PlanInEditor
+  const [newPlanForCustomEditor, setNewPlanForCustomEditor] = useState<EditableInsurancePlan>({
+    id: generateId(),
+    type: 'health',
+    title: '',
+    provider: '',
+    monthlyPremium: 0,
+  }); // Removed 'as any'
 
+  // NEW STATE: Error message for the plan builder
   const [planEditorError, setPlanEditorError] = useState<string | null>(null);
 
-  const getPackageToDisplay = (id: string) =>
-    availablePackages.find((pkg) => pkg.id === id);
+
+  // Function to get a package from availablePackages by ID
+  const getPackageToDisplay = (id: string): Package | undefined => {
+    // Search by ID, which is the key in selectedPackageIds
+    return availablePackages.find(pkg => pkg.id === id); 
+  };
 
   const handlePackageToggle = (packageId: string) => {
-    setSelectedPackageIds((prev) => {
+    setSelectedPackageIds(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(packageId)) newSet.delete(packageId);
-      else newSet.add(packageId);
+      if (newSet.has(packageId)) {
+        newSet.delete(packageId);
+      } else {
+        newSet.add(packageId);
+      }
       return newSet;
     });
   };
 
+  const totalSelectedValue = Array.from(selectedPackageIds).reduce((sum, id) => {
+    const pkg = getPackageToDisplay(id);
+    return sum + (pkg?.totalMonthlyPremium || 0);
+  }, 0);
+
+  // --- Custom Package Creation/Editing Logic (Unified) ---
+
   const handleStartNewCustomPackage = () => {
     setPackageBeingCustomEdited({
-      id: generateId(),
-      name: '',
-      description: 'A custom package tailored for the client.',
-      plans: [],
-      totalMonthlyPremium: 0,
+        id: generateId(),
+        name: '',
+        description: '',
+        plans: [],
+        totalMonthlyPremium: 0,
     });
+    // Reset the plan builder form
     setNewPlanForCustomEditor({
-      id: generateId(),
-      type: 'health',
-      title: '',
-      name: '',
-      provider: '',
-      monthlyPremium: 0,
-    } as PlanInEditor);
-    setPlanEditorError(null);
+        id: generateId(),
+        type: 'health',
+        title: '',
+        provider: '',
+        monthlyPremium: 0,
+    }); // Removed 'as any'
+    setPlanEditorError(null); // Reset error state
   };
 
-  // Start editing an existing custom package
   const handleStartCustomEdit = (pkg: Package) => {
-    setPackageBeingCustomEdited({
-      ...pkg,
-      // Map plans to PlanInEditor type: ensure ID is defined and add title
-      plans: pkg.plans.map(p => ({ 
-        ...p, 
-        id: p.id || generateId(), // Ensure ID is present
-        title: p.name || 'Untitled Plan' 
-      })) as PlanInEditor[],
-    });
-    setNewPlanForCustomEditor({
-      id: generateId(),
-      type: 'health',
-      title: '',
-      name: '',
-      provider: '',
-      monthlyPremium: 0,
-    } as PlanInEditor);
-    setPlanEditorError(null);
+      // Deep clone the package and plans to prevent direct state mutation
+      setPackageBeingCustomEdited({
+          ...pkg,
+          plans: pkg.plans.map(p => ({ ...p }))
+      });
+      // Reset the plan builder form
+      setNewPlanForCustomEditor({
+          id: generateId(),
+          type: 'health',
+          title: '',
+          provider: '',
+          monthlyPremium: 0,
+      }); // Removed 'as any'
+      setPlanEditorError(null); // Reset error state
   };
 
-  // Start editing a template package (only premium/plan details)
-  const handleStartModificationEdit = (pkg: Package) => {
-    setPackageBeingCustomEdited({
-      ...pkg,
-      // Map plans to PlanInEditor type: ensure ID is defined and add title
-      plans: pkg.plans.map(p => ({ 
-        ...p, 
-        id: p.id || generateId(), 
-        title: p.name || 'Untitled Plan' 
-      })) as PlanInEditor[],
-    });
-    setNewPlanForCustomEditor({
-      id: generateId(), // This plan is not used for template mods
-      type: 'health',
-      title: '',
-      name: '',
-      provider: '',
-      monthlyPremium: 0,
-    } as PlanInEditor);
-    setPlanEditorError(null);
-  };
 
   const handlePlanTypeChangeInCustomEditor = (type: InsuranceType) => {
     setNewPlanForCustomEditor({
       id: generateId(),
-      type,
+      type: type,
       title: '',
-      name: '',
       provider: '',
       monthlyPremium: 0,
-    } as PlanInEditor);
-    setPlanEditorError(null);
+    }); // Removed 'as any'
+    setPlanEditorError(null); // Clear error on interaction
   };
 
-  // Updates a field on an *existing* plan within the packageBeingCustomEdited
-  const handlePlanUpdate = (
-    planId: string,
-    field: keyof InsurancePlan,
-    value: string | number | boolean
-  ) => {
-    setPackageBeingCustomEdited((prev) =>
-      prev
-        ? {
-            ...prev,
-            plans: prev.plans.map((p) => {
-              // Cast to PlanInEditor for safe property access
-              const plan = p as PlanInEditor;
-              if (plan.id === planId) {
-                // Update the plan fields
-                const updatedPlan = { ...plan, [field]: value };
-                
-                // If 'name' is updated, update the temporary 'title' as well for the editor view
-                if (field === 'name') {
-                  updatedPlan.title = value as string;
-                }
-                return updatedPlan;
-              }
-              return plan;
-            }) as InsurancePlan[], // Cast back to the base array type (InsurancePlan[])
-          }
-        : null
-    );
-  };
-
-  // Adds the plan from the 'add new plan' form to the custom package
   const handleAddPlanToCustomPackage = () => {
     if (!packageBeingCustomEdited) return;
+    const currentPlan = newPlanForCustomEditor;
 
-    const plan = newPlanForCustomEditor;
-
-    if (!plan.title || !plan.provider || (plan.monthlyPremium ?? 0) <= 0) {
-      setPlanEditorError(
-        'Please fill in Plan Title, select a Carrier, and enter a Monthly Premium greater than $0.'
-      );
+    // FIX: Use optional chaining and default value (|| 0) to resolve the 'possibly undefined' error
+    if (!currentPlan.title || !currentPlan.provider || (currentPlan.monthlyPremium || 0) <= 0) {
+      setPlanEditorError('Please fill in Plan Title, select a Carrier, and enter a Monthly Premium greater than $0.');
       return;
     }
 
-    // Create the final InsurancePlan object
+    setPlanEditorError(null); // Clear error on success
+
     const planToAdd: InsurancePlan = {
+      ...currentPlan as InsurancePlan,
       id: generateId(),
-      name: plan.title, // Use title as the official name
-      type: plan.type,
-      provider: plan.provider,
-      details: plan.details || '',
-      coverage: plan.coverage || '',
-      monthlyPremium: plan.monthlyPremium || 0,
-      title: ''
+      name: currentPlan.title,
+      details: currentPlan.details || '',
+      coverage: currentPlan.coverage || '',
     };
 
     const updatedPlans = [...packageBeingCustomEdited.plans, planToAdd];
-    const newTotal = updatedPlans.reduce(
-      (sum, p) => sum + (p.monthlyPremium || 0),
-      0
-    );
-
-    setPackageBeingCustomEdited({
-      ...packageBeingCustomEdited,
+    const newTotal = updatedPlans.reduce((sum, p) => sum + (p.monthlyPremium || 0), 0);
+    
+    setPackageBeingCustomEdited(prev => prev ? ({
+      ...prev,
       plans: updatedPlans,
       totalMonthlyPremium: newTotal,
-    });
+    }) : null);
 
-    // Reset the new plan form
+    // Reset new plan form
     setNewPlanForCustomEditor({
       id: generateId(),
       type: 'health',
       title: '',
-      name: '',
       provider: '',
       monthlyPremium: 0,
-    } as PlanInEditor);
-    setPlanEditorError(null);
+    }); // Removed 'as any'
   };
-
-  // Saves modifications to a TEMPLATE package's plan prices/details
-  const handleSaveModification = () => {
+  
+  const handleRemovePlanFromCustomPackage = (planId: string) => {
     if (!packageBeingCustomEdited) return;
 
-    const originalTemplate = PACKAGE_TEMPLATES.find(
-      (p) => p.name === packageBeingCustomEdited.name
-    );
+    const updatedPlans = packageBeingCustomEdited.plans.filter(p => p.id !== planId);
+    const newTotal = updatedPlans.reduce((sum, p) => sum + (p.monthlyPremium || 0), 0);
     
-    if (!originalTemplate) {
-      setPlanEditorError("Cannot save modifications. The original template was not found.");
-      return;
-    }
-    
-    // FIX: Map plans to a type that guarantees 'id: string' for the utility function
-    const plansWithGuaranteedId = packageBeingCustomEdited.plans.map(p => ({
-      ...p,
-      id: p.id || generateId(), // Ensure ID is present
-    })) as (InsurancePlan & { id: string })[]; // Assert the resulting type array
-    
-    // The utility function updatePackagePricing must accept the type with guaranteed IDs
-    const updatedPkg = updatePackagePricing(
-      packageBeingCustomEdited, 
-      plansWithGuaranteedId // Pass the type-safe array
-    );
+    setPackageBeingCustomEdited(prev => prev ? ({
+        ...prev,
+        plans: updatedPlans,
+        totalMonthlyPremium: newTotal,
+    }) : null);
+  };
+  
+  const handleUpdatePlanPremiumInCustomPackage = (planId: string, newPremium: number) => {
+    if (!packageBeingCustomEdited) return;
 
-    setAvailablePackages((prev) =>
-      prev.map((pkg) =>
-        pkg.name === updatedPkg.name ? updatedPkg : pkg
-      )
+    const updatedPlans = packageBeingCustomEdited.plans.map(p => 
+        p.id === planId ? { ...p, monthlyPremium: newPremium } : p
     );
+    const newTotal = updatedPlans.reduce((sum, p) => sum + (p.monthlyPremium || 0), 0);
 
-    setSelectedPackageIds((prev) => new Set(prev).add(updatedPkg.id));
-    
-    setPackageBeingCustomEdited(null);
+    setPackageBeingCustomEdited(prev => prev ? ({
+        ...prev,
+        plans: updatedPlans,
+        totalMonthlyPremium: newTotal,
+    }) : null);
   };
 
-  // Saves a NEW or EDITED fully custom package
   const handleSaveCustomPackage = () => {
-    if (!packageBeingCustomEdited) return;
-
-    if (!packageBeingCustomEdited.name) {
-      setPlanEditorError('Please provide a name for your custom package.');
+    if (!packageBeingCustomEdited || !packageBeingCustomEdited.name || packageBeingCustomEdited.plans.length === 0) {
+      console.error('Please name the package and add at least one plan.'); 
       return;
     }
-
-    if (packageBeingCustomEdited.plans.length === 0) {
-      setPlanEditorError('A custom package must contain at least one plan.');
-      return;
-    }
-
-    const isNew = !availablePackages.some(p => p.id === packageBeingCustomEdited.id);
     
-    // Finalize total premium
-    const totalMonthlyPremium = packageBeingCustomEdited.plans.reduce(
-      (sum, p) => sum + (p.monthlyPremium || 0),
-      0
-    );
-
-    const savedPackage: Package = {
-      ...packageBeingCustomEdited,
-      totalMonthlyPremium,
-      plans: packageBeingCustomEdited.plans.map(p => {
-        const plan = p as PlanInEditor;
-        return {
-          ...p,
-          // Ensure 'name' is set, using the temporary 'title' if 'name' is missing
-          name: plan.name || plan.title, 
-        }
-      }) as InsurancePlan[], // Cast back to the base array type (InsurancePlan[])
+    // Finalize total monthly premium calculation
+    const finalPackage = {
+        ...packageBeingCustomEdited,
+        totalMonthlyPremium: packageBeingCustomEdited.plans.reduce((sum, p) => sum + (p.monthlyPremium || 0), 0),
     };
 
-    setAvailablePackages((prev) => {
-      if (isNew) {
-        return [...prev, savedPackage];
-      }
-      return prev.map((pkg) =>
-        pkg.id === savedPackage.id ? savedPackage : pkg
-      );
+    setAvailablePackages(prev => {
+        const existingIndex = prev.findIndex(p => p.id === finalPackage.id);
+        if (existingIndex !== -1 && !isTemplatePackage(finalPackage)) {
+            // Editing existing custom package (must be non-template)
+            const newPackages = [...prev];
+            newPackages[existingIndex] = finalPackage;
+            return newPackages;
+        } else if (existingIndex === -1) {
+            // Saving brand new custom package (ID was generated in handleStartNewCustomPackage)
+            return [...prev, finalPackage];
+        }
+        return prev; // Should not happen for templates via this flow
     });
 
-    // Select the new/edited custom package
-    setSelectedPackageIds((prev) => new Set(prev).add(savedPackage.id));
-
-    setPackageBeingCustomEdited(null);
+    setSelectedPackageIds(prev => new Set(prev).add(finalPackage.id));
+    setPackageBeingCustomEdited(null); // Close modal
   };
 
-  // ---------------------------------
-  // --- Custom/Modification Editor UI ---
-  // ---------------------------------
-  if (packageBeingCustomEdited) {
-    const isEditingTemplate = isTemplatePackage(packageBeingCustomEdited);
-    const isNewCustom = !availablePackages.some(p => p.id === packageBeingCustomEdited.id);
+  // --- End Custom Package Creation/Editing Logic ---
 
-    return (
-      <Card className="p-6">
-        <CardHeader className="p-0 mb-4">
-          <CardTitle>
-            {isNewCustom
-              ? 'Create New Custom Package'
-              : isEditingTemplate
-              ? `Modify Template: ${packageBeingCustomEdited.name}`
-              : `Edit Custom Package: ${packageBeingCustomEdited.name}`}
-          </CardTitle>
-          <p className="text-sm text-gray-500">
-            {isEditingTemplate
-              ? 'Adjust plan prices and details for this client. The template definition is preserved.'
-              : 'Add, remove, or modify plans to create a unique package.'}
-          </p>
-        </CardHeader>
-        <Separator className="mb-4" />
+  // --- Delete Custom Package Logic ---
+  const handleDeleteCustomPackage = (packageId: string) => {
+    // Only allow deletion of non-template packages
+    const pkgToDelete = availablePackages.find(p => p.id === packageId);
+    if (pkgToDelete && !isTemplatePackage(pkgToDelete)) {
+        setAvailablePackages(prev => prev.filter(p => p.id !== packageId));
+        setSelectedPackageIds(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(packageId);
+            return newSet;
+        });
+    }
+  };
+  // --- End Delete Custom Package Logic ---
 
-        {!isEditingTemplate && (
-          <div className="mb-4">
-            <Label htmlFor="packageName">Package Name</Label>
-            <Input
-              id="packageName"
-              value={packageBeingCustomEdited.name}
-              onChange={(e) =>
-                setPackageBeingCustomEdited((prev) =>
-                  prev ? { ...prev, name: e.target.value } : null
-                )
-              }
-            />
-          </div>
-        )}
 
-        <h3 className="text-lg font-semibold mb-3">Plans in Package</h3>
-        
-        {/* Render existing plans, cast to PlanInEditor for the editor component */}
-        {(packageBeingCustomEdited.plans as PlanInEditor[]).map((plan) => (
-          <PlanEditorCard
-            key={plan.id}
-            plan={plan}
-            onUpdate={(field, value) => handlePlanUpdate(plan.id!, field, value)}
-          />
-        ))}
+  // --- Template Modification Logic (Existing) ---
+  // State for package modification (only for templates)
+  const [modifyingPackageId, setModifyingPackageId] = useState<string | null>(null);
+  const [modifiedPlans, setModifiedPlans] = useState<InsurancePlan[]>([]);
 
-        {!isEditingTemplate && (
-          <>
-            <Separator className="my-4" />
-            <h3 className="text-lg font-semibold mb-3">Add New Plan</h3>
-            <Card className="p-4 bg-yellow-50 border-yellow-200">
-              {planEditorError && (
-                <p className="text-sm text-red-600 mb-2">{planEditorError}</p>
-              )}
-              <div className="grid grid-cols-4 gap-4">
-                <div>
-                  <Label>Plan Type</Label>
-                  <select
-                    className="w-full p-2 border rounded-md"
-                    value={newPlanForCustomEditor.type}
-                    onChange={(e) =>
-                      handlePlanTypeChangeInCustomEditor(
-                        e.target.value as InsuranceType
-                      )
-                    }
-                  >
-                    {Object.keys(CARRIERS).map((type) => (
-                      <option key={type} value={type}>
-                        {getPlanTypeLabel(type as InsuranceType)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label>Plan Title</Label>
-                  <Input
-                    value={newPlanForCustomEditor.title}
-                    onChange={(e) =>
-                      setNewPlanForCustomEditor((p) => ({
-                        ...p,
-                        title: e.target.value,
-                        name: e.target.value, // Keep 'name' updated with 'title'
-                      } as PlanInEditor))
-                    }
-                  />
-                </div>
-                <div>
-                  <Label>Carrier</Label>
-                  <select
-                    className="w-full p-2 border rounded-md"
-                    value={newPlanForCustomEditor.provider}
-                    onChange={(e) =>
-                      setNewPlanForCustomEditor((p) => ({
-                        ...p,
-                        provider: e.target.value,
-                      } as PlanInEditor))
-                    }
-                  >
-                    <option value="">Select Carrier</option>
-                    {CARRIERS[newPlanForCustomEditor.type].map((carrier) => (
-                      <option key={carrier} value={carrier}>
-                        {carrier}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label>Monthly Premium ($)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={newPlanForCustomEditor.monthlyPremium ?? 0}
-                    onChange={(e) =>
-                      setNewPlanForCustomEditor((p) => ({
-                        ...p,
-                        monthlyPremium: parseFloat(e.target.value) || 0,
-                      } as PlanInEditor))
-                    }
-                  />
-                </div>
-              </div>
-              <Button onClick={handleAddPlanToCustomPackage} className="mt-4">
-                <Plus className="w-4 h-4 mr-2" /> Add Plan to Package
-              </Button>
-            </Card>
-          </>
-        )}
 
-        <div className="mt-6 flex justify-between items-center">
-          <Button variant="outline" onClick={() => setPackageBeingCustomEdited(null)}>
-            Cancel
-          </Button>
-          <div className="text-xl font-bold">
-            Total: $
-            {packageBeingCustomEdited.plans
-              .reduce((sum, p) => sum + (p.monthlyPremium || 0), 0)
-              .toFixed(2)}
-            /mo
-          </div>
-          <Button
-            onClick={
-              isEditingTemplate ? handleSaveModification : handleSaveCustomPackage
-            }
-          >
-            {isEditingTemplate ? 'Save Modification' : 'Save Custom Package'}
-          </Button>
-        </div>
-      </Card>
+  const handleStartModify = (pkg: Package) => {
+    setModifyingPackageId(pkg.id);
+    // Deep clone the plans for modification
+    setModifiedPlans(pkg.plans.map(p => ({ ...p })));
+  };
+
+  const handlePlanUpdate = (planId: string, field: keyof InsurancePlan, value: any) => {
+    setModifiedPlans(prev => 
+      prev.map(p => (p.id === planId ? { ...p, [field]: value } : p))
     );
-  }
+  };
 
-  // ---------------------------------
-  // --- Main Package Selection UI ---
-  // ---------------------------------
+  const handleSaveModification = () => {
+    const originalPackage = availablePackages.find(p => p.id === modifyingPackageId);
+    if (!originalPackage) return;
+
+    // FIX: Map the modified plans into the required type: (Partial<InsurancePlan> & { id: string })[]
+    // 1. Filter to ensure the plan has an ID, which is required by the utility function.
+    // 2. Map to create the updates object, ensuring it includes 'id: string'.
+    const planUpdates = modifiedPlans
+      .filter((p): p is InsurancePlan & { id: string } => !!p.id)
+      .map(p => {
+          const originalPlan = originalPackage.plans.find(op => op.id === p.id);
+          
+          // The base structure the utility needs: { id: string }
+          const updates: Partial<InsurancePlan> & { id: string } = { id: p.id };
+          
+          // Build the updates object by comparing with the original plan
+          if (originalPlan) {
+              (Object.keys(p) as (keyof InsurancePlan)[]).forEach(key => {
+                // Check if the property changed and is not 'id'
+                if (key !== 'id' && p[key] !== originalPlan[key]) {
+                  // Only include the property if it was changed
+                  (updates as Record<string, unknown>)[key] = p[key];
+                }
+              });
+          }
+          
+          return updates;
+      })
+      // Only keep updates where something besides the ID was changed (i.e., keys > 1)
+      .filter(u => Object.keys(u).length > 1);
+      
+    // The type is now correctly inferred, no need for the final 'as' cast.
+    const updatedPkg = updatePackagePricing(originalPackage, planUpdates);
+
+    // Replace the old package with the updated one in the available list
+    setAvailablePackages(prev => 
+      prev.map(p => (p.id === modifyingPackageId ? updatedPkg : p))
+    );
+
+    // Close the modal
+    setModifyingPackageId(null);
+  };
+  // Find the package being modified to display in the modal
+  const packageToModify = availablePackages.find(p => p.id === modifyingPackageId);
+  // --- End Template Modification Logic ---
+
+
   return (
-    <div className="p-4 bg-white rounded-lg shadow-xl">
-      <h2 className="text-2xl font-semibold mb-6">
-        2. Select Insurance Packages
-      </h2>
+    <div className="p-4 sm:p-6 lg:p-8 bg-white rounded-lg shadow-xl">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">2. Select Insurance Packages</h2>
+      <p className="mb-6 text-gray-600">
+        Review the package options and select the combination that best fits {client.name}'s needs.
+      </p>
 
+      {/* Available Packages Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {availablePackages.map((pkg) => {
           const isSelected = selectedPackageIds.has(pkg.id);
           const isTemplate = isTemplatePackage(pkg);
 
-          // Use the package ID as the key for rendering stability
-          const displayKey = pkg.id;
-
           return (
             <Card
-              key={displayKey}
-              className={`border-2 ${
-                isSelected
-                  ? 'border-indigo-500 ring-4 ring-indigo-200'
-                  : 'border-gray-200 hover:border-indigo-400'
-              }`}
+              key={pkg.id}
+              className={`
+                transition-all duration-300 cursor-pointer 
+                ${isSelected 
+                  ? 'border-4 border-indigo-500 shadow-xl ring-4 ring-indigo-200' 
+                  : 'border-2 border-gray-200 hover:border-indigo-400 hover:shadow-lg'}
+              `}
             >
-              <CardHeader className="flex justify-between items-center">
-                <div
-                  onClick={() => handlePackageToggle(pkg.id)}
-                  className="flex items-center gap-2 cursor-pointer"
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 border-b">
+                {/* This div now handles the toggle for the whole clickable area of the title/checkbox. */}
+                <div 
+                    className="flex items-center space-x-2 flex-1 min-w-0 pr-4 cursor-pointer"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handlePackageToggle(pkg.id);
+                    }}
                 >
-                  <Checkbox checked={isSelected} />
-                  <CardTitle>{pkg.name}</CardTitle>
+                    <Checkbox
+                        checked={isSelected}
+                        className="w-5 h-5 rounded-md border-indigo-500"
+                    />
+                    <CardTitle className="text-xl font-bold text-gray-900 truncate">{pkg.name}</CardTitle>
                 </div>
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    isTemplate
-                      ? handleStartModificationEdit(pkg)
-                      : handleStartCustomEdit(pkg)
-                  }
-                  title={
-                    isTemplate
-                      ? 'Modify Template Pricing'
-                      : 'Edit Custom Package'
-                  }
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
+                <div className="flex items-center space-x-1 flex-shrink-0">
+                    {/* Edit button: For Templates (price modification) or Custom (full edit) */}
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={(e) => { 
+                            e.stopPropagation(); 
+                            if (isTemplate) {
+                                handleStartModify(pkg); // Existing template price modifier
+                            } else {
+                                handleStartCustomEdit(pkg); // New full custom editor
+                            }
+                        }}
+                        title={isTemplate ? "Modify Plan Pricing/Details" : "Edit Custom Package"}
+                        className="text-gray-500 hover:text-indigo-600"
+                    >
+                        <Edit className="w-4 h-4" />
+                    </Button>
+
+                    {/* Delete button: Only for custom packages (non-templates) */}
+                    {!isTemplate && (
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={(e) => { e.stopPropagation(); handleDeleteCustomPackage(pkg.id); }}
+                            title="Delete Custom Package"
+                            className="text-red-500 hover:text-red-700"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    )}
+                </div>
               </CardHeader>
-              <CardContent>
-                <p>{pkg.description}</p>
-                <p className="font-bold text-indigo-600">
-                  ${pkg.totalMonthlyPremium.toFixed(2)}/mo
-                </p>
-                <Separator className="my-2" />
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {pkg.plans.map((plan) => (
-                    <Badge key={plan.id} variant="secondary">
-                      {getPlanTypeLabel(plan.type)}
-                    </Badge>
-                  ))}
+              {/* CardContent click handles selection if user clicks on plan details instead of header */}
+              <CardContent 
+                className="p-4 cursor-pointer"
+                onClick={() => handlePackageToggle(pkg.id)}
+              >
+                <p className="text-sm text-gray-500 mb-3">{pkg.description}</p>
+                <div className="text-center mb-4">
+                  <span className="text-3xl font-extrabold text-indigo-600">
+                    ${pkg.totalMonthlyPremium.toLocaleString()}
+                  </span>
+                  <span className="text-base text-gray-600">/mo</span>
                 </div>
+                <Separator className="mb-3" />
+                <ul className="space-y-2 text-sm">
+                  {pkg.plans.map((plan, index) => (
+                    <li 
+                      key={index} 
+                      className="flex items-center justify-between space-x-2 w-full"
+                    >
+                      {/* Left Side: Icon and Title. Added flex-1 and min-w-0 to title to ensure proper truncation */}
+                      <div className="flex items-center space-x-2 min-w-0 flex-1">
+                        <div className="flex items-center flex-shrink-0">
+                          {getPlanIcon(plan.type)}
+                        </div>
+                        <span className="font-medium truncate min-w-0">{plan.title}</span> 
+                      </div>
+                      
+                      {/* Right Side: Carrier Logo and Name. Used flex-shrink-0 and constrained image/text. */}
+                      <div className="flex items-center space-x-1 text-gray-700 flex-shrink-0">
+                          <Image
+                              src={getCarrierLogo(plan.provider)}
+                              alt={`${plan.provider} Logo`}
+                              width={75}
+                              height={20}
+                              // max-w-[60px] helps constrain the logo's space
+                              className="object-contain h-4 max-w-[60px] w-auto" 
+                          />
+                          {/* Hidden on default/sm, visible on md and up. Added truncate for extra safety. */}
+                          <span className="text-xs font-normal hidden md:inline truncate">{plan.provider}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
           );
         })}
 
-        <Card
-          className="border-dashed border-gray-400 cursor-pointer hover:border-indigo-500"
-          onClick={handleStartNewCustomPackage}
+        {/* Add New Custom Package Card */}
+        <Card 
+            className="border-2 border-dashed border-gray-300 flex items-center justify-center p-6 cursor-pointer hover:border-indigo-500 transition-colors"
+            onClick={handleStartNewCustomPackage}
         >
-          <div className="text-center py-10 text-gray-600">
-            <Plus className="mx-auto mb-2" />
-            Create Custom Package
-          </div>
+            <div className="text-center text-gray-500 hover:text-indigo-600">
+                <Plus className="w-8 h-8 mx-auto mb-2" />
+                <p className="font-semibold">Create New Custom Package</p>
+            </div>
         </Card>
       </div>
 
-      <div className="flex justify-between mt-8">
-        <Button variant="outline" onClick={onBack}>
-          Back
-        </Button>
-        <Button
-          disabled={selectedPackageIds.size === 0}
-          onClick={() =>
-            onSubmit(
-              Array.from(selectedPackageIds)
-                .map(getPackageToDisplay)
-                .filter((p): p is Package => !!p)
-            )
-          }
+      <Separator className="my-8" />
+
+      {/* Quote Summary */}
+      <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
+        <h3 className="text-xl font-semibold mb-3 text-gray-800">Quote Summary</h3>
+        <p className="text-lg">
+          Packages Selected: <strong className="text-indigo-600">{selectedPackageIds.size}</strong>
+        </p>
+        <p className="text-2xl mt-1 font-bold">
+          Total Monthly Premium: 
+          <span className="text-green-600 ml-2">${totalSelectedValue.toLocaleString()}</span>/mo
+        </p>
+      </div>
+
+      <div className="flex justify-between pt-6">
+        <Button variant="outline" onClick={onBack}>Back</Button>
+        <Button 
+            onClick={() => onSubmit(Array.from(selectedPackageIds).map(getPackageToDisplay).filter((pkg): pkg is Package => pkg !== undefined))}
+            disabled={selectedPackageIds.size === 0}
+            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
         >
-          Continue ({selectedPackageIds.size})
+            Continue ({selectedPackageIds.size} Package{selectedPackageIds.size !== 1 ? 's' : ''})
         </Button>
       </div>
+
+      {/* Modal for Creating/Editing Custom Package (Unified Editor) */}
+      {packageBeingCustomEdited && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-2xl">
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {isTemplatePackage(packageBeingCustomEdited) ? 'Create Custom Package' : 'Edit Custom Package'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 max-h-[80vh] overflow-y-auto">
+              {/* Package Details */}
+              <Label htmlFor="pkg-name">Package Name</Label>
+              <Input 
+                id="pkg-name" 
+                value={packageBeingCustomEdited.name} 
+                onChange={e => setPackageBeingCustomEdited(prev => prev ? ({...prev, name: e.target.value}) : null)} 
+                placeholder="e.g., Premier Custom Health Plan"
+              />
+              <Label htmlFor="pkg-desc">Description</Label>
+              <Textarea 
+                id="pkg-desc" 
+                value={packageBeingCustomEdited.description} 
+                onChange={e => setPackageBeingCustomEdited(prev => prev ? ({...prev, description: e.target.value}) : null)} 
+                placeholder="A brief description of this package."
+              />
+              
+              <Separator />
+
+              {/* Plans in Package List (Editable) */}
+              <h4 className="text-lg font-semibold">
+                Plans in Package ({packageBeingCustomEdited.plans.length})
+                <span className="text-sm font-normal ml-2 text-gray-500">
+                    Total: ${packageBeingCustomEdited.totalMonthlyPremium.toLocaleString()}
+                </span>
+              </h4>
+              <div className="p-3 border rounded bg-gray-50 max-h-40 overflow-y-auto">
+                {packageBeingCustomEdited.plans.map(p => (
+                  <div key={p.id} className="flex flex-col space-y-2 py-2 border-b last:border-b-0">
+                    <div className="flex justify-between items-center w-full">
+                        <div className="flex items-center space-x-2">
+                            <span className="font-medium text-gray-800">{p.name}</span>
+                            <Badge variant="secondary">{p.provider}</Badge>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Input 
+                                type="number"
+                                value={p.monthlyPremium}
+                                onChange={(e) => {
+                                    const newPremium = parseFloat(e.target.value) || 0;
+                                    // Use non-null assertion '!' here as plans in the editor state should have an ID
+                                    handleUpdatePlanPremiumInCustomPackage(p.id!, newPremium);
+                                }}
+                                className="w-24 text-right h-8"
+                            />
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                // Use non-null assertion '!' here as plans in the editor state should have an ID
+                                onClick={() => handleRemovePlanFromCustomPackage(p.id!)}
+                                className="w-7 h-7 text-red-500 hover:text-red-700"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
+                    {p.details && <p className="text-xs text-gray-500 italic">{p.details}</p>}
+                  </div>
+                ))}
+                {packageBeingCustomEdited.plans.length === 0 && (
+                  <p className="text-sm text-gray-500 text-center py-4">No plans added to this package yet.</p>
+                )}
+              </div>
+
+              <Separator />
+              <h4 className="text-lg font-semibold">Add New Plan</h4>
+              
+              {/* NEW: Display Error Message */}
+              {planEditorError && (
+                <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-md text-sm">
+                  {planEditorError}
+                </div>
+              )}
+              
+              {/* Add New Plan Form */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <Label htmlFor="plan-type">Plan Type</Label>
+                    <select
+                        id="plan-type"
+                        value={newPlanForCustomEditor.type}
+                        onChange={e => handlePlanTypeChangeInCustomEditor(e.target.value as InsuranceType)}
+                        className="p-2 border rounded-md w-full"
+                    >
+                        {(Object.keys(CARRIERS) as InsuranceType[]).map(type => (
+                            <option key={type} value={type}>{getPlanTypeLabel(type)}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="space-y-1">
+                    <Label htmlFor="plan-provider">Provider/Carrier</Label>
+                    <select
+                        id="plan-provider"
+                        value={newPlanForCustomEditor.provider}
+                        onChange={e => setNewPlanForCustomEditor(prev => ({...prev, provider: e.target.value}))}
+                        className="p-2 border rounded-md w-full"
+                    >
+                        <option value="">Select Carrier</option>
+                        {(CARRIERS[newPlanForCustomEditor.type] || []).map(carrier => (
+                            <option key={carrier} value={carrier}>{carrier}</option>
+                        ))}
+                    </select>
+                </div>
+              </div>
+
+              <Label>Plan Title</Label>
+              <Input 
+                value={newPlanForCustomEditor.title} 
+                onChange={e => setNewPlanForCustomEditor(prev => ({...prev, title: e.target.value}))} 
+                placeholder="e.g., Gold PPO 500"
+              />
+
+              <Label>Monthly Premium ($)</Label>
+              <Input 
+                type="number" 
+                value={newPlanForCustomEditor.monthlyPremium || ''} 
+                onChange={e => setNewPlanForCustomEditor(prev => ({...prev, monthlyPremium: parseFloat(e.target.value) || 0}))} 
+                placeholder="150.00"
+              />
+
+              {/* Conditional Inputs based on Plan Type (Simplified) */}
+              {newPlanForCustomEditor.type === 'health' && (
+                <>
+                  <Label>Deductible</Label>
+                  <Input type="number" value={newPlanForCustomEditor.deductible ?? ''} onChange={e => setNewPlanForCustomEditor(prev => ({...prev, deductible: parseInt(e.target.value) || 0}))} />
+                  <Label>Out-of-Pocket Max</Label>
+                  <Input type="number" value={newPlanForCustomEditor.outOfPocketMax ?? ''} onChange={e => setNewPlanForCustomEditor(prev => ({...prev, outOfPocketMax: parseInt(e.target.value) || 0}))} />
+                </>
+              )}
+
+              {newPlanForCustomEditor.type === 'life' && (
+                <>
+                  <Label>Term (Years)</Label>
+                  <Input 
+                    value={newPlanForCustomEditor.term ?? ''} 
+                    onChange={e => {
+                        // FIX: Clean non-numeric characters to ensure only the number of years is saved
+                        const cleanValue = e.target.value.replace(/[^0-9]/g, '');
+                        setNewPlanForCustomEditor(prev => ({...prev, term: cleanValue}))
+                    }} 
+                  />
+                   <Label>Coverage Amount ($)</Label>
+                  <Input 
+                    // Changed type to text to allow custom formatting
+                    type="text" 
+                    // Format the value for display as a currency string (e.g., $100,000)
+                    value={newPlanForCustomEditor.deathBenefit ? `$${String(newPlanForCustomEditor.deathBenefit).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}` : ''} 
+                    onChange={e => {
+                        // Remove non-digit characters (like $, commas) before updating state
+                        const cleanValue = e.target.value.replace(/[^0-9]/g, '');
+                        setNewPlanForCustomEditor(prev => ({
+                            ...prev, 
+                            deathBenefit: cleanValue
+                        }))
+                    }} 
+                    placeholder="e.g., 250,000"
+                  />
+                </>
+              )}
+              
+              <Label>Summary</Label>
+              <Textarea 
+                value={newPlanForCustomEditor.coverage as string || 
+                       (newPlanForCustomEditor.type === 'life' 
+                          ? 'Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.' 
+                          : '')
+                      } 
+                onChange={e => setNewPlanForCustomEditor(prev => ({...prev, coverage: e.target.value}))} 
+                placeholder={newPlanForCustomEditor.type === 'life' 
+                             ? 'Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.' 
+                             : 'e.g., $10 Copay, $50 Specialist, Free Annual Exam'}
+              />
+
+
+              <Button onClick={handleAddPlanToCustomPackage} className="mt-2 bg-green-500 hover:bg-green-600">Add Plan to Package</Button>
+            </CardContent>
+
+            <div className="flex justify-end space-x-2 p-4 border-t">
+              <Button variant="outline" onClick={() => setPackageBeingCustomEdited(null)}>Cancel</Button>
+              <Button 
+                onClick={handleSaveCustomPackage} 
+                className="bg-indigo-600 hover:bg-indigo-700" 
+                disabled={!packageBeingCustomEdited.name || packageBeingCustomEdited.plans.length === 0}
+              >
+                Save Package
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Modal for Modifying Template Package (Pricing Only - Existing Logic) */}
+      {modifyingPackageId && packageToModify && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <Card className="w-full max-w-4xl">
+                  <CardHeader>
+                      <CardTitle className="text-2xl">Modify Package: {packageToModify.name}</CardTitle>
+                      <p className="text-sm text-gray-500">Adjust the pricing or details for this quote only. Original template is unaffected.</p>
+                  </CardHeader>
+                  <CardContent className="space-y-6 max-h-[70vh] overflow-y-auto">
+                      {modifiedPlans.map(plan => (
+                          <div key={plan.id} className="border p-4 rounded-lg space-y-3 bg-gray-50">
+                              {/* UPDATED: Display Plan Title with Carrier Logo and Name - using flex-1 and justify-between for responsiveness */}
+                              <h4 className="text-lg font-semibold flex items-center justify-between space-x-2">
+                                  <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                      {getPlanIcon(plan.type)}
+                                      <Image
+                                          src={getCarrierLogo(plan.provider)}
+                                          alt={`${plan.provider} Logo`}
+                                          width={75}
+                                          height={20}
+                                          className="object-contain h-4 w-auto" 
+                                      />
+                                      <span className="truncate">{plan.title}</span>
+                                  </div>
+                                  <div className="text-gray-500 text-sm flex-shrink-0">
+                                      ({getPlanTypeLabel(plan.type)})
+                                  </div>
+                              </h4>
+                              
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                                  {/* Monthly Premium Adjustment */}
+                                  <div className="space-y-1">
+                                      <Label htmlFor={`premium-${plan.id}`} className="font-medium text-gray-700">
+                                          Monthly Premium ($)
+                                      </Label>
+                                      <Input
+                                          id={`premium-${plan.id}`}
+                                          type="number"
+                                          value={plan.monthlyPremium || ''}
+                                          onChange={e => handlePlanUpdate(plan.id!, 'monthlyPremium', parseFloat(e.target.value) || 0)}
+                                          placeholder="0.00"
+                                          className="text-base"
+                                      />
+                                  </div>
+                                  
+                                  {/* Deductible Adjustment (Only for Health/Catastrophic/HealthShare plans) */}
+                                  {(plan.type === 'health' || plan.type === 'catastrophic' || plan.type === 'healthShare') && (
+                                      <div className="space-y-1">
+                                          <Label htmlFor={`deductible-${plan.id}`} className="font-medium text-gray-700">
+                                              Deductible
+                                          </Label>
+                                          <Input
+                                              id={`deductible-${plan.id}`}
+                                              type="number"
+                                              onChange={e => handlePlanUpdate(plan.id!, 'deductible', parseInt(e.target.value) || 0)}
+                                              placeholder="0"
+                                              className="text-base"
+                                          />
+                                      </div>
+                                  )}
+
+                                  {/* Coinsurance Adjustment (Only for Health/Catastrophic/HealthShare plans) */}
+                                  {(plan.type === 'health' || plan.type === 'catastrophic' || plan.type === 'healthShare') && (
+                                      <div className="space-y-1">
+                                          <Label htmlFor={`coinsurance-${plan.id}`} className="font-medium text-gray-700">
+                                              Coinsurance (%)
+                                          </Label>
+                                          <Input
+                                              id={`coinsurance-${plan.id}`}
+                                              type="number"
+                                              value={plan.coinsurance || ''}
+                                              onChange={e => handlePlanUpdate(plan.id!, 'coinsurance', parseInt(e.target.value) || 0)}
+                                              placeholder="20"
+                                              className="text-base"
+                                          />
+                                      </div>
+                                  )}
+
+                                  {/* Out-of-Pocket Max Adjustment (Only for Health/Catastrophic plans) */}
+                                  {(plan.type === 'health' || plan.type === 'catastrophic') && (
+                                      <div className="space-y-1">
+                                          <Label htmlFor={`oop-max-${plan.id}`} className="font-medium text-gray-700">
+                                              Out-of-Pocket Max
+                                          </Label>
+                                          <Input
+                                              id={`oop-max-${plan.id}`}
+                                              type="number"
+                                              value={plan.outOfPocketMax || ''}
+                                              onChange={e => handlePlanUpdate(plan.id!, 'outOfPocketMax', parseInt(e.target.value) || 0)}
+                                              placeholder="0"
+                                              className="text-base"
+                                          />
+                                      </div>
+                                  )}
+
+                                  {/* Co-pays for Health Plans (New Fields) */}
+                                  {(plan.type === 'health' || plan.type === 'catastrophic' || plan.type === 'healthShare') && (
+                                      <>
+                                          {/* Primary Care Co-pay */}
+                                          <div className="space-y-1">
+                                              <Label htmlFor={`pcp-copay-${plan.id}`} className="font-medium text-gray-700">
+                                                  Primary Care Co-pay ($)
+                                              </Label>
+                                              <Input
+                                                  id={`pcp-copay-${plan.id}`}
+                                                  type="number"
+                                                  value={plan.primaryCareCopay || ''}
+                                                  onChange={e => handlePlanUpdate(plan.id!, 'primaryCareCopay', parseInt(e.target.value) || 0)}
+                                                  placeholder="30"
+                                                  className="text-base"
+                                              />
+                                          </div>
+
+                                          {/* Specialist Co-pay */}
+                                          <div className="space-y-1">
+                                              <Label htmlFor={`spec-copay-${plan.id}`} className="font-medium text-gray-700">
+                                                  Specialist Co-pay ($)
+                                              </Label>
+                                              <Input
+                                                  id={`spec-copay-${plan.id}`}
+                                                  type="number"
+                                                  value={plan.specialistCopay || ''}
+                                                  onChange={e => handlePlanUpdate(plan.id!, 'specialistCopay', parseInt(e.target.value) || 0)}
+                                                  placeholder="60"
+                                                  className="text-base"
+                                              />
+                                          </div>
+
+                                          {/* Generic Drug Co-pay */}
+                                          <div className="space-y-1">
+                                              <Label htmlFor={`drug-copay-${plan.id}`} className="font-medium text-gray-700">
+                                                  Generic Drug Co-pay ($)
+                                              </Label>
+                                              <Input
+                                                  id={`drug-copay-${plan.id}`}
+                                                  type="number"
+                                                  value={plan.genericDrugCopay || ''}
+                                                  onChange={e => handlePlanUpdate(plan.id!, 'genericDrugCopay', parseInt(e.target.value) || 0)}
+                                                  placeholder="10"
+                                                  className="text-base"
+                                              />
+                                          </div>
+                                      </>
+                                  )}
+                                  
+                                  {/* Coverage/Details Summary Modification (Textarea) */}
+                                  <div className="space-y-1 col-span-full">
+                                      <Label htmlFor={`details-${plan.id}`} className="font-medium text-gray-700">
+                                          Plan Details Summary
+                                      </Label>
+                                      <Textarea
+                                          id={`details-${plan.id}`}
+                                          value={plan.details || ''}
+                                          onChange={e => handlePlanUpdate(plan.id!, 'details', e.target.value)}
+                                          placeholder="Brief summary of coverage or benefits."
+                                          rows={2}
+                                          className="text-sm"
+                                      />
+                                  </div>
+                              </div>
+                          </div>
+                      ))}
+                  </CardContent>
+                  <div className="flex justify-end space-x-2 p-4 border-t">
+                      <Button variant="outline" onClick={() => setModifyingPackageId(null)}>Cancel</Button>
+                      <Button onClick={handleSaveModification} className="bg-indigo-600 hover:bg-indigo-700">Apply Changes</Button>
+                  </div>
+              </Card>
+          </div>
+      )}
     </div>
   );
 }
