@@ -98,6 +98,9 @@ const isTemplatePackage = (pkg: Package) => PACKAGE_TEMPLATES.some(t => t.name =
 // --- End Helper Functions ---
 
 
+// Define a union type for all possible InsurancePlan property values for the setter function
+type InsurancePlanValue = InsurancePlan[keyof InsurancePlan];
+
 export function PackageSelection({ client, initialPackages, onSubmit, onBack }: PackageSelectionProps) {
   // All packages available to select (templates + custom ones added by user)
   const [availablePackages, setAvailablePackages] = useState<Package[]>(() => {
@@ -154,7 +157,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     title: '',
     provider: '',
     monthlyPremium: 0,
-  }); // Removed 'as any'
+  }); 
 
   // NEW STATE: Error message for the plan builder
   const [planEditorError, setPlanEditorError] = useState<string | null>(null);
@@ -200,7 +203,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
         title: '',
         provider: '',
         monthlyPremium: 0,
-    }); // Removed 'as any'
+    }); 
     setPlanEditorError(null); // Reset error state
   };
 
@@ -217,7 +220,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
           title: '',
           provider: '',
           monthlyPremium: 0,
-      }); // Removed 'as any'
+      }); 
       setPlanEditorError(null); // Reset error state
   };
 
@@ -229,7 +232,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       title: '',
       provider: '',
       monthlyPremium: 0,
-    }); // Removed 'as any'
+    }); 
     setPlanEditorError(null); // Clear error on interaction
   };
 
@@ -246,7 +249,9 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     setPlanEditorError(null); // Clear error on success
 
     const planToAdd: InsurancePlan = {
-      ...currentPlan as InsurancePlan,
+      // Cast currentPlan to InsurancePlan, relying on the state flow to ensure required fields (id, name, type, provider, monthlyPremium) are present.
+      // Note: We set 'name' explicitly below, as 'title' is temporary.
+      ...(currentPlan as InsurancePlan),
       id: generateId(),
       name: currentPlan.title,
       details: currentPlan.details || '',
@@ -269,7 +274,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       title: '',
       provider: '',
       monthlyPremium: 0,
-    }); // Removed 'as any'
+    }); 
   };
   
   const handleRemovePlanFromCustomPackage = (planId: string) => {
@@ -360,7 +365,8 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     setModifiedPlans(pkg.plans.map(p => ({ ...p })));
   };
 
-  const handlePlanUpdate = (planId: string, field: keyof InsurancePlan, value: any) => {
+  // FIX: Line 363 Error: Replaced `value: any` with the type-safe `value: InsurancePlanValue`
+  const handlePlanUpdate = (planId: string, field: keyof InsurancePlan, value: InsurancePlanValue) => {
     setModifiedPlans(prev => 
       prev.map(p => (p.id === planId ? { ...p, [field]: value } : p))
     );
@@ -866,7 +872,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                                   )}
 
                                   {/* Co-pays for Health Plans (New Fields) */}
-                                  {(plan.type === 'health' || plan.type === 'catastrophic' || plan.type === 'healthShare') && (
+                                  {(plan.type === 'health') && (
                                       <>
                                           {/* Primary Care Co-pay */}
                                           <div className="space-y-1">
