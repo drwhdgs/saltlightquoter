@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Salt & Light Quoter",
+  title: "QuoteDeck — The Simplest Way to Quote, Bundle, and Send Insurance Plans",
   description:
-    "Easily create and share health insurance quotes for clients with Salt & Light Insurance Group. Send quotes via email or SMS with pre-filled package options and shareable links.",
+    "Simplify your sales process with QuoteDeck. Create, customize, and send insurance quotes in minutes — with ready-to-send package options and links clients can view from any device.",
   icons: {
     icon: [
       { url: "/favicon.png" }, // standard .ico favicon
