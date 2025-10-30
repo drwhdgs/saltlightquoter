@@ -55,7 +55,7 @@ export interface InsurancePlan {
 }
 
 export type PackageName =
-  | "Bronze"
+  | "ACA Bronze"
   | "ACA Silver"
   | "Gold"
   | "Healthy Bundle"
@@ -119,6 +119,52 @@ export const formatEffectiveDateUS = (isoDate?: string) => {
 
 // ✅ --- PACKAGE TEMPLATES ---
 export const PACKAGE_TEMPLATES: PackageTemplate[] = [
+  {
+    name: "ACA Bronze",
+    description:
+      "",
+    planTypes: ["health", "dental", "vision", "life", "outOfPocket"],
+    defaultPlans: [
+      withEffectiveDate({
+        type: "health",
+        name: "ACA Health Insurance",
+        title: "Molina Bronze - HMO",
+        provider: "ACA",
+        monthlyPremium: 0,
+        deductible: 0,
+        outOfPocketMax: 4000,
+        coinsurance: 30,
+        details:
+          "Provides enhanced coverage with moderate premiums and cost-sharing, balancing benefits and affordability for typical medical care.",
+        primaryCareCopay: 0,
+        specialistCopay: 0,
+        genericDrugCopay: 0,
+      }),
+      withEffectiveDate({
+        type: "dental",
+        name: "Dental & Vision",
+        title: "Ameritas Primestar",
+        provider: "Ameritas",
+        monthlyPremium: 39.02,
+        deductible: 50,
+        details: "Preventive and basic dental and vision care",
+        brochureUrl:
+          "https://apps.topbrokercrm.com/storage/files/rXVEfxXCKgmpqdxZUivjLLWHv9W5WVxEWbrXG0UQ.pdf",
+      }),
+      withEffectiveDate({
+        type: "life",
+        name: "Life Insurance",
+        title: "Term Made Simple",
+        provider: "American Amicable",
+        monthlyPremium: 0,
+        coverage: "$25,000 term life insurance",
+        details:
+          "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
+        brochureUrl:
+          "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
+      }),
+    ],
+  },
   {
     name: "ACA Silver",
     description:
