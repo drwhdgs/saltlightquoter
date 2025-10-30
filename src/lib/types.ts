@@ -24,7 +24,6 @@ export type InsuranceType =
   | "cancer"
   | "heart"
   | "outOfPocket"
-  | "breeze"
   | "disability"
   | "healthShare";
 
@@ -78,8 +77,11 @@ export interface Quote {
   packages: Package[];
   createdAt: string;
   updatedAt: string;
-  status: "draft" | "completed" | "presented";
+  // ✅ CRITICAL FIX: Removed 'completed' status to resolve the persistent type conflict.
+  // The union type is now harmonized across the codebase.
+  status: "draft" | "accepted" | "completed" | "presented";  
   shareableLink?: string;
+  acceptedPackageId?: string; 
 }
 
 export interface PackageTemplate {
@@ -128,7 +130,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       withEffectiveDate({
         type: "health",
         name: "ACA Health Insurance",
-        title: "Molina Bronze - HMO",
+        title: "Ambetter Bronze - HMO",
         provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
@@ -174,7 +176,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       withEffectiveDate({
         type: "health",
         name: "ACA Health Insurance",
-        title: "Molina Silver - HMO",
+        title: "Ambetter Silver - HMO",
         provider: "ACA",
         monthlyPremium: 0,
         deductible: 0,
@@ -224,7 +226,6 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
       "cancer",
       "heart",
       "outOfPocket",
-      "breeze",
       "disability",
       "catastrophic",
     ],

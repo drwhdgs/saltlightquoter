@@ -1,3 +1,5 @@
+// ./src/lib/storage.ts
+
 import { Agent, Quote, Client, Package, InsurancePlan, PACKAGE_TEMPLATES } from './types';
 import pako from 'pako';
 
@@ -14,6 +16,40 @@ const STORAGE_KEYS = {
   QUOTES: 'insurance_quotes',
   CURRENT_AGENT: 'current_agent',
 } as const;
+
+// Add this to ./src/lib/storage.ts
+
+export const updateClientInQuotes = (updatedClient: string, oldEmail: string, newClientData: Client): void => {
+  if (typeof window === 'undefined') return;
+
+  const agent = getCurrentAgent(); // Assuming getCurrentAgent exists
+  if (!agent) {
+    console.error('No current agent found.');
+    return;
+  }
+
+  const quotesKey = `insurance_quotes_${agent.id}`; // Assuming STORAGE_KEYS are correctly defined
+  const storedQuotes = localStorage.getItem(quotesKey);
+  if (!storedQuotes) return;
+
+  let quotes: Quote[] = JSON.parse(storedQuotes);
+  let quotesUpdated = false;
+
+  // Update the client object in all matching quotes
+  quotes = quotes.map(quote => {
+    if (quote.client.email === oldEmail) {
+      quotesUpdated = true;
+      // Replace the client object entirely. This handles an email change as well.
+      return { ...quote, client: newClientData, updatedAt: new Date().toISOString() };
+    }
+    return quote;
+  });
+
+  if (quotesUpdated) {
+    localStorage.setItem(quotesKey, JSON.stringify(quotes));
+    console.log(`Updated client data for all quotes associated with ${oldEmail}.`);
+  }
+};
 
 // -------------------- Agent Management --------------------
 export const saveAgent = (agent: Agent): void => {
@@ -68,6 +104,38 @@ export const getQuoteById = (id: string): Quote | null => {
 export const deleteQuote = (id: string): void => {
   const quotes = getQuotes().filter((q) => q.id !== id);
   localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify(quotes));
+};
+
+/**
+ * Finds a quote by its ID and merges in partial updates.
+ * Saves the updated list back to localStorage.
+ */
+export const updateQuote = (quoteId: string, updates: Partial<Quote>): Quote | null => {
+  const allQuotes = getQuotes(); 
+  let updatedQuote: Quote | null = null;
+
+  const updatedQuotes = allQuotes.map(quote => {
+    if (quote.id === quoteId) {
+      // Found the quote, apply the updates
+      updatedQuote = {
+        ...quote,
+        ...updates,
+        updatedAt: new Date().toISOString() // Good practice to track updates
+      };
+      return updatedQuote;
+    }
+    return quote;
+  });
+
+  if (updatedQuote) {
+    // If we successfully updated a quote, save the new array
+    localStorage.setItem(STORAGE_KEYS.QUOTES, JSON.stringify(updatedQuotes));
+  } else {
+    console.error(`[updateQuote] Quote with id "${quoteId}" not found.`);
+  }
+
+  // Return the modified quote
+  return updatedQuote;
 };
 
 // -------------------- Utility --------------------
@@ -253,6 +321,11 @@ const ultraDecodeAndDecompress = (
     // Combine both lists
     const allPackages = [...templatePackages, ...customPackages];
 
+    // NOTE: This decompression function does NOT reconstruct the full Quote object (e.g., status, agentId, acceptedPackageId). 
+    // It only reconstructs the data necessary to view the quote (client, packages, createdAt).
+    // The main dashboard and list components rely on the Quote object stored in localStorage,
+    // which is handled by saveQuote/updateQuote.
+
     return { client, packages: allPackages, createdAt: new Date(compressed.t).toISOString() };
   } catch (err) {
     console.error('Decompression Error:', err);
@@ -278,6 +351,7 @@ export const getQuoteDataByShortId = decodeQuoteFromUrl;
 export const generateShareableLink = (quote: Quote): string => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
   try {
+    // Only essential data is compressed for the URL
     const encoded = ultraCompressAndEncode({
       client: quote.client,
       packages: quote.packages,
