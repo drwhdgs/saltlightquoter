@@ -1,20 +1,78 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+
+// Define a type for a Lucide icon component
+type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>;
+
+// --- Interface Definitions for Mock Components ---
+// Define specific prop types for the mocked components
+interface ButtonProps {
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; // Explicitly typing the mouse event
+  children: React.ReactNode;
+  className?: string;
+  variant?: 'ghost' | 'outline';
+  size?: 'icon' | 'default';
+  title?: string;
+}
+
+interface BadgeProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface SeparatorProps {
+  className?: string;
+}
+// --- End Interface Definitions ---
+
+
+// Mocking external component imports to make the file self-contained and runnable
+// The prop types are now explicitly defined.
+const Button = ({ onClick, children, className = '', title }: ButtonProps) => (
+  <button 
+    onClick={onClick} 
+    className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${className}`} 
+    title={title}
+  >
+    {children}
+  </button>
+);
+
+const Badge = ({ children, className = '' }: BadgeProps) => (
+  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>{children}</span>
+);
+
+const Separator = ({ className = '' }: SeparatorProps) => <div className={`h-px bg-gray-200 ${className}`} />;
+
 import {
   FileText,
   Plus,
   Settings,
   LogOut,
-  Users,
   BarChart3,
   Menu,
-  X
+  X,
+  Clock,
+  Users,
+  LayoutDashboard,
+  Zap,
+  Calendar,
+  LifeBuoy,
+  UserCircle
 } from 'lucide-react';
-import { Agent, Quote } from '@/lib/types';
+// Mocking Agent and Quote types for runnability
+interface Agent { name: string; email: string; }
+interface Quote { id: string; status: 'draft' | 'completed' | 'presented'; }
+
+// Define explicit Tailwind classes used for the theme
+const SIDEBAR_BG_CLASS = 'bg-[#1d2333]';
+const ACTIVE_BG_CLASS = 'bg-gray-700/50'; // Darker gray for active state contrast
+const ACTIVE_TEXT_COLOR = 'text-white';
+
+// ----------------------------------------------------------------------
+// SIDEBAR COMPONENT INTERFACES
+// ----------------------------------------------------------------------
 
 interface SidebarProps {
   agent: Agent;
@@ -25,181 +83,167 @@ interface SidebarProps {
   onLogout: () => void;
 }
 
-export function Sidebar({
-  agent,
-  quotes,
-  activeView,
-  onViewChange,
-  onQuoteSelect,
-  onLogout
-}: SidebarProps) {
+// ----------------------------------------------------------------------
+// SIDEBAR COMPONENT
+// ----------------------------------------------------------------------
+
+export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect, onLogout }: SidebarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const recentQuotes = quotes
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-    .slice(0, 5);
+  // Count drafts for the badge
+  const draftCount = quotes.filter(q => q.status === 'draft').length;
+  
+  // Define navigation items
+  const navItems: Array<{ name: string; icon: IconComponent; view: string; badge?: number }> = [ // FIX: Used IconComponent
+    { name: 'Dashboard', icon: LayoutDashboard, view: 'dashboard' },
+    // Type casting here ensures the badge property is correctly typed in the array
+    { name: 'My Quotes', icon: FileText, view: 'quotes', badge: draftCount },
+    { name: 'Analytics', icon: BarChart3, view: 'analytics' },
+    { name: 'Clients', icon: Users, view: 'clients' },
+    { name: 'Calendar', icon: Calendar, view: 'calendar' },
+  ];
 
-  const pendingQuotes = quotes.filter(q => q.status === 'draft').length;
+  const secondaryItems: Array<{ name: string; icon: IconComponent; view: string; badge?: number }> = [ // FIX: Used IconComponent
+    { name: 'Settings', icon: Settings, view: 'settings' },
+    { name: 'Help & Support', icon: LifeBuoy, view: 'help' },
+  ];
+
+  const handleViewChange = (view: string) => {
+    onViewChange(view);
+    setIsMobileOpen(false); // Close mobile sidebar on navigation
+  };
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-<div className="p-6 border-b flex items-center gap-4">
-  {/* Logo */}
-  <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-    <img
-      src="https://i.ibb.co/gbLRKXn3/662-815-0033-removebg-preview.png" // replace with your logo path
-      alt="Company Logo"
-      className="w-full h-full object-cover"
-    />
-  </div>
+    <div className={`flex flex-col flex-1 p-4 ${SIDEBAR_BG_CLASS} h-full`}>
+      {/* Logo Area */}
+      <div className="flex items-center justify-center h-16 mb-4">
+        {/* NOTE: If you are using this component in your app, replace the placeholder img tag 
+            with a proper logo component or path to your asset. */}
+        <img
+          src="/QuoteDeck2.png" 
+          alt="QuoteDeck Logo"
+          className="h-12 w-auto object-contain rounded-2xl"
+        />
+      </div>
 
-  {/* Title and Welcome */}
-  <div>
-    <h2 className="text-xl font-bold text-gray-900">Salt & Light Quoter</h2>
-    <p className="text-sm text-gray-600 mt-1">Welcome, {agent.name}</p>
-  </div>
-</div>
-
-
-      {/* Navigation */}
-      <div className="flex-1 p-4 space-y-2">
-        <Button
-          variant={activeView === 'new-quote' ? 'default' : 'ghost'}
-          className="w-full justify-start"
-          onClick={() => {
-            onViewChange('new-quote');
-            setIsMobileOpen(false);
-          }}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Quote
-          {pendingQuotes > 0 && (
-            <Badge variant="secondary" className="ml-auto">
-              {pendingQuotes}
-            </Badge>
-          )}
-        </Button>
-
+      {/* Main Navigation */}
+      <nav className="flex-1 space-y-2 py-2">
         
-        <Button
-          variant={activeView === 'dashboard' ? 'default' : 'ghost'}
-          className="w-full justify-start"
-          onClick={() => {
-            onViewChange('dashboard');
-            setIsMobileOpen(false);
-          }}
-        >
-          <BarChart3 className="w-4 h-4 mr-2" />
-          Dashboard
-        </Button>
-
-
-        <Button
-          variant={activeView === 'quotes' ? 'default' : 'ghost'}
-          className="w-full justify-start"
-          onClick={() => {
-            onViewChange('quotes');
-            setIsMobileOpen(false);
-          }}
-        >
-          <FileText className="w-4 h-4 mr-2" />
-          My Quotes
-          <Badge variant="outline" className="ml-auto">
-            {quotes.length}
-          </Badge>
-        </Button>
-
-        <Separator className="my-4" />
-
-        {/* Recent Quotes */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium text-gray-700 px-2">Recent Quotes</h3>
-          {recentQuotes.length === 0 ? (
-            <p className="text-xs text-gray-500 px-2">No quotes yet</p>
-          ) : (
-            recentQuotes.map((quote) => (
-              <Button
-                key={quote.id}
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start text-left h-auto p-2"
-                onClick={() => {
-                  onQuoteSelect(quote.id);
-                  setIsMobileOpen(false);
-                }}
-              >
-                <div className="flex flex-col items-start w-full">
-                  <span className="text-sm font-medium truncate w-full">
-                    {quote.client.name}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {new Date(quote.updatedAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <Badge
-                  variant={quote.status === 'completed' ? 'default' : 'secondary'}
-                  className="ml-2 text-xs"
-                >
-                  {quote.status}
+        {navItems.map((item) => {
+          const isActive = activeView === item.view;
+          return (
+            <div
+              key={item.view}
+              onClick={() => handleViewChange(item.view)}
+              // Applied rounded-xl for a more aggressive, pill-like corner on the item
+              className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors duration-150 group 
+                          ${isActive 
+                              ? `${ACTIVE_BG_CLASS} ${ACTIVE_TEXT_COLOR} font-semibold` 
+                              : 'text-gray-300 hover:bg-gray-700/30'
+                          }`}
+            >
+              <item.icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'}`} />
+              <span className="flex-1">{item.name}</span>
+              
+              {/* FIX: Badge component is correctly placed within JSX and type-guarded */}
+              {typeof item.badge === 'number' && item.badge > 0 && (
+                <Badge className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5">
+                  {item.badge}
                 </Badge>
-              </Button>
-            ))
-          )}
+              )}
+            </div>
+          );
+        })}
+
+        <Separator className="bg-gray-700 my-4" />
+
+        {secondaryItems.map((item) => {
+          const isActive = activeView === item.view;
+          return (
+            <div
+              key={item.view}
+              onClick={() => handleViewChange(item.view)}
+              // Applied rounded-xl for a more aggressive, pill-like corner on the item
+              className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors duration-150 group 
+                          ${isActive 
+                              ? `${ACTIVE_BG_CLASS} ${ACTIVE_TEXT_COLOR} font-semibold` 
+                              : 'text-gray-300 hover:bg-gray-700/30'
+                          }`}
+            >
+              <item.icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'}`} />
+              <span className="flex-1">{item.name}</span>
+              {/* No badge logic needed here */}
+            </div>
+          );
+        })}
+      </nav>
+
+      {/* Upgrade CTA */}
+      <div className="mt-auto p-4 bg-gray-800 rounded-xl text-center shadow-inner">
+        <Zap className="w-6 h-6 mx-auto text-yellow-400 mb-2" />
+        <h3 className="font-bold text-white text-sm">Unlock Pro Features</h3>
+        <p className="text-xs text-gray-400 mt-1">Access advanced analytics and unlimited clients.</p>
+        <Button 
+          className="mt-3 w-full bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold"
+        >
+          Upgrade Now
+        </Button>
+      </div>
+
+
+      {/* User Profile and Logout */}
+      <div className="mt-4 pt-4 border-t border-gray-700">
+        <div className="flex items-center justify-between p-2">
+          <div className="flex items-center space-x-3">
+            <UserCircle className="w-8 h-8 text-gray-400" />
+            <div>
+              <p className="text-sm font-semibold text-white">{agent.name}</p>
+              <p className="text-xs text-gray-400 truncate">{agent.email}</p>
+            </div>
+          </div>
+          <Button
+              // Since the mock component doesn't use variant/size, we only pass the necessary props
+              className="flex-shrink-0 w-8 h-8 text-gray-400 hover:bg-gray-700 hover:text-white bg-transparent"
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.stopPropagation(); // Prevents the parent div's click event (onViewChange)
+                  onLogout();
+              }}
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="p-4 border-t space-y-2">
-        <Button
-          variant="ghost"
-          className="w-full justify-start"
-          onClick={() => {
-            onViewChange('settings');
-            setIsMobileOpen(false);
-          }}
-        >
-          <Settings className="w-4 h-4 mr-2" />
-          Settings
-        </Button>
-
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-          onClick={onLogout}
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Logout
-        </Button>
-      </div>
     </div>
   );
 
   return (
     <>
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu Button - Fixed to the top left */}
       <Button
-        variant="ghost"
-        size="sm"
-        className="lg:hidden fixed top-4 left-4 z-50"
+        className={`lg:hidden fixed top-4 left-4 z-50 bg-gray-900 text-white border-gray-700 shadow-md`}
         onClick={() => setIsMobileOpen(!isMobileOpen)}
+        title={isMobileOpen ? "Close Menu" : "Open Menu"}
       >
-        {isMobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+        {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </Button>
 
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:flex flex-col h-screen w-80 bg-white border-r">
+      {/* Desktop Sidebar (Pill Rounding Applied) */}
+      <div className={`hidden lg:flex flex-col h-screen w-64 z-30
+                      rounded-r-3xl overflow-hidden shadow-2xl`}>
         <SidebarContent />
       </div>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar (Pill Rounding Applied) */}
       {isMobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40">
           <div
-            className="absolute inset-0 bg-black bg-opacity-50"
+            className="absolute inset-0 bg-black bg-opacity-30" // Overlay
             onClick={() => setIsMobileOpen(false)}
-          />
-          <div className="relative w-80 h-full bg-white border-r">
+          ></div>
+          {/* Apply rounding and shadow to the mobile drawer */}
+          <div className={`relative w-64 h-full ${SIDEBAR_BG_CLASS} rounded-r-3xl shadow-2xl`}>
             <SidebarContent />
           </div>
         </div>
