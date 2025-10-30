@@ -1,3 +1,5 @@
+// ./src/components/dashboard/Sidebar.tsx
+
 'use client';
 
 import { useState } from 'react';
@@ -6,9 +8,8 @@ import { useState } from 'react';
 type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>;
 
 // --- Interface Definitions for Mock Components ---
-// Define specific prop types for the mocked components
 interface ButtonProps {
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; // Explicitly typing the mouse event
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children: React.ReactNode;
   className?: string;
   variant?: 'ghost' | 'outline';
@@ -28,7 +29,6 @@ interface SeparatorProps {
 
 
 // Mocking external component imports to make the file self-contained and runnable
-// The prop types are now explicitly defined.
 const Button = ({ onClick, children, className = '', title }: ButtonProps) => (
   <button 
     onClick={onClick} 
@@ -54,21 +54,29 @@ import {
   Menu,
   X,
   Clock,
-  Users,
+  Users, 
   LayoutDashboard,
   Zap,
   Calendar,
   LifeBuoy,
   UserCircle
 } from 'lucide-react';
-// Mocking Agent and Quote types for runnability
+
+// CORRECTED MOCK TYPES:
+// The actual component should import from '@/lib/types', but for local runnability, we fix the status here.
 interface Agent { name: string; email: string; }
-interface Quote { id: string; status: 'draft' | 'completed' | 'presented'; }
+// 🔥 FIX: Added 'accepted' status to align with the MainDashboard component's prop type.
+interface Quote { id: string; status: 'draft' | 'accepted' | 'completed' | 'presented'; } 
 
 // Define explicit Tailwind classes used for the theme
 const SIDEBAR_BG_CLASS = 'bg-[#1d2333]';
-const ACTIVE_BG_CLASS = 'bg-gray-700/50'; // Darker gray for active state contrast
+const ACTIVE_BG_CLASS = 'bg-gray-700/50';
 const ACTIVE_TEXT_COLOR = 'text-white';
+
+// FIX 3 (part 2): Define ViewType to match MainDashboard's DashboardView and include 'calendar'.
+// Changed 'help' to 'support' for consistency with MainDashboard's handler.
+type ViewType = 'dashboard' | 'new-quote' | 'quotes' | 'clients' | 'settings' | 'edit-quote' | 'view-quote' | 'analytics' | 'support' | 'calendar';
+
 
 // ----------------------------------------------------------------------
 // SIDEBAR COMPONENT INTERFACES
@@ -77,8 +85,8 @@ const ACTIVE_TEXT_COLOR = 'text-white';
 interface SidebarProps {
   agent: Agent;
   quotes: Quote[];
-  activeView: string;
-  onViewChange: (view: string) => void;
+  activeView: ViewType;
+  onViewChange: (view: ViewType) => void;
   onQuoteSelect: (quoteId: string) => void;
   onLogout: () => void;
 }
@@ -94,21 +102,21 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
   const draftCount = quotes.filter(q => q.status === 'draft').length;
   
   // Define navigation items
-  const navItems: Array<{ name: string; icon: IconComponent; view: string; badge?: number }> = [ // FIX: Used IconComponent
+  const navItems: Array<{ name: string; icon: IconComponent; view: ViewType; badge?: number }> = [
     { name: 'Dashboard', icon: LayoutDashboard, view: 'dashboard' },
-    // Type casting here ensures the badge property is correctly typed in the array
     { name: 'My Quotes', icon: FileText, view: 'quotes', badge: draftCount },
     { name: 'Analytics', icon: BarChart3, view: 'analytics' },
     { name: 'Clients', icon: Users, view: 'clients' },
     { name: 'Calendar', icon: Calendar, view: 'calendar' },
   ];
 
-  const secondaryItems: Array<{ name: string; icon: IconComponent; view: string; badge?: number }> = [ // FIX: Used IconComponent
+  const secondaryItems: Array<{ name: string; icon: IconComponent; view: ViewType; badge?: number }> = [
     { name: 'Settings', icon: Settings, view: 'settings' },
-    { name: 'Help & Support', icon: LifeBuoy, view: 'help' },
+    // Changed 'help' to 'support' to align with MainDashboard.tsx's switch case
+    { name: 'Help & Support', icon: LifeBuoy, view: 'support' }, 
   ];
 
-  const handleViewChange = (view: string) => {
+  const handleViewChange = (view: ViewType) => {
     onViewChange(view);
     setIsMobileOpen(false); // Close mobile sidebar on navigation
   };
@@ -117,8 +125,6 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
     <div className={`flex flex-col flex-1 p-4 ${SIDEBAR_BG_CLASS} h-full`}>
       {/* Logo Area */}
       <div className="flex items-center justify-center h-16 mb-4">
-        {/* NOTE: If you are using this component in your app, replace the placeholder img tag 
-            with a proper logo component or path to your asset. */}
         <img
           src="/QuoteDeck2.png" 
           alt="QuoteDeck Logo"
@@ -135,7 +141,6 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
             <div
               key={item.view}
               onClick={() => handleViewChange(item.view)}
-              // Applied rounded-xl for a more aggressive, pill-like corner on the item
               className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors duration-150 group 
                           ${isActive 
                               ? `${ACTIVE_BG_CLASS} ${ACTIVE_TEXT_COLOR} font-semibold` 
@@ -145,7 +150,6 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
               <item.icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'}`} />
               <span className="flex-1">{item.name}</span>
               
-              {/* FIX: Badge component is correctly placed within JSX and type-guarded */}
               {typeof item.badge === 'number' && item.badge > 0 && (
                 <Badge className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5">
                   {item.badge}
@@ -163,7 +167,6 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
             <div
               key={item.view}
               onClick={() => handleViewChange(item.view)}
-              // Applied rounded-xl for a more aggressive, pill-like corner on the item
               className={`flex items-center p-3 rounded-xl cursor-pointer transition-colors duration-150 group 
                           ${isActive 
                               ? `${ACTIVE_BG_CLASS} ${ACTIVE_TEXT_COLOR} font-semibold` 
@@ -172,7 +175,6 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
             >
               <item.icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'}`} />
               <span className="flex-1">{item.name}</span>
-              {/* No badge logic needed here */}
             </div>
           );
         })}
@@ -202,10 +204,9 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
             </div>
           </div>
           <Button
-              // Since the mock component doesn't use variant/size, we only pass the necessary props
               className="flex-shrink-0 w-8 h-8 text-gray-400 hover:bg-gray-700 hover:text-white bg-transparent"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.stopPropagation(); // Prevents the parent div's click event (onViewChange)
+                  e.stopPropagation(); 
                   onLogout();
               }}
               title="Logout"
@@ -239,10 +240,9 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
       {isMobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40">
           <div
-            className="absolute inset-0 bg-black bg-opacity-30" // Overlay
+            className="absolute inset-0 bg-black bg-opacity-30" 
             onClick={() => setIsMobileOpen(false)}
           ></div>
-          {/* Apply rounding and shadow to the mobile drawer */}
           <div className={`relative w-64 h-full ${SIDEBAR_BG_CLASS} rounded-r-3xl shadow-2xl`}>
             <SidebarContent />
           </div>

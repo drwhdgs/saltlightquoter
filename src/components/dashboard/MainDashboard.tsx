@@ -1,3 +1,4 @@
+// fileName: MainDashboard.tsx
 // ./src/components/dashboard/MainDashboard.tsx
 
 'use client';
@@ -9,18 +10,29 @@ import { DashboardOverview } from './DashboardOverview';
 import { QuoteWizard } from '../quotes/QuoteWizard';
 import { QuotesList } from '../quotes/QuotesList';
 import { EmailQuoteModal } from '../quotes/EmailQuoteModal';
-import { Agent, Quote } from '@/lib/types';
-import { getQuotes, clearCurrentAgent, getQuoteById, generateShareableLink } from '@/lib/storage';
-import { Button } from '@/components/ui/button'; // Assuming a Button component like the one used in DashboardOverview
+import { ClientsList } from '../client/ClientsList'; // <-- CORRECTED IMPORT PATH/NAME
+// UPDATED: Import the full Quote and Client type
+import { Agent, Quote, Client } from '@/lib/types';
+import { 
+  getQuotes, 
+  clearCurrentAgent, 
+  getQuoteById, 
+  generateShareableLink, 
+  updateQuote, 
+  updateClientInQuotes // <-- NEW/UPDATED STORAGE FUNCTION
+} from '@/lib/storage';
+import { Button } from '@/components/ui/button'; // Assuming a Button component
 
 interface MainDashboardProps {
   agent: Agent;
   onLogout: () => void;
 }
 
-type DashboardView = 'dashboard' | 'new-quote' | 'quotes' | 'settings' | 'edit-quote' | 'view-quote' | 'analytics' | 'support';
+// UPDATED: Added 'clients' view
+type DashboardView = 'dashboard' | 'new-quote' | 'quotes' | 'clients' | 'settings' | 'edit-quote' | 'view-quote' | 'analytics' | 'support';
 
-export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
+// 🔥 FIX: Changed 'export function' to 'export default function' to resolve the import error
+export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
   const [activeView, setActiveView] = useState<DashboardView>('dashboard');
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [selectedQuoteId, setSelectedQuoteId] = useState<string | null>(null);
@@ -28,6 +40,7 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
 
   const loadQuotes = useCallback(() => {
+    // This is the core data refresh function
     const agentQuotes = getQuotes(agent.id);
     setQuotes(agentQuotes);
   }, [agent.id]);
@@ -41,8 +54,12 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
     onLogout();
   };
 
-  const handleNewQuote = () => {
+  const handleNewQuote = (clientInfo?: Partial<Client>) => {
+    // If client info is passed, it can pre-fill the QuoteWizard
     setSelectedQuoteId(null);
+    // You'd pass clientInfo to the QuoteWizard, possibly via state or context
+    // For this example, we just navigate to 'new-quote'
+    console.log("Starting new quote with client info:", clientInfo);
     setActiveView('new-quote');
   };
 
@@ -50,33 +67,100 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
     setSelectedQuoteId(quoteId);
     setActiveView('view-quote');
   };
+  
+  // NEW: Handler to view all quotes for a specific client (Navigates to QuotesList, filtering assumed outside this component)
+  const handleViewClientQuotes = (clientEmail: string) => {
+      // In a real app, you'd navigate to the quotes list and apply a filter state
+      setActiveView('quotes');
+      // For now, we log the intent
+      console.log(`Navigating to quotes list and filtering by client email: ${clientEmail}`);
+  };
+
 
   const handleEditQuote = (quoteId: string) => {
     setSelectedQuoteId(quoteId);
     setActiveView('edit-quote');
   };
 
+  // UPDATED: This function now marks the quote as 'presented' (i.e., ready to send) when the wizard completes.
   const handleQuoteComplete = (quote: Quote) => {
-    loadQuotes();
-    // Go directly to the new quote's details.
+    // When the wizard finishes, the quote is ready to be 'presented'.
+    if (quote.status !== 'presented' && quote.status !== 'accepted') {
+      try {
+        updateQuote(quote.id, { status: 'presented' });
+      } catch (error) {
+        console.error("Failed to mark quote as presented:", error);
+      }
+    }
+
+    loadQuotes(); // Re-fetch all quotes
     setSelectedQuoteId(quote.id);
-    setActiveView('view-quote');
+    setActiveView('view-quote'); // Go to the details page
   };
+  
+  // NEW: Handler to manually mark a quote as presented from the View Quote screen
+  const handleMarkAsPresented = (quoteId: string) => {
+    try {
+      updateQuote(quoteId, { status: 'presented' });
+      loadQuotes(); // Re-fetch all quotes and trigger re-render of the current view
+    } catch (error) {
+      console.error("Failed to mark quote as presented:", error);
+    }
+  };
+
+  // NEW: Handler to mark a specific package as accepted
+  const handleMarkAsAccepted = (quoteId: string, packageId: string) => {
+    try {
+      updateQuote(quoteId, {
+        status: 'accepted',
+        acceptedPackageId: packageId
+      });
+      // Refresh the quotes list and trigger re-render of the current view
+      loadQuotes();
+    } catch (error) {
+      console.error("Failed to mark quote as accepted:", error);
+    }
+  };
+
+  // --- NEW CLIENT HANDLER ---
+  const handleClientUpdate = (oldEmail: string, updatedClient: Client) => {
+    try {
+      // This function in the storage layer is crucial: it must iterate through all
+      // quotes and update the client object where the email matches `oldEmail`.
+      // If the email itself was changed, it updates the key used for lookup in future.
+      const updatedCount = updateClientInQuotes(agent.id, oldEmail, updatedClient);
+      
+      console.log(`Client update successful. ${updatedCount} quotes updated.`);
+      
+      // Refresh all quote data to reflect client changes everywhere
+      loadQuotes(); 
+      
+      // OPTIONAL: Navigate back to clients list or close any open modals handled by ClientsList
+      setActiveView('clients');
+
+    } catch (error) {
+      console.error("Failed to update client across all quotes:", error);
+      alert("Error updating client data. Check console for details.");
+    }
+  };
+  // --- END NEW CLIENT HANDLER ---
+
 
   const handleQuoteSelect = (quoteId: string) => {
     const quote = getQuoteById(quoteId);
     if (quote) {
-      if (quote.status === 'completed' || quote.status === 'presented') {
-        handleViewQuote(quoteId);
-      } else {
+      // UPDATED: 'draft' quotes go to edit. 'presented' or 'accepted' quotes go to view.
+      if (quote.status === 'draft') {
         handleEditQuote(quoteId);
+      } else {
+        // Assumes any other status ('presented', 'accepted') should be viewed
+        handleViewQuote(quoteId);
       }
     }
   };
 
   useEffect(() => {
     if (activeView === 'view-quote' || activeView === 'new-quote' || activeView === 'edit-quote') {
-      // Scroll to top whenever the view is a form or quote details
       window.scrollTo(0, 0);
     }
   }, [activeView, selectedQuoteId]);
@@ -93,27 +177,43 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
     setEmailModalOpen(true);
   };
 
-  // Helper to safely copy text without using alert()
   const copyToClipboard = (text: string, successMessage: string) => {
     try {
       const textarea = document.createElement('textarea');
       textarea.value = text;
-      // Use hidden styling to avoid visual disruption
       textarea.style.position = 'fixed';
       textarea.style.opacity = '0';
       document.body.appendChild(textarea);
       textarea.select();
       
-      // Use document.execCommand('copy') for better iframe compatibility
-      const successful = document.execCommand('copy');
-      document.body.removeChild(textarea);
+      // Use modern clipboard API if available, fallback to execCommand
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+              console.log(successMessage);
+          }, () => {
+              // Fallback if permission is denied
+              const successful = document.execCommand('copy');
+              document.body.removeChild(textarea);
 
-      if (successful) {
-        console.log(successMessage);
+              if (successful) {
+                  console.log(successMessage + ' (Fallback)');
+              } else {
+                  console.error('Failed to copy text using execCommand.');
+              }
+          });
+          document.body.removeChild(textarea);
       } else {
-        console.error('Failed to copy text using execCommand.');
+          // Fallback only: execCommand
+          const successful = document.execCommand('copy');
+          document.body.removeChild(textarea);
+
+          if (successful) {
+              console.log(successMessage + ' (Fallback)');
+          } else {
+              console.error('Failed to copy text using execCommand.');
+          }
       }
-    } catch (err: unknown) { // FIX: Changed 'any' to 'unknown'
+    } catch (err: unknown) {
       if (err instanceof Error) {
         console.error('Error copying text:', err.message);
       } else {
@@ -135,7 +235,6 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
         );
 
       case 'new-quote':
-        // Updated wrapper class to match the clean aesthetic
         return (
           <div className="p-8 bg-white rounded-xl shadow-xl">
              <h1 className="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-4">Create New Quote</h1>
@@ -151,7 +250,6 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
         if (selectedQuoteId) {
           const quote = getQuoteById(selectedQuoteId);
           if (quote) {
-            // Updated wrapper class to match the clean aesthetic
             return (
               <div className="p-8 bg-white rounded-xl shadow-xl">
                  <h1 className="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-4">Edit Quote: {quote.client.name}</h1>
@@ -175,14 +273,28 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
             onViewQuote={handleViewQuote}
             onEditQuote={handleEditQuote}
             onRefresh={loadQuotes}
+            // Connect the list's email button to the main modal
+            onEmailQuote={handleEmailClient}
           />
         );
+        
+      // --- NEW CLIENTS VIEW ---
+      case 'clients':
+        return (
+          <ClientsList
+            quotes={quotes} // Clients are derived from existing quotes
+            onNewQuote={handleNewQuote} // Use the standard new quote handler
+            onViewClientQuotes={handleViewClientQuotes} // Handler to navigate/filter quotes
+            onClientUpdate={handleClientUpdate} // Handler to update client data in storage
+          />
+        );
+      // --- END NEW CLIENTS VIEW ---
 
       case 'view-quote':
         if (selectedQuoteId) {
+          // Get a fresh quote object, especially after an update
           const quote = getQuoteById(selectedQuoteId);
           if (quote) {
-            // Use the shareableLink from the quote or generate it
             const currentShareableLink = quote.shareableLink || generateShareableLink(quote);
 
             return (
@@ -190,19 +302,37 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-4 border-gray-200">
                   <h1 className="text-4xl font-extrabold text-gray-900 mb-4 sm:mb-0">Quote Details: {quote.client.name}</h1>
                   <div className="flex flex-wrap gap-3">
-                    {/* Updated button styles to match DashboardOverview's CTA style (rounded-lg, shadow, hover effect) */}
-                    <Button
-                      onClick={() => handleEditQuote(selectedQuoteId)}
-                      className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-150 font-semibold shadow-md"
-                    >
-                      Edit Quote
-                    </Button>
-                    <Button
-                      onClick={() => handleEmailClient(quote)}
-                      className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition duration-150 font-semibold shadow-md"
-                    >
-                      Message Client
-                    </Button>
+                    
+                    {/* EDIT Button: Only visible for 'draft' or 'presented' quotes */}
+                    {(quote.status === 'draft' || quote.status === 'presented') && (
+                      <Button
+                        onClick={() => handleEditQuote(selectedQuoteId)}
+                        className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-150 font-semibold shadow-md"
+                      >
+                        Edit Quote
+                      </Button>
+                    )}
+                    
+                    {/* Mark as Presented Button: Only visible for 'draft' quotes */}
+                    {quote.status === 'draft' && (
+                      <Button
+                        onClick={() => handleMarkAsPresented(quote.id)}
+                        className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-150 font-semibold shadow-md"
+                      >
+                        Mark as Presented
+                      </Button>
+                    )}
+                    
+                    {/* Message Client Button: Only visible for 'presented' or 'accepted' quotes */}
+                    {(quote.status === 'presented' || quote.status === 'accepted') && (
+                      <Button
+                        onClick={() => handleEmailClient(quote)}
+                        className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition duration-150 font-semibold shadow-md"
+                      >
+                        Message Client
+                      </Button>
+                    )}
+
                     <Button
                       onClick={() => {
                         copyToClipboard(currentShareableLink, 'Shareable link copied to clipboard!');
@@ -222,9 +352,9 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                   </div>
                 </div>
 
-                {/* Quote Details View Card - Elevated and organized */}
                 <div className="bg-white rounded-xl shadow-xl p-8">
                   <h2 className="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">Client Information</h2>
+                  {/* ... Client Info grid ... (no changes) */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div>
                       <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Name</label>
@@ -244,17 +374,21 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                     </div>
                   </div>
 
+
                   <h2 className="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">Packages ({quote.packages.length})</h2>
+                  {/* --- UPDATED PACKAGE LIST --- */}
                   <div className="space-y-6">
                     {quote.packages.map((pkg) => (
-                      <div key={pkg.id} className="border border-blue-200 rounded-xl p-6 bg-blue-50 shadow-md">
-                        <div className="flex justify-between items-start mb-3">
+                      <div key={pkg.id} className={`border rounded-xl p-6 bg-blue-50 shadow-md ${quote.acceptedPackageId === pkg.id ? 'border-green-500 ring-4 ring-green-100' : 'border-blue-200'}`}>
+                        <div className="flex flex-col sm:flex-row justify-between sm:items-start mb-3">
                           <h3 className="text-xl font-extrabold text-gray-900">{pkg.name}</h3>
-                          <span className="text-2xl font-bold text-teal-600 ml-4">
+                          <span className="text-2xl font-bold text-teal-600 mt-2 sm:mt-0 sm:ml-4">
                             ${pkg.totalMonthlyPremium.toLocaleString()}/mo
                           </span>
                         </div>
                         <p className="text-gray-700 mb-4 text-sm">{pkg.description}</p>
+                        
+                        {/* --- Plan Details --- */}
                         <div className="space-y-2 pt-3 border-t border-blue-100">
                           {pkg.plans.map((plan) => (
                             <div key={plan.id} className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
@@ -263,11 +397,47 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                             </div>
                           ))}
                         </div>
+
+                        {/* --- 'Mark as Accepted' Button Logic --- */}
+                        <div className="mt-5 pt-5 border-t border-blue-100 text-right">
+                          {/* Show Mark as Accepted button only if status is 'presented' */}
+                          {quote.status === 'presented' && (
+                            <Button
+                              onClick={() => handleMarkAsAccepted(quote.id, pkg.id)}
+                              className="flex items-center px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-150 font-semibold shadow-md ml-auto"
+                            >
+                              Mark as Accepted
+                            </Button>
+                          )}
+                          
+                          {/* Show accepted/not accepted status if overall status is 'accepted' */}
+                          {quote.status === 'accepted' && (
+                            <>
+                              {quote.acceptedPackageId === pkg.id ? (
+                                <Button
+                                  disabled
+                                  className="flex items-center px-5 py-2.5 bg-green-600 text-white rounded-lg font-semibold shadow-md opacity-100 cursor-default ml-auto"
+                                >
+                                  ✔ Accepted
+                                </Button>
+                              ) : (
+                                <Button
+                                  disabled
+                                  className="flex items-center px-5 py-2.5 bg-gray-300 text-gray-600 rounded-lg font-semibold shadow-sm opacity-70 cursor-not-allowed ml-auto"
+                                >
+                                  Not Accepted
+                                </Button>
+                              )}
+                            </>
+                          )}
+                        </div>
+                        {/* --- END BUTTONS --- */}
+
                       </div>
                     ))}
                   </div>
 
-
+                  {/* ... Shareable Link and Email sections ... (no changes) */}
                   <div className="mt-8 p-5 bg-gray-50 rounded-xl border border-gray-200">
                     <label className="text-sm font-medium text-gray-600 uppercase tracking-wider">Shareable Client Link</label>
                     <div className="flex items-center space-x-3 mt-2">
@@ -277,7 +447,6 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                         readOnly
                         className="flex-1 p-3 border border-gray-300 rounded-lg bg-white text-sm"
                       />
-                      {/* Updated Button component */}
                       <Button
                         onClick={() => {
                           copyToClipboard(currentShareableLink, 'Link copied to clipboard!');
@@ -298,7 +467,6 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                         readOnly
                         className="flex-1 p-3 border border-teal-300 rounded-lg bg-white text-sm"
                       />
-                      {/* Updated Button component */}
                       <Button
                         onClick={() => handleEmailClient(quote)}
                         className="px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition duration-150 font-semibold"
@@ -310,6 +478,7 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                       This will open an email compose dialog with a pre-written message and the quote link.
                     </p>
                   </div>
+
                 </div>
               </div>
             );
@@ -321,7 +490,6 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
         return (
           <div className="space-y-6">
             <h1 className="text-4xl font-extrabold text-gray-900">Settings</h1>
-            {/* Adopted Card style (rounded-xl, shadow-xl) */}
             <div className="bg-white rounded-xl shadow-xl p-8">
               <h2 className="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">Agent Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -335,13 +503,13 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Account Created</label>
-                  <p className="text-xl font-semibold text-gray-900 mt-1">{new Date(agent.createdAt).toLocaleDateString()}</p>
+                  {/* Added check for agent.createdAt existence */}
+                  <p className="text-xl font-semibold text-gray-900 mt-1">{agent.createdAt ? new Date(agent.createdAt).toLocaleDateString() : 'N/A'}</p>
                 </div>
               </div>
 
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <h3 className="text-xl font-semibold text-red-600 mb-4">Danger Zone</h3>
-                {/* Updated Button component */}
                 <Button
                   onClick={handleLogout}
                   className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150 font-semibold shadow-md"
@@ -353,7 +521,6 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
           </div>
         );
 
-      // Add simple screens for 'analytics' and 'support' to prevent errors from Sidebar navigation
       case 'analytics':
         return (
           <div className="p-8 bg-white rounded-xl shadow-xl min-h-[400px]">
@@ -375,7 +542,6 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
   };
 
   return (
-    // Updated flex parent to use the light background color
     <div className="flex h-screen bg-[#f8f9fb]">
       <Sidebar
         agent={agent}
@@ -388,14 +554,12 @@ export function MainDashboard({ agent, onLogout }: MainDashboardProps) {
 
       <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
         <main className="flex-1 overflow-auto">
-          {/* Main content padding adjusted to match DashboardOverview's spacing */}
           <div className="p-6 lg:p-10">
             {renderMainContent()}
           </div>
         </main>
       </div>
 
-      {/* Email Modal */}
       {selectedQuote && (
         <EmailQuoteModal
           isOpen={emailModalOpen}
