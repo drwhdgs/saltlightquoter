@@ -1,4 +1,3 @@
-// fileName: ClientPresentation.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -82,13 +81,13 @@ export default function ClientPresentation({
 }: ClientPresentationProps) {
   // Map of provider names to their logo paths
   const carrierLogos: Record<string, string> = {
-    Ameritas: "/logos/ameritas.png",
+    "Ameritas Primestar": "/logos/ameritas.png",
     "American Amicable": "/logos/AmericanAmicable.jpeg",
     "Manhattan Life": "/logos/manhattan-life.png",
     KonnectMD: "/logos/konnect.png",
     TRUVirtual: "/logos/virtual.png",
     Breeze: "/logos/breeze.png",
-    ACA: "/logos/aca.png",
+    "Ambetter - HMO": "/logos/aca.png",
     "United Healthcare": "/logos/uhc.png",
     "Health Share": "/logos/healthshare.png",
     "Sedera Health": "/logos/sedera.jpg",
@@ -482,8 +481,8 @@ export default function ClientPresentation({
                       <PlanLogo plan={plan} />
                       <div>
                         <div className="text-base font-bold text-gray-900 leading-tight">
-                          {/* Use plan.title for display, falling back to plan.name. This is where the updated name will appear. */}
-                          {plan.title || plan.name} 
+                          {/* UPDATED: Changed to use plan.name for display, with a fallback to plan.title. */}
+                          {plan.name || plan.title} 
                         </div>
                         <div className="text-xs text-gray-600 italic">
                           ({plan.provider})
