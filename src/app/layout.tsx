@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "QuoteDeck — The Simplest Way to Quote, Bundle, and Send Insurance Plans",
+  title: "QuoteDeck",
   description:
-    "Simplify your sales process with QuoteDeck. Create, customize, and send insurance quotes in minutes — with ready-to-send package options and links clients can view from any device.",
+    "Easily create and share health insurance quotes for your clients with QuoteDeck. Send quotes via email or SMS with pre-filled package options and shareable links.",
   icons: {
     icon: [
       { url: "/favicon.png" }, // standard .ico favicon

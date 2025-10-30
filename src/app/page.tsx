@@ -1,8 +1,11 @@
+// src/app/page.tsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { AuthPage } from '@/components/auth/AuthPage';
-import { MainDashboard } from '@/components/dashboard/MainDashboard';
+// FIX: Changed from named import { MainDashboard } to default import MainDashboard
+import MainDashboard from '@/components/dashboard/MainDashboard';
 import { Agent } from '@/lib/types';
 import { getCurrentAgent, initializeStorage } from '@/lib/storage';
 
@@ -28,7 +31,7 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#fcfdfd]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading Insurance Quoting Platform...</p>
