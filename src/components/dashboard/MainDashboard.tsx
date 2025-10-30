@@ -1,6 +1,3 @@
-// fileName: MainDashboard.tsx
-// ./src/components/dashboard/MainDashboard.tsx
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -10,7 +7,7 @@ import { DashboardOverview } from './DashboardOverview';
 import { QuoteWizard } from '../quotes/QuoteWizard';
 import { QuotesList } from '../quotes/QuotesList';
 import { EmailQuoteModal } from '../quotes/EmailQuoteModal';
-import { ClientsList } from '../client/ClientsList'; // <-- CORRECTED IMPORT PATH/NAME
+import { ClientsList } from '../client/ClientsList'; 
 // UPDATED: Import the full Quote and Client type
 import { Agent, Quote, Client } from '@/lib/types';
 import { 
@@ -19,19 +16,18 @@ import {
   getQuoteById, 
   generateShareableLink, 
   updateQuote, 
-  updateClientInQuotes // <-- NEW/UPDATED STORAGE FUNCTION
+  updateClientInQuotes 
 } from '@/lib/storage';
-import { Button } from '@/components/ui/button'; // Assuming a Button component
+import { Button } from '@/components/ui/button'; 
 
 interface MainDashboardProps {
   agent: Agent;
   onLogout: () => void;
 }
 
-// UPDATED: Added 'clients' view
 type DashboardView = 'dashboard' | 'new-quote' | 'quotes' | 'clients' | 'settings' | 'edit-quote' | 'view-quote' | 'analytics' | 'support';
 
-// 🔥 FIX: Changed 'export function' to 'export default function' to resolve the import error
+// FIX: Changed 'export function' to 'export default function' to resolve the import error
 export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
   const [activeView, setActiveView] = useState<DashboardView>('dashboard');
   const [quotes, setQuotes] = useState<Quote[]>([]);
@@ -57,8 +53,6 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
   const handleNewQuote = (clientInfo?: Partial<Client>) => {
     // If client info is passed, it can pre-fill the QuoteWizard
     setSelectedQuoteId(null);
-    // You'd pass clientInfo to the QuoteWizard, possibly via state or context
-    // For this example, we just navigate to 'new-quote'
     console.log("Starting new quote with client info:", clientInfo);
     setActiveView('new-quote');
   };
@@ -68,11 +62,24 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
     setActiveView('view-quote');
   };
   
-  // NEW: Handler to view all quotes for a specific client (Navigates to QuotesList, filtering assumed outside this component)
-  const handleViewClientQuotes = (clientEmail: string) => {
-      // In a real app, you'd navigate to the quotes list and apply a filter state
+  // 🔥 NEW HANDLER: For the Global Follow Up button on the dashboard
+  const handleReviewFollowUps = () => {
+      // In a real app, this would set a filter state for overdue quotes.
+      // For this example, we just navigate to the main quotes list.
+      console.log("Navigating to quotes list with overdue follow-up filter active.");
       setActiveView('quotes');
-      // For now, we log the intent
+  };
+
+  // 🔥 NEW HANDLER: For the individual Follow Up button on the Recent Activity list
+  const handleFollowUpQuote = (quoteId: string) => {
+      // You could implement logic here to log the follow-up (e.g., update a 'lastFollowUpDate' on the quote).
+      console.log(`Initiating follow-up for Quote ID: ${quoteId}. Navigating to view.`);
+      handleViewQuote(quoteId);
+  };
+
+
+  const handleViewClientQuotes = (clientEmail: string) => {
+      setActiveView('quotes');
       console.log(`Navigating to quotes list and filtering by client email: ${clientEmail}`);
   };
 
@@ -125,9 +132,6 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
   // --- NEW CLIENT HANDLER ---
   const handleClientUpdate = (oldEmail: string, updatedClient: Client) => {
     try {
-      // This function in the storage layer is crucial: it must iterate through all
-      // quotes and update the client object where the email matches `oldEmail`.
-      // If the email itself was changed, it updates the key used for lookup in future.
       const updatedCount = updateClientInQuotes(agent.id, oldEmail, updatedClient);
       
       console.log(`Client update successful. ${updatedCount} quotes updated.`);
@@ -135,7 +139,6 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
       // Refresh all quote data to reflect client changes everywhere
       loadQuotes(); 
       
-      // OPTIONAL: Navigate back to clients list or close any open modals handled by ClientsList
       setActiveView('clients');
 
     } catch (error) {
@@ -230,7 +233,9 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
           <DashboardOverview
             quotes={quotes}
             onNewQuote={handleNewQuote}
-            onViewQuote={handleViewQuote}
+            onViewQuote={handleViewQuote} 
+            // 🔥 FIXED: Pass the new functions here
+            onReviewFollowUps={handleReviewFollowUps} 
           />
         );
 
@@ -307,7 +312,7 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                     {(quote.status === 'draft' || quote.status === 'presented') && (
                       <Button
                         onClick={() => handleEditQuote(selectedQuoteId)}
-                        className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-150 font-semibold shadow-md"
+                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 font-semibold shadow-md"
                       >
                         Edit Quote
                       </Button>
@@ -451,7 +456,7 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                         onClick={() => {
                           copyToClipboard(currentShareableLink, 'Link copied to clipboard!');
                         }}
-                        className="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-150 font-semibold"
+                        className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 font-semibold"
                       >
                         Copy
                       </Button>
@@ -537,7 +542,15 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
         );
 
       default:
-        return <DashboardOverview quotes={quotes} onNewQuote={handleNewQuote} onViewQuote={handleViewQuote} />;
+        return (
+            <DashboardOverview 
+                quotes={quotes} 
+                onNewQuote={handleNewQuote} 
+                onViewQuote={handleViewQuote} 
+                // 🔥 FIXED: Pass the new functions here
+                onReviewFollowUps={handleReviewFollowUps} 
+            />
+        );
     }
   };
 
