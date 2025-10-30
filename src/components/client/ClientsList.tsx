@@ -262,7 +262,6 @@ export function ClientsList({
   return (
     <div className="space-y-6">
       <h1 className="text-4xl font-extrabold text-gray-900 flex items-center">
-        <Users className="w-8 h-8 mr-3 text-blue-600" />
         Clients
       </h1>
 
