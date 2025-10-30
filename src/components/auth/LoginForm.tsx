@@ -62,7 +62,16 @@ export function LoginForm({ onLogin, onSwitchToRegister }: LoginFormProps) {
             <Input
               id="email"
               type="email"
-              placeholder="agent@example.com"
+              placeholder=""
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Label htmlFor="email">Password</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder=""
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

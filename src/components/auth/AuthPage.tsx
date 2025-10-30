@@ -13,14 +13,14 @@ export function AuthPage({ onAuthenticated }: AuthPageProps) {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#f8f9fb] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-0"> {/* reduce margin here */}
   {/* Logo */}
   <img
-    src="https://images.squarespace-cdn.com/content/v1/65528343aaca95757058ceb9/1168189f-9596-4b42-baae-da48565cc482/Screen+Shot+2023-11-16+at+5.08.32+PM-PhotoRoom.png-PhotoRoom.png?format=1500w"
+    src="/QuoteDeck3.png"
     alt="Salt & Light Logo"
-    className="mx-auto w-60 h-60 object-contain"
+    className="mx-auto w-100 h-100 mb-10 object-contain"
   />
 
 </div>
@@ -40,8 +40,10 @@ export function AuthPage({ onAuthenticated }: AuthPageProps) {
         )}
 
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>All data is stored locally in your browser</p>
+        <div className="mt-8 text-center text-md text-gray-500">
+          <p>Copyright © 2025 QuoteDeck | Terms of Use & Privacy Policy</p>
+                 <p><br/>All data is stored locally in your browser</p>
+
         </div>
       </div>
     </div>
