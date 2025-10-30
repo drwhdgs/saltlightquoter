@@ -1,3 +1,4 @@
+// fileName: ClientPresentation.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -310,13 +311,13 @@ export default function ClientPresentation({
     }
     // 7. Supplemental/Disability/Cancer/Heart/Out of Pocket (Financials + Coverage)
     else if (
-      type === "cancer" ||
-      type === "heart" ||
-      type === "outOfPocket" ||
-      type === "breeze" ||
-      type === "disability"
-    ) {
-      addDetail("Deductible", deductible);
+  type === "cancer" ||
+  type === "heart" ||
+  type === "outOfPocket" ||
+  type === "disability"
+) {
+  addDetail("Deductible", deductible);
+  // Coinsurance is a percentage, so isMonetary is false
       // Coinsurance is a percentage, so isMonetary is false
       addDetail("Coinsurance", coinsurance, (v) => `${v}%`, false);
       addDetail("Annual Max Benefit", annualMax);
@@ -341,8 +342,6 @@ export default function ClientPresentation({
 
     return details;
   };
-
-  // ... (rest of the component remains the same)
 
   // Component to handle logo display with a provider-initial fallback
   const PlanLogo: React.FC<{ plan: InsurancePlan }> = ({ plan }) => {
@@ -376,6 +375,7 @@ export default function ClientPresentation({
 
   // --- NEW: Sort packages by fixed order before rendering ---
   const packageOrder: string[] = [
+    "ACA Bronze",
     "ACA Silver",
     "Private Health",
     "Health Share",
@@ -482,13 +482,12 @@ export default function ClientPresentation({
                       <PlanLogo plan={plan} />
                       <div>
                         <div className="text-base font-bold text-gray-900 leading-tight">
-                          {plan.name}
+                          {/* Use plan.title for display, falling back to plan.name. This is where the updated name will appear. */}
+                          {plan.title || plan.name} 
                         </div>
-                        {plan.title && (
-                          <div className="text-xs text-gray-600 italic">
-                            {plan.title} ({plan.provider})
-                          </div>
-                        )}
+                        <div className="text-xs text-gray-600 italic">
+                          ({plan.provider})
+                        </div>
                       </div>
                     </div>
 
