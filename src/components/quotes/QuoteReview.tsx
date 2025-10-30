@@ -41,13 +41,15 @@ export function QuoteReview({
   const totalAnnualPremium = totalMonthlyPremium * 12;
 
   const carrierLogos: Record<string, string> = {
-    Ameritas: '/logos/ameritas.png',
-    Transamerica: '/logos/transamerica.png',
-    'Manhattan Life': '/logos/manhattan-life.png',
-    ACA: '/logos/aca.png',
-    KonnectMD: '/logos/konnect.png',
-    Breeze: '/logos/breeze.png',
-    'United Healthcare': '/logos/uhc.png'
+    Ameritas: "/logos/ameritas.png",
+  "American Amicable": "/logos/AmericanAmicable.jpeg",
+  Transamerica: "/logos/transamerica.png",
+  KonnectMD: "/logos/konnect.png",
+  TRUVirtual: "/logos/virtual.png",
+  Breeze: "/logos/breeze.png",
+  ACA: "/logos/aca.png",
+  "United Healthcare": "/logos/uhc.png",
+  "Sedera Health": "/logos/sedera.jpg",
   };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {
@@ -278,7 +280,6 @@ export function QuoteReview({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5" />
             Quote Summary
           </CardTitle>
         </CardHeader>
@@ -297,20 +298,6 @@ export function QuoteReview({
             </div>
 
             <Separator />
-
-            <div className="flex justify-between items-center text-lg">
-              <span className="font-medium">Monthly Premium:</span>
-              <span className="font-bold text-green-600">
-                ${totalMonthlyPremium.toLocaleString()}/mo
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Annual Premium:</span>
-              <span className="font-medium">
-                ${totalAnnualPremium.toLocaleString()}/year
-              </span>
-            </div>
 
             <div className="bg-blue-50 p-4 rounded-lg mt-4">
               <p className="text-sm text-blue-800">

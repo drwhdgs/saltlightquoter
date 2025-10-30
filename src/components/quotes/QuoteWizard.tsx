@@ -106,8 +106,8 @@ export function QuoteWizard({ agent, existingQuote, onComplete, onCancel }: Quot
                       {isCompleted ? '✓' : stepNumber}
                     </div>
                     <span className={`
-                      text-sm font-medium
-                      ${isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-500'}
+                      text-lg font-medium
+                      ${isActive ? 'text-blue-500' : isCompleted ? 'text-green-600' : 'text-gray-500'}
                     `}>
                       {getStepTitle(step)}
                     </span>

@@ -1,163 +1,61 @@
 // ./src/components/quotes/QuotesList.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Search,
   Plus,
   Eye,
   Edit,
   Trash2,
-  Link as LinkIcon, // Renamed to avoid conflict with the component below
   Calendar,
   DollarSign,
-  Users,
   Mail,
   CheckCircle,
-  X
+  Clock,
+  FileText,
+  X,
+  Archive,
 } from 'lucide-react';
 
-// FIX: Importing canonical types to resolve the conflict with MainDashboard.tsx
-import { Quote, Package, Client, InsurancePlan } from '../../lib/types';
+// UPDATED: Import real types and storage functions
+import { Quote } from '../../lib/types';
+import { deleteQuote } from '../../lib/storage'; // generateShareableLink is not directly needed here
 
-// --- MOCK External Dependencies (Consolidated) ---
+// UPDATED: Import real UI components
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
-// 1. Mock Storage Functions (Re-added deleteQuote to prevent runtime error)
-const deleteQuote = (quoteId: string) => {
-  console.log(`MOCK: Deleting quote with ID: ${quoteId}`);
-  // In a real app, this would call Firestore or an API endpoint.
-};
-
-const generateShareableLink = (quote: Quote) => {
-  console.log(`MOCK: Generating shareable link for quote: ${quote.id}`);
-  return `https://share.app/quote/${quote.id}`;
-};
-
-// 2. Mock UI Components (with explicit typing)
-
-// Props for Button component
-interface ButtonProps {
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  children: React.ReactNode;
-  className?: string;
-  variant?: 'ghost' | 'outline' | 'destructive'; // Added 'destructive'
-  size?: 'sm' | 'default'; // Added 'sm'
-  title?: string;
-  disabled?: boolean;
-}
-// Explicitly typed props
-const Button = ({ onClick, children, className = '', variant, size, title, disabled }: ButtonProps) => {
-  let baseClasses = 'px-4 py-2 font-semibold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-opacity-50 flex items-center justify-center space-x-2';
-  
-  if (variant === 'ghost') {
-    baseClasses = `p-2 ${className} hover:bg-gray-100 text-gray-500 rounded-full`;
-  } else if (variant === 'destructive') {
-    baseClasses = `${baseClasses} bg-red-600 text-white hover:bg-red-700 focus:ring-red-500`;
-  } else {
-    baseClasses = `${baseClasses} bg-blue-500 text-white hover:bg-blue-700 focus:ring-blue-500`;
+// --- UI Utility ---
+const getStatusBadge = (status: Quote['status']) => {
+  switch (status) {
+    case 'draft':
+      return {
+        label: 'Draft',
+        className: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+        icon: FileText,
+      };
+    case 'presented':
+      return {
+        label: 'Presented',
+        className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+        icon: Clock,
+      };
+    case 'accepted':
+      return {
+        label: 'Accepted',
+        className: 'bg-green-100 text-green-800 hover:bg-green-200',
+        icon: CheckCircle,
+      };
+    default:
+      return {
+        label: 'Unknown',
+        className: 'bg-gray-100 text-gray-800 hover:bg-gray-200',
+        icon: X,
+      };
   }
-  
-  if (size === 'sm') {
-      baseClasses = baseClasses.replace('px-4 py-2', 'px-3 py-1.5 text-sm');
-  }
-
-  if (disabled) {
-    baseClasses = `${baseClasses} opacity-50 cursor-not-allowed`;
-  }
-
-  return (
-    <button className={`${baseClasses} ${className}`} onClick={onClick} title={title} disabled={disabled}>
-      {children}
-    </button>
-  );
 };
-
-// Props for Input component
-interface InputProps {
-  placeholder?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // Typed change event
-  className?: string;
-}
-// Explicitly typed props
-const Input = ({ placeholder, value, onChange, className = '' }: InputProps) => (
-  <input
-    type="text"
-    placeholder={placeholder}
-    value={value}
-    onChange={onChange}
-    className={`w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
-  />
-);
-
-// Props for Card components
-interface BaseComponentProps {
-  children: React.ReactNode;
-  className?: string;
-}
-// Explicitly typed props
-const Card = ({ children, className = '' }: BaseComponentProps) => <div className={`bg-white rounded-xl shadow-lg ${className}`}>{children}</div>;
-// Explicitly typed props
-const CardContent = ({ children, className = '' }: BaseComponentProps) => <div className={`p-6 ${className}`}>{children}</div>;
-// Explicitly typed props
-const CardHeader = ({ children, className = '' }: BaseComponentProps) => <div className={`p-6 border-b ${className}`}>{children}</div>;
-// Explicitly typed props
-const CardTitle = ({ children, className = '' }: BaseComponentProps) => <h2 className={`text-xl font-bold ${className}`}>{children}</h2>;
-
-// Props for Badge component
-// Removed interface BadgeProps extends BaseComponentProps {}
-// Explicitly typed props
-const Badge = ({ children, className = '' }: BaseComponentProps) => (
-  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>
-    {children}
-  </span>
-);
-
-// Mock EmailQuoteModal Component
-// FIX: Removed 'any' from the quote prop type definition.
-const EmailQuoteModal = ({ isOpen, onClose, quote }: { isOpen: boolean; onClose: () => void; quote: Quote | null }) => {
-  if (!isOpen || !quote) return null;
-
-  const handleSend = () => {
-    alert(`MOCK: Sending quote for ${quote.client.name} via email to ${quote.client.email}`);
-    onClose();
-  };
-  
-  // FIX: Explicitly typed the reduce accumulator as a number.
-  const quoteTotal = quote.packages.reduce((sum: number, pkg: Package) => sum + pkg.totalMonthlyPremium, 0);
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4">
-      <Card className="w-full max-w-lg">
-        <CardHeader className="flex flex-row justify-between items-center">
-          <CardTitle>Email Quote to {quote.client.name}</CardTitle>
-          <Button onClick={onClose} variant="ghost" size="sm" title="Close">
-            <X className="w-5 h-5" />
-          </Button>
-        </CardHeader>
-        <CardContent className="pt-4 space-y-4">
-          <p className="text-gray-700">
-            This feature is a placeholder. In a real application, a secure email service would be integrated here.
-          </p>
-          <div className="text-sm">
-            <p className="font-medium">Client:</p>
-            <p>{quote.client.email}</p>
-            <p className="font-medium mt-2">Quote Value:</p>
-            <p className="font-bold text-green-600">${quoteTotal.toLocaleString()}/mo</p>
-          </div>
-          <div className="flex justify-end gap-3 pt-2">
-            <Button variant="ghost" onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSend} className="bg-blue-600 hover:bg-blue-700 text-white">
-              MOCK Send Email
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-
-// --- END MOCK External Dependencies ---
 
 interface QuotesListProps {
   quotes: Quote[];
@@ -165,375 +63,230 @@ interface QuotesListProps {
   onViewQuote: (quoteId: string) => void;
   onEditQuote: (quoteId: string) => void;
   onRefresh: () => void;
+  onEmailQuote: (quote: Quote) => void;
 }
+
+// Define the filter options based on the new status types
+const statusFilterOptions: { value: Quote['status'] | 'all'; label: string }[] = [
+  { value: 'all', label: 'All Quotes' },
+  { value: 'draft', label: 'Drafts' },
+  { value: 'presented', label: 'Presented (Awaiting Decision)' },
+  { value: 'accepted', label: 'Accepted (Bound)' },
+];
+
 
 export function QuotesList({
   quotes,
   onNewQuote,
   onViewQuote,
   onEditQuote,
-  onRefresh
+  onRefresh,
+  onEmailQuote
 }: QuotesListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<Quote['status'] | 'all'>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'client' | 'value'>('date');
-  const [emailModalOpen, setEmailModalOpen] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
-
-  // State for confirmation modal and toast notification
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState<Quote | null>(null);
-  const [copySuccessMessage, setCopySuccessMessage] = useState('');
 
   const filteredQuotes = quotes
-    .filter(quote => {
-      const matchesSearch = quote.client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           quote.client.email.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || quote.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'client':
-          return a.client.name.localeCompare(b.client.name);
-        case 'value':
-          const aValue = a.packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0);
-          // Fixed 'pkgSum' to 'sum'
-          const bValue = b.packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0);
-          return bValue - aValue;
-        case 'date':
-        default:
-          // Sort by latest updated date first
-          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    .filter((quote) => {
+      // Status filter
+      if (statusFilter !== 'all' && quote.status !== statusFilter) {
+        return false;
       }
-    });
+      // Search filter (by client name or zip code)
+      if (searchTerm.trim() === '') {
+        return true;
+      }
+      const lowerSearch = searchTerm.toLowerCase();
+      return (
+        quote.client.name.toLowerCase().includes(lowerSearch) ||
+        quote.client.zipCode?.includes(lowerSearch) // Use optional chaining for zipCode
+      );
+    })
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()); // Sort by newest first
 
-  // Handler to open the confirmation modal
-  const handleDeleteQuote = (quoteId: string) => {
-    const quote = quotes.find(q => q.id === quoteId);
-    if (quote) {
-      setQuoteToDelete(quote);
-      setIsConfirmingDelete(true);
-    }
+  const handleDelete = (quote: Quote) => {
+    setQuoteToDelete(quote);
+    setIsConfirmingDelete(true);
   };
 
-  // Handler to execute deletion after confirmation
   const confirmDelete = () => {
     if (quoteToDelete) {
-      deleteQuote(quoteToDelete.id);
-      onRefresh();
+      deleteQuote(quoteToDelete.id); // Assuming deleteQuote handles the storage update
+      onRefresh(); // Refresh the list from parent state
       setIsConfirmingDelete(false);
       setQuoteToDelete(null);
     }
   };
 
-  const handleCopyLink = (quote: Quote) => {
-    let shareableLink = quote.shareableLink;
-    if (!shareableLink) {
-      shareableLink = generateShareableLink(quote);
-    }
-    
-    // Use clipboard API
-    navigator.clipboard.writeText(shareableLink)
-      .then(() => {
-          setCopySuccessMessage('Shareable link copied to clipboard!');
-          setTimeout(() => setCopySuccessMessage(''), 3000); // Clear message after 3 seconds
-      })
-      .catch(() => {
-          setCopySuccessMessage('Failed to copy link.');
-          setTimeout(() => setCopySuccessMessage(''), 3000);
-      });
+  const calculateTotalPremium = (quote: Quote) => {
+    return quote.packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0).toLocaleString();
   };
-
-  const handleEmailClient = (quote: Quote) => {
-    setSelectedQuote(quote);
-    setEmailModalOpen(true);
-  };
-
-  const getStatusColor = (status: Quote['status']) => {
-    switch (status) {
-      case 'draft': return 'bg-yellow-100 text-yellow-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'presented': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const totalValue = filteredQuotes.reduce((sum, quote) =>
-    sum + quote.packages.reduce((pkgSum, pkg) => pkgSum + pkg.totalMonthlyPremium, 0), 0
-  );
 
   return (
-    <div className="space-y-6 relative p-4 sm:p-6 bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-4xl font-extrabold text-gray-900">My Quotes</h1>
-          <p className="text-gray-600">Manage and track all your insurance quotes</p>
+    <div className="space-y-6 relative">
+      <h1 className="text-4xl font-extrabold text-gray-900">Client Quotes</h1>
+
+      {/* Header Bar: Search, Filter, New Quote Button */}
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-xl shadow-md">
+        
+        {/* Search Input */}
+        <div className="relative w-full md:w-1/3">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          {/* Input component (assuming Input is a styled component) */}
+          <Input
+            type="text"
+            placeholder="Search by client name or ZIP"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
         </div>
-        <Button onClick={onNewQuote} className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
+
+        {/* Status Filter Dropdown */}
+        <div className="w-full md:w-1/4">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as Quote['status'] | 'all')}
+            className="w-full px-4 py-2 border rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 appearance-none"
+          >
+            {statusFilterOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* New Quote Button */}
+        <Button
+          onClick={onNewQuote}
+          className="w-full md:w-auto px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition duration-150 font-semibold shadow-md flex items-center"
+        >
+          <Plus className="w-4 h-4 mr-2" />
           Create New Quote
         </Button>
       </div>
 
-      {/* Statistics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="shadow-md">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 rounded-full">
-                <Users className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Total Quotes</p>
-                <p className="text-2xl font-bold text-gray-900">{quotes.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-md">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-yellow-100 rounded-full">
-                <Calendar className="w-5 h-5 text-yellow-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Drafts</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {quotes.filter(q => q.status === 'draft').length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-md">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-purple-100 rounded-full">
-                <Eye className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Presented</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {quotes.filter(q => q.status === 'presented').length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-md">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-green-100 rounded-full">
-                <DollarSign className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Total Value (Monthly)</p>
-                <p className="text-2xl font-bold text-green-600">${totalValue.toLocaleString()}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters and Search */}
-      <Card className="shadow-md">
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search by client name or email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 h-10"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <select
-                value={statusFilter}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value as Quote['status'] | 'all')}
-                className="px-4 py-2 border border-gray-300 rounded-lg bg-white h-10 text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="all">All Status</option>
-                <option value="draft">Draft</option>
-                <option value="completed">Completed</option>
-                <option value="presented">Presented</option>
-              </select>
-
-              <select
-                value={sortBy}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value as 'date' | 'client' | 'value')}
-                className="px-4 py-2 border border-gray-300 rounded-lg bg-white h-10 text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="date">Sort by Date</option>
-                <option value="client">Sort by Client</option>
-                <option value="value">Sort by Value</option>
-              </select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Quotes List */}
-      <div className="space-y-4">
+      {/* Quote List Table/Cards */}
+      <div className="bg-white rounded-xl shadow-xl overflow-hidden">
         {filteredQuotes.length === 0 ? (
-          <Card className="shadow-md">
-            <CardContent className="p-12 text-center bg-white">
-              <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {quotes.length === 0 ? 'No quotes yet' : 'No quotes match your filters'}
-              </h3>
-              <p className="text-gray-600 mb-6">
-                {quotes.length === 0
-                  ? 'Start by creating your first insurance quote to see it here.'
-                  : 'Try adjusting your search or filter criteria to find quotes.'
-                }
-              </p>
-              {quotes.length === 0 && (
-                <Button onClick={onNewQuote}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create First Quote
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <div className="text-center p-12 text-gray-500">
+            <Archive className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <p className="text-lg font-semibold">No quotes found</p>
+            <p>Try adjusting your filters or <span onClick={onNewQuote} className='text-blue-600 cursor-pointer hover:text-blue-700 font-medium'>start a new quote</span>.</p>
+          </div>
         ) : (
-          filteredQuotes.map((quote) => {
-            const totalMonthly = quote.packages.reduce((sum, pkg) => sum + pkg.totalMonthlyPremium, 0);
-            const planCount = quote.packages.reduce((sum, pkg) => sum + pkg.plans.length, 0);
-
-            return (
-              <Card key={quote.id} className="hover:shadow-xl transition-all duration-300 border-l-4 border-blue-500">
-                <CardContent className="p-5">
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-xl font-bold text-gray-900 break-words">
-                          {quote.client.name}
-                        </h3>
-                        <Badge className={`uppercase text-xs font-semibold ${getStatusColor(quote.status)}`}>
-                          {quote.status}
-                        </Badge>
-                      </div>
-
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-2 gap-x-6 text-sm text-gray-600 mt-3">
-                        <div>
-                          <p className="font-medium text-gray-700">Email</p>
-                          <p className="break-words">{quote.client.email}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-700">ZIP Code</p>
-                          <p>{quote.client.zipCode}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-700">Packages</p>
-                          <p>{quote.packages.length} package{quote.packages.length !== 1 ? 's' : ''}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-700">Total Plans</p>
-                          <p>{planCount} plan{planCount !== 1 ? 's' : ''}</p>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 flex items-center space-x-6 text-xs text-gray-500">
-                        <span className="flex items-center">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          Created: {new Date(quote.createdAt).toLocaleDateString()}
-                        </span>
-                        <span className="flex items-center">
-                          <Edit className="w-3 h-3 mr-1" />
-                          Updated: {new Date(quote.updatedAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-end space-y-3 pt-2 md:pt-0 w-full md:w-auto">
-                      <div className="text-right">
-                        <p className="text-3xl font-extrabold text-green-600">
-                          ${totalMonthly.toLocaleString()}/mo
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          ${(totalMonthly * 12).toLocaleString()}/year
-                        </p>
-                      </div>
-
-                      <div className="flex space-x-1.5">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onViewQuote(quote.id)}
-                          title="View Quote Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onEditQuote(quote.id)}
-                          title="Edit Quote"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEmailClient(quote)}
-                          title="Email Quote to Client"
-                          className="text-blue-600 hover:text-blue-700"
-                        >
-                          <Mail className="w-4 h-4" />
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleCopyLink(quote)}
-                          title="Copy Shareable Link"
-                        >
-                          <LinkIcon className="w-4 h-4" />
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteQuote(quote.id)}
-                          className="text-red-600 hover:text-red-700"
-                          title="Delete Quote"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
+          <div className="divide-y divide-gray-100">
+            {/* Header Row */}
+            <div className="hidden lg:grid grid-cols-10 gap-4 text-xs font-semibold uppercase text-gray-500 p-4 border-b border-gray-100">
+              <div className="col-span-3">Client Name</div>
+              <div className="col-span-1">ZIP</div>
+              <div className="col-span-2">Last Updated</div>
+              <div className="col-span-2">Status</div>
+              <div className="col-span-1 text-right">Premium (mo)</div>
+              <div className="col-span-1 text-right">Actions</div>
+            </div>
+            
+            {/* Quote Rows */}
+            {filteredQuotes.map((quote) => {
+              const status = getStatusBadge(quote.status);
+              const totalPremium = calculateTotalPremium(quote);
+              
+              return (
+                <div 
+                  key={quote.id} 
+                  className="grid grid-cols-10 gap-4 items-center p-4 hover:bg-gray-50 transition duration-100 cursor-pointer"
+                  onClick={() => onViewQuote(quote.id)}
+                >
+                  {/* Client Name & Email (Col 1) */}
+                  <div className="col-span-10 lg:col-span-3 font-semibold text-gray-900 flex flex-col">
+                    <span className="text-base">{quote.client.name}</span>
+                    <span className="text-sm font-normal text-gray-500 hidden sm:block">{quote.client.email}</span>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })
+
+                  {/* ZIP (Col 2) */}
+                  <div className="hidden lg:block col-span-1 text-sm text-gray-600">{quote.client.zipCode}</div>
+
+                  {/* Last Updated (Col 3) */}
+                  <div className="col-span-5 sm:col-span-2 lg:col-span-2 text-sm text-gray-600">
+                    {new Date(quote.updatedAt).toLocaleDateString()}
+                  </div>
+
+                  {/* Status (Col 4) */}
+                  <div className="col-span-5 sm:col-span-3 lg:col-span-2">
+                    <Badge className={`text-xs font-semibold px-3 py-1 rounded-full flex items-center justify-center ${status.className}`}>
+                      <status.icon className='w-3 h-3 mr-1'/>
+                      {status.label}
+                    </Badge>
+                  </div>
+
+                  {/* Premium (Col 5) */}
+                  <div className="col-span-5 sm:col-span-3 lg:col-span-1 text-lg font-bold text-teal-600 text-right mr-5">
+                    ${totalPremium}
+                  </div>
+
+                  {/* Actions (Col 6) - Prevent click propagation from the row onClick */}
+                  <div className="col-span-5 sm:col-span-4 lg:col-span-1 flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                    
+                    {/* View Button */}
+                    <Button
+                      onClick={() => onViewQuote(quote.id)}
+                      title="View Details"
+                      size="sm"
+                      className="p-1.5 h-auto bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    
+                    {/* Edit Button - Only for 'draft' or 'presented' quotes */}
+                    {(quote.status === 'draft' || quote.status === 'presented') && (
+                      <Button
+                        onClick={() => onEditQuote(quote.id)}
+                        title="Edit Quote"
+                        size="sm"
+                        className="p-1.5 h-auto bg-blue-100 text-blue-600 hover:bg-blue-200"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                    )}
+                    
+                    {/* Email Button - Only for 'presented' or 'accepted' quotes */}
+                    {(quote.status === 'presented' || quote.status === 'accepted') && (
+                      <Button
+                        onClick={() => onEmailQuote(quote)}
+                        title="Email Client"
+                        size="sm"
+                        className="p-1.5 h-auto bg-teal-100 text-teal-600 hover:bg-teal-200"
+                      >
+                        <Mail className="w-4 h-4" />
+                      </Button>
+                    )}
+
+                    {/* Delete Button */}
+                    <Button
+                      onClick={() => handleDelete(quote)}
+                      title="Delete Quote"
+                      size="sm"
+                      className="p-1.5 h-auto bg-red-100 text-red-600 hover:bg-red-200"
+                      variant="destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 
-      {/* Copy Success Toast/Notification */}
-      {copySuccessMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 p-4 rounded-xl bg-green-600 text-white shadow-2xl transition-all duration-300 transform animate-pulse">
-          <CheckCircle className="w-5 h-5" />
-          <span className="font-medium">{copySuccessMessage}</span>
-        </div>
-      )}
 
       {/* Delete Confirmation Modal */}
       {isConfirmingDelete && quoteToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4">
-          <Card className="w-full max-w-sm border-2 border-red-500 animate-in fade-in zoom-in">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-lg shadow-2xl border-2 border-red-500">
             <CardHeader>
               <CardTitle className="text-2xl text-red-600 flex items-center gap-2">
                 <Trash2 className="w-6 h-6" />
@@ -549,18 +302,19 @@ export function QuotesList({
               </p>
               <div className="flex justify-end gap-3">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   onClick={() => {
                     setIsConfirmingDelete(false);
                     setQuoteToDelete(null);
                   }}
-                  className="text-gray-500 hover:bg-gray-100"
+                  className="text-gray-700 hover:bg-gray-100"
                 >
                   Cancel
                 </Button>
                 <Button
                   className="bg-red-600 hover:bg-red-700 text-white shadow-md"
                   onClick={confirmDelete}
+                  variant="destructive"
                 >
                   Yes, Delete
                 </Button>
@@ -568,19 +322,6 @@ export function QuotesList({
             </CardContent>
           </Card>
         </div>
-      )}
-
-
-      {/* Email Modal */}
-      {selectedQuote && (
-        <EmailQuoteModal
-          isOpen={emailModalOpen}
-          onClose={() => {
-            setEmailModalOpen(false);
-            setSelectedQuote(null);
-          }}
-          quote={selectedQuote}
-        />
       )}
     </div>
   );

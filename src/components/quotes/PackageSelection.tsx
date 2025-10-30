@@ -25,18 +25,17 @@ interface PackageSelectionProps {
 
 // FIX: Added missing 'vision' and 'breeze' keys to satisfy the Record<InsuranceType, string[]> type definition
 const CARRIERS: Record<InsuranceType, string[]> = {
-  health: ['Molina', 'Blue Cross Blue Shield', 'Cigna'],
+  health: ['Ambetter', 'Molina', 'Blue Cross Blue Shield', 'Cigna', ],
   healthShare: ['Sedera Health'],
   konnect: ['TRUVirtual', 'KonnectMD'],
   dental: ['Ameritas'],
   life: ['American Amicable', 'Transamerica'],
   catastrophic: ['United Healthcare'],
-  cancer: ['Some Carrier'],
-  heart: ['Some Carrier'],
-  outOfPocket: ['Generic'],
-  disability: ['Some Carrier'],
-  vision: ['VSP', 'EyeMed'], // Added missing vision type
-  breeze: ['Breeze'], // Added missing breeze type, using "Breeze" from logos as carrier
+  cancer: ['Manhattan Life', 'Cigna'],
+  heart: ['Manhattan Life', 'Cigna'],
+  outOfPocket: ['Manhattan Life'],
+  disability: ['Breeze'],
+  vision: ['Ameritas'], // Added missing vision type
 };
 
 // NEW: Define carrier logos, using placeholders for missing images
@@ -48,6 +47,7 @@ const carrierLogos: Record<string, string> = {
   TRUVirtual: "/logos/virtual.png",
   Breeze: "/logos/breeze.png",
   ACA: "/logos/aca.png",
+  health: "/logos/aca.png",
   "United Healthcare": "/logos/uhc.png",
   "Sedera Health": "/logos/sedera.jpg",
   VSP: "https://placehold.co/75x20/F0F4F8/3B82F6?text=VSP",
@@ -93,8 +93,6 @@ const getPlanTypeLabel = (type: InsurancePlan['type']) => {
       return 'Dental';
     case 'vision':
       return 'Vision'; // Added label for vision
-    case 'breeze':
-        return 'Breeze Plan'; // Added label for breeze
     case 'life':
       return 'Life Insurance';
     case 'catastrophic':
@@ -261,7 +259,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
       // Cast currentPlan to InsurancePlan, relying on the state flow to ensure required fields (id, name, type, provider, monthlyPremium) are present.
       ...(currentPlan as InsurancePlan),
       id: generateId(),
-      name: currentPlan.title,
+      name: currentPlan.title, // Ensure 'name' is synced with 'title' on creation
       details: currentPlan.details || '',
       coverage: currentPlan.coverage || '',
     };
@@ -285,6 +283,43 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     }); 
   };
   
+  /**
+   * NEW FUNCTION: Unified handler for updating any field in a custom package plan.
+   * Crucially, it syncs 'name' and 'title' for display consistency across app views.
+   */
+  const handleUpdatePlanFieldInCustomPackage = (planId: string, field: keyof InsurancePlan, value: InsurancePlanValue) => {
+    if (!packageBeingCustomEdited) return;
+
+    const updatedPlans = packageBeingCustomEdited.plans.map(p => {
+        if (p.id === planId) {
+const updatedPlan = { ...p, [field]: value };
+            
+            // Keep name and title in sync for display consistency in both PackageSelection list and ClientPresentation.
+            if (field === 'name') {
+                updatedPlan.title = String(value);
+            } else if (field === 'title') {
+                updatedPlan.name = String(value);
+            }
+            
+            // Ensure monthly premium is a number and recalculate total
+            if (field === 'monthlyPremium') {
+                updatedPlan.monthlyPremium = parseFloat(String(value)) || 0;
+            }
+
+            return updatedPlan;
+        }
+        return p;
+    });
+
+    const newTotal = updatedPlans.reduce((sum, p) => sum + (p.monthlyPremium || 0), 0);
+
+    setPackageBeingCustomEdited(prev => prev ? ({
+        ...prev,
+        plans: updatedPlans,
+        totalMonthlyPremium: newTotal,
+    }) : null);
+  };
+  
   const handleRemovePlanFromCustomPackage = (planId: string) => {
     if (!packageBeingCustomEdited) return;
 
@@ -298,21 +333,6 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     }) : null);
   };
   
-  const handleUpdatePlanPremiumInCustomPackage = (planId: string, newPremium: number) => {
-    if (!packageBeingCustomEdited) return;
-
-    const updatedPlans = packageBeingCustomEdited.plans.map(p => 
-        p.id === planId ? { ...p, monthlyPremium: newPremium } : p
-    );
-    const newTotal = updatedPlans.reduce((sum, p) => sum + (p.monthlyPremium || 0), 0);
-
-    setPackageBeingCustomEdited(prev => prev ? ({
-        ...prev,
-        plans: updatedPlans,
-        totalMonthlyPremium: newTotal,
-    }) : null);
-  };
-
   const handleSaveCustomPackage = () => {
     if (!packageBeingCustomEdited || !packageBeingCustomEdited.name || packageBeingCustomEdited.plans.length === 0) {
       console.error('Please name the package and add at least one plan.'); 
@@ -373,9 +393,27 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     setModifiedPlans(pkg.plans.map(p => ({ ...p })));
   };
 
+  // UPDATED: Handle plan name/title update in template modification modal
   const handlePlanUpdate = (planId: string, field: keyof InsurancePlan, value: InsurancePlanValue) => {
     setModifiedPlans(prev => 
-      prev.map(p => (p.id === planId ? { ...p, [field]: value } : p))
+      prev.map(p => {
+        if (p.id === planId) {
+const updatedPlan = { ...p, [field]: value };
+            
+            // Sync name and title when editing in the template modification modal
+            if (field === 'name') {
+                updatedPlan.title = String(value);
+            } else if (field === 'title') {
+                updatedPlan.name = String(value);
+            }
+            // Ensure monthly premium is a number
+            if (field === 'monthlyPremium') {
+                updatedPlan.monthlyPremium = parseFloat(String(value)) || 0;
+            }
+            return updatedPlan;
+        }
+        return p;
+      })
     );
   };
 
@@ -383,9 +421,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
     const originalPackage = availablePackages.find(p => p.id === modifyingPackageId);
     if (!originalPackage) return;
 
-    // FIX: Map the modified plans into the required type: (Partial<InsurancePlan> & { id: string })[]
-    // 1. Filter to ensure the plan has an ID, which is required by the utility function.
-    // 2. Map to create the updates object, ensuring it includes 'id: string'.
+    // Map the modified plans into the required type: (Partial<InsurancePlan> & { id: string })[]
     const planUpdates = modifiedPlans
       .filter((p): p is InsurancePlan & { id: string } => !!p.id)
       .map(p => {
@@ -405,12 +441,23 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
               });
           }
           
+          // CRUCIAL: Since the user edits 'title' (which also updates 'name' via handlePlanUpdate), 
+          // we need to ensure 'title' is included in the updates if it changed,
+          // so it propagates to ClientPresentation.
+          if (p.title !== originalPlan?.title) {
+            updates.title = p.title;
+          }
+          // Also include name for consistency if it changed
+          if (p.name !== originalPlan?.name) {
+            updates.name = p.name;
+          }
+
           return updates;
       })
       // Only keep updates where something besides the ID was changed (i.e., keys > 1)
       .filter(u => Object.keys(u).length > 1);
       
-    // The type is now correctly inferred, no need for the final 'as' cast.
+    // updatePackagePricing handles recalculation of the total premium based on the modified plans/premiums.
     const updatedPkg = updatePackagePricing(originalPackage, planUpdates);
 
     // Replace the old package with the updated one in the available list
@@ -477,7 +524,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                                 handleStartCustomEdit(pkg); // New full custom editor
                             }
                         }}
-                        title={isTemplate ? "Modify Plan Pricing/Details" : "Edit Custom Package"}
+                        title={isTemplate ? "Modify Plan Pricing/Details/Name" : "Edit Custom Package"}
                         className="text-gray-500 hover:text-indigo-600"
                     >
                         <Edit className="w-4 h-4" />
@@ -521,6 +568,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                         <div className="flex items-center flex-shrink-0">
                           {getPlanIcon(plan.type)}
                         </div>
+                        {/* Use plan.title for display here, which is synced with plan.name in the editor */}
                         <span className="font-medium truncate min-w-0">{plan.title}</span> 
                       </div>
                       
@@ -561,13 +609,8 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
 
       {/* Quote Summary */}
       <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
-        <h3 className="text-xl font-semibold mb-3 text-gray-800">Quote Summary</h3>
-        <p className="text-lg">
-          Packages Selected: <strong className="text-indigo-600">{selectedPackageIds.size}</strong>
-        </p>
         <p className="text-2xl mt-1 font-bold">
-          Total Monthly Premium: 
-          <span className="text-green-600 ml-2">${totalSelectedValue.toLocaleString()}</span>/mo
+            Packages Selected: <strong className="text-indigo-600">{selectedPackageIds.size}</strong>
         </p>
       </div>
 
@@ -576,7 +619,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
         <Button 
             onClick={() => onSubmit(Array.from(selectedPackageIds).map(getPackageToDisplay).filter((pkg): pkg is Package => pkg !== undefined))}
             disabled={selectedPackageIds.size === 0}
-            className="bg-[#1d2333] hover:bg-indigo-700 disabled:opacity-50"
+            className="bg-blue-500 hover:bg-indigo-700 disabled:opacity-50"
         >
             Continue ({selectedPackageIds.size} Package{selectedPackageIds.size !== 1 ? 's' : ''})
         </Button>
@@ -621,18 +664,28 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                 {packageBeingCustomEdited.plans.map(p => (
                   <div key={p.id} className="flex flex-col space-y-2 py-2 border-b last:border-b-0">
                     <div className="flex justify-between items-center w-full">
-                        <div className="flex items-center space-x-2">
-                            <span className="font-medium text-gray-800">{p.name}</span>
-                            <Badge variant="secondary">{p.provider}</Badge>
+                        {/* FIX: Use Input for editable plan name (name field is displayed here) */}
+                        <div className="flex items-center space-x-2 flex-1 min-w-0"> 
+                            <Input 
+                                type="text"
+                                // Use 'name' for the input value in the editor
+                                value={p.name}
+                                onChange={(e) => {
+                                    // Use the generic handler to update the name and sync the title
+                                    handleUpdatePlanFieldInCustomPackage(p.id!, 'name', e.target.value);
+                                }}
+                                className="flex-1 text-sm font-medium text-gray-800 h-8 p-1 px-2 border-gray-300"
+                            />
+                            <Badge variant="secondary" className="flex-shrink-0">{p.provider}</Badge>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 flex-shrink-0">
                             <Input 
                                 type="number"
                                 value={p.monthlyPremium}
                                 onChange={(e) => {
                                     const newPremium = parseFloat(e.target.value) || 0;
-                                    // Use non-null assertion '!' here as plans in the editor state should have an ID
-                                    handleUpdatePlanPremiumInCustomPackage(p.id!, newPremium);
+                                    // Use the generic handler to update the premium
+                                    handleUpdatePlanFieldInCustomPackage(p.id!, 'monthlyPremium', newPremium);
                                 }}
                                 className="w-24 text-right h-8"
                             />
@@ -783,18 +836,17 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
         </div>
       )}
 
-      {/* Modal for Modifying Template Package (Pricing Only - Existing Logic) */}
+      {/* Modal for Modifying Template Package (Pricing/Details/Name) */}
       {modifyingPackageId && packageToModify && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
               <Card className="w-full max-w-4xl">
                   <CardHeader>
                       <CardTitle className="text-2xl">Modify Package: {packageToModify.name}</CardTitle>
-                      <p className="text-sm text-gray-500">Adjust the pricing or details for this quote only. Original template is unaffected.</p>
+                      <p className="text-sm text-gray-500">Adjust the pricing, details, or plan name for this quote only.</p>
                   </CardHeader>
                   <CardContent className="space-y-6 max-h-[70vh] overflow-y-auto">
                       {modifiedPlans.map(plan => (
                           <div key={plan.id} className="border p-4 rounded-lg space-y-3 bg-gray-50">
-                              {/* UPDATED: Display Plan Title with Carrier Logo and Name - using flex-1 and justify-between for responsiveness */}
                               <h4 className="text-lg font-semibold flex items-center justify-between space-x-2">
                                   <div className="flex items-center space-x-2 min-w-0 flex-1">
                                       {getPlanIcon(plan.type)}
@@ -813,6 +865,23 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                               </h4>
                               
                               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                                  {/* NEW: Plan Name/Title Adjustment */}
+                                  <div className="space-y-1 col-span-full">
+                                      <Label htmlFor={`title-${plan.id}`} className="font-medium text-gray-700">
+                                          Plan Name/Title
+                                      </Label>
+                                      <Input
+                                          id={`title-${plan.id}`}
+                                          type="text"
+                                          // Use 'title' for display and editing
+                                          value={plan.title}
+                                          // Update 'title' which also syncs 'name' via handlePlanUpdate
+                                          onChange={e => handlePlanUpdate(plan.id!, 'title', e.target.value)}
+                                          placeholder="e.g., New Gold PPO 500"
+                                          className="text-base"
+                                      />
+                                  </div>
+
                                   {/* Monthly Premium Adjustment */}
                                   <div className="space-y-1">
                                       <Label htmlFor={`premium-${plan.id}`} className="font-medium text-gray-700">
@@ -837,6 +906,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                                           <Input
                                               id={`deductible-${plan.id}`}
                                               type="number"
+                                              value={plan.deductible || ''} // Use 'plan.deductible' for existing value
                                               onChange={e => handlePlanUpdate(plan.id!, 'deductible', parseInt(e.target.value) || 0)}
                                               placeholder="0"
                                               className="text-base"
