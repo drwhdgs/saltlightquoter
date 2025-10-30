@@ -13,7 +13,7 @@ export function AuthPage({ onAuthenticated }: AuthPageProps) {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fb] flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-0"> {/* reduce margin here */}
   {/* Logo */}
@@ -42,7 +42,13 @@ export function AuthPage({ onAuthenticated }: AuthPageProps) {
         {/* Footer */}
         <div className="mt-8 text-center text-md text-gray-500">
           <p>Copyright © 2025 QuoteDeck | Terms of Use & Privacy Policy</p>
-                 <p><br/>All data is stored locally in your browser</p>
+                 <div className="bg-yellow-100 text-yellow-800 p-4 rounded-md mt-4 shadow-sm">
+  <p className="font-semibold">⚠️ Important Notice</p>
+  <p className="text-sm">
+    As of now, all data is stored locally in your browser. Do not clear your cookies or browser storage, 
+    or your saved quotes and settings may be lost.
+  </p>
+</div>
 
         </div>
       </div>
