@@ -445,8 +445,8 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
               className={`
                 transition-all duration-300 cursor-pointer 
                 ${isSelected 
-                  ? 'border-4 border-indigo-500 shadow-xl ring-4 ring-indigo-200' 
-                  : 'border-2 border-gray-200 hover:border-indigo-400 hover:shadow-lg'}
+                  ? 'border-4 border-[#1d2333] shadow-xl ring-4 ring-gray-200' 
+                  : 'border-2 border-gray-200 hover:border-gray-400 hover:shadow-lg'}
               `}
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 border-b">
@@ -504,7 +504,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
               >
                 <p className="text-sm text-gray-500 mb-3">{pkg.description}</p>
                 <div className="text-center mb-4">
-                  <span className="text-3xl font-extrabold text-indigo-600">
+                  <span className="text-3xl font-extrabold text-gray-900">
                     ${pkg.totalMonthlyPremium.toLocaleString()}
                   </span>
                   <span className="text-base text-gray-600">/mo</span>
@@ -576,7 +576,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
         <Button 
             onClick={() => onSubmit(Array.from(selectedPackageIds).map(getPackageToDisplay).filter((pkg): pkg is Package => pkg !== undefined))}
             disabled={selectedPackageIds.size === 0}
-            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+            className="bg-[#1d2333] hover:bg-indigo-700 disabled:opacity-50"
         >
             Continue ({selectedPackageIds.size} Package{selectedPackageIds.size !== 1 ? 's' : ''})
         </Button>
@@ -773,7 +773,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
               <Button variant="outline" onClick={() => setPackageBeingCustomEdited(null)}>Cancel</Button>
               <Button 
                 onClick={handleSaveCustomPackage} 
-                className="bg-indigo-600 hover:bg-indigo-700" 
+                className="bg-[#1d2333] hover:bg-indigo-700" 
                 disabled={!packageBeingCustomEdited.name || packageBeingCustomEdited.plans.length === 0}
               >
                 Save Package
@@ -948,7 +948,7 @@ export function PackageSelection({ client, initialPackages, onSubmit, onBack }: 
                   </CardContent>
                   <div className="flex justify-end space-x-2 p-4 border-t">
                       <Button variant="outline" onClick={() => setModifyingPackageId(null)}>Cancel</Button>
-                      <Button onClick={handleSaveModification} className="bg-indigo-600 hover:bg-indigo-700">Apply Changes</Button>
+                      <Button onClick={handleSaveModification} className="bg-[#1d2333] hover:bg-indigo-700">Apply Changes</Button>
                   </div>
               </Card>
           </div>
