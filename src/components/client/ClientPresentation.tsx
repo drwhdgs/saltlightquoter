@@ -224,7 +224,59 @@ const addCoverageList = (listTitle: string = "Coverage:") => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      {/* Header omitted for brevity - same as your code */}
+      {/* Header */}
+      <div className="bg-white shadow-lg border-b sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="text-left w-full sm:w-auto">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-1">
+                Insurance Options for:
+              </h1>
+              <div className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+                {quote.client.name}
+              </div>
+             <div className="text-base sm:text-lg text-gray-600">
+  <a
+    href={`tel:${quote.client.phone}`}
+    className="hover:text-blue-600 transition"
+  >
+    {quote.client.phone.replace(
+      /(\d{3})(\d{3})(\d{4})/,
+      "($1) $2-$3"
+    )}
+  </a>
+</div>
+            </div>
+
+            <div className="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-inner w-full sm:w-auto justify-center sm:justify-start">
+              <div className="w-14 h-14 rounded-full overflow-hidden bg-white shadow-md flex items-center justify-center border-2 border-gray-200">
+                <img
+                  src="https://i.ibb.co/gbLRKXn3/662-815-0033-removebg-preview.png"
+                  alt="Company Logo"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="text-left">
+                <div className="font-semibold text-gray-900 text-sm">
+                  Salt & Light Insurance Group
+                </div>
+                <div className="text-xs text-gray-600 flex items-center mt-1">
+                  <Phone className="w-3 h-3 inline mr-1 text-teal-600" />
+                  <a href="tel:+16624603656" className="hover:text-teal-700">
+                    (662) 460-3656
+                  </a>
+                </div>
+                <div className="text-xs text-gray-600 flex items-center">
+                  <Mail className="w-3 h-3 inline mr-1 text-teal-600" />
+                  <a href="mailto:support@saltlightinsurancegroup.com" className="hover:text-teal-700">
+                    support@saltlightinsurancegroup.com
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Packages */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8">
