@@ -7,7 +7,9 @@ import { DashboardOverview } from './DashboardOverview';
 import { QuoteWizard } from '../quotes/QuoteWizard';
 import { QuotesList } from '../quotes/QuotesList';
 import { EmailQuoteModal } from '../quotes/EmailQuoteModal';
-import { ClientsList } from '../client/ClientsList'; 
+import { ClientsList } from '../client/ClientsList';
+// UPDATED: Corrected import path and component name
+import { CalendarPage } from '../dashboard/Calendar'; 
 // UPDATED: Import the full Quote and Client type
 import { Agent, Quote, Client } from '@/lib/types';
 import { 
@@ -19,13 +21,18 @@ import {
   updateClientInQuotes 
 } from '@/lib/storage';
 import { Button } from '@/components/ui/button'; 
+// 🔥 NEW: Import the ComingSoonPopup component
+import { ComingSoonPopup } from '../dashboard/ComingSoonPopup'; 
+// 🔥 NEW: Import the AgentSettings component - ASSUMING FILE IS AgentSettings
+import { AgentSettings } from '../dashboard/AppSettings'; // Corrected file name assumption
 
 interface MainDashboardProps {
   agent: Agent;
   onLogout: () => void;
 }
 
-type DashboardView = 'dashboard' | 'new-quote' | 'quotes' | 'clients' | 'settings' | 'edit-quote' | 'view-quote' | 'analytics' | 'support';
+// 🔥 FIX: Re-inserted the missing type definition
+type DashboardView = 'dashboard' | 'new-quote' | 'quotes' | 'clients' | 'settings' | 'edit-quote' | 'view-quote' | 'analytics' | 'support' | 'calendar';
 
 // FIX: Changed 'export function' to 'export default function' to resolve the import error
 export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
@@ -49,7 +56,24 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
     clearCurrentAgent();
     onLogout();
   };
-
+  
+  // 🔥 NEW: Placeholder for agent update logic
+  const handleAgentUpdate = async (updatedAgent: Partial<Agent>): Promise<void> => {
+    // In a real application, you would call your storage/API function here
+    // e.g., await updateAgentData(agent.id, updatedAgent);
+    console.log("Attempting to update agent with:", updatedAgent);
+    
+    // For this example, we'll simulate a slight delay and a success.
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // You would typically update the local agent state or trigger a global context refresh
+        // For now, we just log and resolve.
+        console.log("Agent update simulated successfully.");
+        resolve();
+      }, 500);
+    });
+  };
+  
   const handleNewQuote = (clientInfo?: Partial<Client>) => {
     // If client info is passed, it can pre-fill the QuoteWizard
     setSelectedQuoteId(null);
@@ -71,6 +95,8 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
   };
 
   // 🔥 NEW HANDLER: For the individual Follow Up button on the Recent Activity list
+  // Note: This function is no longer passed to DashboardOverview,
+  // as its logic is handled by onViewQuote in the Recent Activity list.
   const handleFollowUpQuote = (quoteId: string) => {
       // You could implement logic here to log the follow-up (e.g., update a 'lastFollowUpDate' on the quote).
       console.log(`Initiating follow-up for Quote ID: ${quoteId}. Navigating to view.`);
@@ -234,11 +260,11 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
             quotes={quotes}
             onNewQuote={handleNewQuote}
             onViewQuote={handleViewQuote} 
-            // 🔥 FIXED: Pass the new functions here
+            // FIXED: Removed onFollowUpQuote prop
             onReviewFollowUps={handleReviewFollowUps} 
           />
         );
-
+      
       case 'new-quote':
         return (
           <div className="p-8 bg-white rounded-xl shadow-xl">
@@ -294,6 +320,15 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
           />
         );
       // --- END NEW CLIENTS VIEW ---
+
+      // --- NEW CALENDAR VIEW ---
+      case 'calendar':
+        return (
+          <CalendarPage /> 
+          // You can pass props here if needed, e.g.,
+          // <CalendarPage quotes={quotes} />
+        );
+      // --- END NEW CALENDAR VIEW ---
 
       case 'view-quote':
         if (selectedQuoteId) {
@@ -491,48 +526,24 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
         }
         return <div className="p-8 bg-white rounded-xl shadow-xl text-center text-red-600 font-semibold">Quote not found</div>;
 
-      case 'settings':
-        return (
-          <div className="space-y-6">
-            <h1 className="text-4xl font-extrabold text-gray-900">Settings</h1>
-            <div className="bg-white rounded-xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">Agent Information</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Name</label>
-                  <p className="text-xl font-semibold text-gray-900 mt-1">{agent.name}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Email</label>
-                  <p className="text-xl font-semibold text-gray-900 mt-1">{agent.email}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Account Created</label>
-                  {/* Added check for agent.createdAt existence */}
-                  <p className="text-xl font-semibold text-gray-900 mt-1">{agent.createdAt ? new Date(agent.createdAt).toLocaleDateString() : 'N/A'}</p>
-                </div>
-              </div>
 
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <h3 className="text-xl font-semibold text-red-600 mb-4">Danger Zone</h3>
-                <Button
-                  onClick={handleLogout}
-                  className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150 font-semibold shadow-md"
-                >
-                  Logout
-                </Button>
-              </div>
-            </div>
-          </div>
+      case 'settings':
+        // 🔥 Use the new AgentSettings component
+        return (
+          <AgentSettings
+            agent={agent}
+            onLogout={handleLogout}
+            onAgentUpdate={handleAgentUpdate}
+          />
         );
+
+      // ... (Cases for 'analytics' and 'support' remain the same) ...
 
       case 'analytics':
         return (
-          <div className="p-8 bg-white rounded-xl shadow-xl min-h-[400px]">
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-4">Analytics</h1>
-            <p className="text-gray-600">Analytics data will be displayed here.</p>
-          </div>
+            <ComingSoonPopup onClose={() => setActiveView('dashboard')} />
         );
+
       case 'support':
         return (
           <div className="p-8 bg-white rounded-xl shadow-xl min-h-[400px]">
@@ -547,13 +558,14 @@ export default function MainDashboard({ agent, onLogout }: MainDashboardProps) {
                 quotes={quotes} 
                 onNewQuote={handleNewQuote} 
                 onViewQuote={handleViewQuote} 
-                // 🔥 FIXED: Pass the new functions here
+                // FIXED: Removed onFollowUpQuote prop
                 onReviewFollowUps={handleReviewFollowUps} 
             />
         );
     }
   };
 
+  // The main return block remains unchanged
   return (
     <div className="flex h-screen bg-[#f8f9fb]">
       <Sidebar

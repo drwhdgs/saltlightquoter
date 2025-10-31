@@ -106,14 +106,12 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
     { name: 'Dashboard', icon: LayoutDashboard, view: 'dashboard' },
     { name: 'My Quotes', icon: FileText, view: 'quotes', badge: draftCount },
     { name: 'Analytics', icon: BarChart3, view: 'analytics' },
-    { name: 'Clients', icon: Users, view: 'clients' },
     { name: 'Calendar', icon: Calendar, view: 'calendar' },
   ];
 
   const secondaryItems: Array<{ name: string; icon: IconComponent; view: ViewType; badge?: number }> = [
     { name: 'Settings', icon: Settings, view: 'settings' },
     // Changed 'help' to 'support' to align with MainDashboard.tsx's switch case
-    { name: 'Help & Support', icon: LifeBuoy, view: 'support' }, 
   ];
 
   const handleViewChange = (view: ViewType) => {
