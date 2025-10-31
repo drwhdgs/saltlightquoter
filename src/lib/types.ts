@@ -174,9 +174,9 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         title: "Term Made Simple",
         provider: "American Amicable",
         monthlyPremium: 0,
-        coverage: "$25,000 term life insurance",
+        coverage: "$25,000 term life insurance, 20-year level term life insurance",
         details:
-          "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
+          "Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
         brochureUrl:
           "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
       }),
@@ -219,9 +219,9 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         title: "Term Made Simple",
         provider: "American Amicable",
         monthlyPremium: 0,
-        coverage: "$25,000 term life insurance",
+        coverage: "$25,000 term life insurance, 20-year level term life insurance",
         details:
-          "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
+          "Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
         brochureUrl:
           "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
       }),
@@ -276,9 +276,9 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         title: "Term Made Simple",
         provider: "American Amicable",
         monthlyPremium: 0,
-        coverage: "$25,000 term life insurance",
+        coverage: "$25,000 term life insurance, 20-year level term life insurance",
         details:
-          "20-year level term life insurance. Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
+          "Includes Terminal Illness Accelerated Death Benefit Rider, Accelerated Death Benefits Rider and Chronic Illness Accelerated Benefit Rider.",
         brochureUrl:
           "https://www.americanamicable.com/CGI/SupplyReq/SupplyReqv2.exe?f=common/3236.pdf",
       }),
