@@ -13,64 +13,48 @@ interface ClientPresentationProps {
 
 /**
  * Calculates the appropriate effective date based on plan type.
- * - ACA/Health/HealthShare plans: First day of the next month.
- * - All others: The next day.
- * Prioritizes a date manually set in the plan object.
+ * FIX: Effective Date is now ONLY calculated and displayed for plans where 
+ * plan.type === "health". All other plan types return undefined to hide the detail.
  */
 const calculateEffectiveDate = (plan: InsurancePlan): Date | undefined => {
-  // 1. If date is explicitly provided in the data and is a non-empty string, use it.
+  const isHealthPlan = plan.type === "health";
+
+  if (!isHealthPlan) {
+    // Return undefined for all non-health plan types (Dental, Life, Catastrophic, etc.)
+    return undefined;
+  }
+  
+  // Logic only for type: "health"
+  const today = new Date();
+  let dateToDisplay: Date;
+  
+  // Default dynamic calculation for 'health' is 1st of next month
+  dateToDisplay = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+  dateToDisplay.setHours(12, 0, 0, 0); 
+
+  // OVERRIDE LOGIC: Respect stored date if it exists for the 'health' plan
   if (plan.effectiveDate && typeof plan.effectiveDate === 'string' && plan.effectiveDate.length > 0) {
-    let date: Date;
+    let storedDate: Date;
     
-    // FIX: Manually parse the date string to construct the date in local time,
-    // which prevents the UTC-midnight parsing error that causes the date rollback.
+    // Manually parse the date string to construct the date in local time for safety
     const parts = plan.effectiveDate.match(/(\d{1,4})[/-](\d{1,2})[/-](\d{1,4})/);
     
     if (parts) {
-      // Logic to handle MM/DD/YYYY or YYYY-MM-DD
       const isYearFirst = parts[1].length === 4;
       const year = parseInt(isYearFirst ? parts[1] : parts[3]);
-      // Month is 0-indexed in JS, so we subtract 1
       const month = parseInt(isYearFirst ? parts[2] : parts[1]) - 1; 
       const day = parseInt(isYearFirst ? parts[3] : parts[2]);
-
-      // Construct date in local time, and set it to noon for safety
-      date = new Date(year, month, day);
-      date.setHours(12, 0, 0, 0);
-
+      storedDate = new Date(year, month, day);
+      storedDate.setHours(12, 0, 0, 0);
     } else {
-      // Fallback for non-standard formats
-      date = new Date(plan.effectiveDate);
+      storedDate = new Date(plan.effectiveDate);
     }
     
-    // Check if the resulting date object is valid
-    if (!isNaN(date.getTime())) {
-        return date;
+    if (!isNaN(storedDate.getTime())) {
+        dateToDisplay = storedDate;
     }
   }
 
-  // 2. Otherwise, calculate the automatic date.
-  const today = new Date();
-  
-  // Correctly identify plans requiring the first of the next month.
-  const isFirstOfNextMonthPlan = plan.type === "health" || plan.provider === "ACA" || plan.type === "healthShare";
-  
-  let dateToDisplay: Date;
-
-  if (isFirstOfNextMonthPlan) {
-    // ACA/HealthShare Plans: First day of the next month (e.g., 11/01/2025)
-    // Setting day to 1 and month to next month handles year rollover automatically
-    dateToDisplay = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-  } else {
-    // All other products: Next day
-    dateToDisplay = new Date(today);
-    dateToDisplay.setDate(today.getDate() + 1);
-  }
-  
-  // OPTIMIZATION: Set the time to 12:00 PM local time to prevent 
-  // timezone-related display issues (e.g., rolling back to the previous day)
-  dateToDisplay.setHours(12, 0, 0, 0); 
-  
   return dateToDisplay;
 };
 
