@@ -41,7 +41,7 @@ export function QuoteReview({
   const totalAnnualPremium = totalMonthlyPremium * 12;
 
   const carrierLogos: Record<string, string> = {
-    "Ameritas Primestar": "/logos/ameritas.png",
+    "Ameritas": "/logos/ameritas.png",
     "American Amicable": "/logos/AmericanAmicable.jpeg",
     "Manhattan Life": "/logos/manhattan-life.png",
     KonnectMD: "/logos/konnect.png",
