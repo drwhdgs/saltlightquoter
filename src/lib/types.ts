@@ -1,8 +1,9 @@
 export interface Agent {
   id: string;
-  email: string;
   name: string;
-  createdAt: string;
+  email: string;
+  phone?: string;        // optional phone number
+  createdAt?: string;    // optional date if not always provided
 }
 
 export interface Client {
@@ -68,6 +69,14 @@ export interface Package {
   description: string;
   plans: InsurancePlan[];
   totalMonthlyPremium: number;
+}
+
+// ✅ Define a strong type for calendar events
+export interface CalendarEvent {
+  id: string; // Unique identifier
+  title: string; // Event name/title
+  date: string; // ISO date string (e.g. "2025-10-30")
+  type: "follow-up" | "renewal" | "birthday" | "marketing"; // Event category
 }
 
 export interface Quote {
