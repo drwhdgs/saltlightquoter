@@ -261,7 +261,7 @@ export function ClientsList({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-4xl font-extrabold text-gray-900 flex items-center">
+      <h1 className="text-3xl font-extrabold text-gray-900 flex items-center">
         Clients
       </h1>
 
@@ -295,6 +295,7 @@ export function ClientsList({
                     <Mail className="w-4 h-4 mr-2" />
                     Message All ({selectedClients.size})
                 </Button>
+                                   
                 
                 {/* Bulk Update Button */}
                 <Button 
@@ -353,6 +354,7 @@ i                   ndeterminate={isIndeterminate}
             {/* Client Rows */}
             {filteredClients.map((client) => {
               const isSelected = selectedClients.has(client.email);
+
               return (
               <div 
                 key={client.email} // Using email as the stable key
@@ -411,15 +413,15 @@ i                   ndeterminate={isIndeterminate}
 
                 {/* Actions (Col 5) - FIX APPLIED HERE */}
                 <div className="col-span-11 lg:col-span-3 flex justify-end gap-2">
-                  <Button
-                    onClick={() => handleSendMessage(client.email)}
-                    title="Send Message/Email"
-                    size="sm"
-                    className="p-1.5 h-auto bg-green-100 text-green-700 hover:bg-green-200"
-                  >
-                    <Send className="w-4 h-4" />
-                  </Button>
-                  
+                 <Button
+  onClick={() => window.open(`mailto:${client.email}?subject=Hello%20${encodeURIComponent(client.name)}&body=Hi%20${encodeURIComponent(client.name)},%0D%0A%0D%0AI wanted to reach out regarding your insurance quote.%0D%0A%0D%0ABest,%0D%0A${encodeURIComponent('Salt & Light Insurance Group')}`)}
+  title="Message Client"
+  size="sm"
+  className="p-1.5 h-auto bg-teal-100 text-teal-600 hover:bg-teal-200"
+>
+  <Send className="w-4 h-4" />
+</Button>
+
                   <Button
                     onClick={() => handleEditClient(client)}
                     title="Edit Client Info"
