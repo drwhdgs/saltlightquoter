@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button'; // Assuming Button is available
+import { Button } from '@/components/ui/button'; 
 import { ClientInfoForm } from './ClientInfoForm';
 import { PackageSelection } from './PackageSelection';
 import { QuoteReview } from './QuoteReview';
 import { Client, Package, Quote, Agent } from '@/lib/types';
 import { generateId, saveQuote, generateShareableLink } from '@/lib/storage';
-import { ChevronLeft, Check, User, PackageOpen, FileText } from 'lucide-react'; // Added icons
+import { ChevronLeft, Check, User, PackageOpen, FileText } from 'lucide-react'; 
 
 interface QuoteWizardProps {
   agent: Agent;
@@ -45,7 +45,7 @@ export function QuoteWizard({ agent, existingQuote, onComplete, onCancel }: Quot
       status: existingQuote?.status || 'draft', 
       createdAt: existingQuote?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      agent: undefined
+      // 🔥 FIX: Removed 'agent: undefined' because it does not exist on type 'Quote'
     };
 
     // Generate shareable link - this will be consistent for the same quote
