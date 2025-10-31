@@ -29,13 +29,13 @@ const CARRIERS: Record<InsuranceType, string[]> = {
   healthShare: ['Sedera Health'],
   konnect: ['TRUVirtual', 'KonnectMD'],
   dental: ['Ameritas'],
-  life: ['American Amicable', 'Transamerica'],
+  vision: ['Ameritas'], // Added missing vision type
+  life: ['American Amicable', 'Transamerica', 'Ethos'],
   catastrophic: ['United Healthcare'],
   cancer: ['Manhattan Life', 'Cigna'],
   heart: ['Manhattan Life', 'Cigna'],
   outOfPocket: ['Manhattan Life'],
   disability: ['Breeze'],
-  vision: ['Ameritas'], // Added missing vision type
 };
 
 // NEW: Define carrier logos, using placeholders for missing images
@@ -505,7 +505,7 @@ const updatedPlan = { ...p, [field]: value };
                 >
                     <Checkbox
                         checked={isSelected}
-                        className="w-5 h-5 rounded-md border-indigo-500"
+                        className="w-5 h-5 rounded-md border-blue-500"
                     />
                     <CardTitle className="text-xl font-bold text-gray-900 truncate">{pkg.name}</CardTitle>
                 </div>
@@ -523,7 +523,7 @@ const updatedPlan = { ...p, [field]: value };
                             }
                         }}
                         title={isTemplate ? "Modify Plan Pricing/Details/Name" : "Edit Custom Package"}
-                        className="text-gray-500 hover:text-indigo-600"
+                        className="text-gray-500 hover:text-blue-600"
                     >
                         <Edit className="w-4 h-4" />
                     </Button>
@@ -593,10 +593,10 @@ const updatedPlan = { ...p, [field]: value };
 
         {/* Add New Custom Package Card */}
         <Card 
-            className="border-2 border-dashed border-gray-300 flex items-center justify-center p-6 cursor-pointer hover:border-indigo-500 transition-colors"
+            className="border-2 border-dashed border-gray-300 flex items-center justify-center p-6 cursor-pointer hover:border-gray-800 transition-colors"
             onClick={handleStartNewCustomPackage}
         >
-            <div className="text-center text-gray-500 hover:text-indigo-600">
+            <div className="text-center text-gray-500 hover:text-blue-500">
                 <Plus className="w-8 h-8 mx-auto mb-2" />
                 <p className="font-semibold">Create New Custom Package</p>
             </div>
@@ -608,7 +608,7 @@ const updatedPlan = { ...p, [field]: value };
       {/* Quote Summary */}
       <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
         <p className="text-2xl mt-1 font-bold">
-            Packages Selected: <strong className="text-indigo-600">{selectedPackageIds.size}</strong>
+            Packages Selected: <strong className="text-blue-500">{selectedPackageIds.size}</strong>
         </p>
       </div>
 
@@ -824,7 +824,7 @@ const updatedPlan = { ...p, [field]: value };
               <Button variant="outline" onClick={() => setPackageBeingCustomEdited(null)}>Cancel</Button>
               <Button 
                 onClick={handleSaveCustomPackage} 
-                className="bg-[#1d2333] hover:bg-indigo-700" 
+                className="bg-blue-500 hover:bg-blue-600" 
                 disabled={!packageBeingCustomEdited.name || packageBeingCustomEdited.plans.length === 0}
               >
                 Save Package
@@ -1016,7 +1016,7 @@ const updatedPlan = { ...p, [field]: value };
                   </CardContent>
                   <div className="flex justify-end space-x-2 p-4 border-t">
                       <Button variant="outline" onClick={() => setModifyingPackageId(null)}>Cancel</Button>
-                      <Button onClick={handleSaveModification} className="bg-[#1d2333] hover:bg-indigo-700">Apply Changes</Button>
+                      <Button onClick={handleSaveModification} className="bg-blue-500 hover:bg-blue-600">Apply Changes</Button>
                   </div>
               </Card>
           </div>

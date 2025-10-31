@@ -301,7 +301,7 @@ export function QuoteReview({
             <Separator />
 
             <div className="bg-blue-50 p-4 rounded-lg mt-4">
-              <p className="text-sm text-blue-800">
+              <p className="text-sm text-blue-600">
                 <strong>Next Steps:</strong> Once generated, you'll receive a shareable link
                 to present these packages to your client. The client will be able to review
                 all options and make their selection.

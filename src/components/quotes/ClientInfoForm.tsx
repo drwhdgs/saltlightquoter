@@ -197,7 +197,7 @@ export function ClientInfoForm({ initialData, onSubmit, onCancel }: ClientInfoFo
                 className={`h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${errors.dateOfBirth ? 'border-red-500' : ''}`}
               />
               {age !== null && formData.dateOfBirth && (
-                <p className="text-sm text-gray-600 mt-1 font-medium">Calculated Age: **{age} years old**</p>
+                <p className="text-sm text-gray-600 mt-1 font-medium">Calculated Age: {age} years old</p>
               )}
               {errors.dateOfBirth && (
                 <p className="text-sm text-red-600">{errors.dateOfBirth}</p>

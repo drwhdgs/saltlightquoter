@@ -171,7 +171,7 @@ Click this link to view your quote: ${link}`;
 
               <Button
                 onClick={handleSendEmail}
-                className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg font-medium"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-medium"
               >
                 Send Email
               </Button>
@@ -214,7 +214,7 @@ Click this link to view your quote: ${link}`;
         window.open(smsLink, '_self');
         onClose();
       }}
-      className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg font-medium"
+      className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-medium"
     >
       Send SMS
     </Button>
