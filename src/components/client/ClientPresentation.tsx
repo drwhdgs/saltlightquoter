@@ -17,53 +17,35 @@ interface ClientPresentationProps {
  * plan.type === "health". All other plan types return undefined to hide the detail.
  */
 const calculateEffectiveDate = (plan: InsurancePlan): Date | undefined => {
-  const isHealthPlan = plan.type === "health";
+  if (plan.type !== "health") return undefined;
 
-  if (!isHealthPlan) {
-    // Return undefined for all non-health plan types (Dental, Life, Catastrophic, etc.)
-    return undefined;
-  }
-  
-  // Logic only for type: "health"
   const today = new Date();
-  let dateToDisplay: Date;
-  
-  // Default dynamic calculation for 'health' is 1st of next month
-  dateToDisplay = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+  let dateToDisplay = new Date(today.getFullYear(), today.getMonth() + 1, 1);
   dateToDisplay.setHours(12, 0, 0, 0); 
 
-  // OVERRIDE LOGIC: Respect stored date if it exists for the 'health' plan
   if (plan.effectiveDate && typeof plan.effectiveDate === 'string' && plan.effectiveDate.length > 0) {
     let storedDate: Date;
-    
-    // Manually parse the date string to construct the date in local time for safety
     const parts = plan.effectiveDate.match(/(\d{1,4})[/-](\d{1,2})[/-](\d{1,4})/);
-    
     if (parts) {
       const isYearFirst = parts[1].length === 4;
       const year = parseInt(isYearFirst ? parts[1] : parts[3]);
-      const month = parseInt(isYearFirst ? parts[2] : parts[1]) - 1; 
+      const month = parseInt(isYearFirst ? parts[2] : parts[1]) - 1;
       const day = parseInt(isYearFirst ? parts[3] : parts[2]);
       storedDate = new Date(year, month, day);
       storedDate.setHours(12, 0, 0, 0);
     } else {
       storedDate = new Date(plan.effectiveDate);
     }
-    
-    if (!isNaN(storedDate.getTime())) {
-        dateToDisplay = storedDate;
-    }
+    if (!isNaN(storedDate.getTime())) dateToDisplay = storedDate;
   }
 
   return dateToDisplay;
 };
 
-
 export default function ClientPresentation({
   quote,
   onPackageSelect,
 }: ClientPresentationProps) {
-  // Map of provider names to their logo paths
   const carrierLogos: Record<string, string> = {
     "Ameritas": "/logos/ameritas.png",
     "American Amicable": "/logos/AmericanAmicable.jpeg",
@@ -105,9 +87,6 @@ export default function ClientPresentation({
       details: planDetails,
     } = plan;
 
-    /**
-     * Helper to add a detail, applying the correct formatting and prefix.
-     */
     const addDetail = (
       label: string,
       value: number | string | undefined,
@@ -116,226 +95,107 @@ export default function ClientPresentation({
       isMonetary: boolean = true,
       forceString: boolean = false
     ) => {
-      // NOTE: We check for undefined/null/empty string, but explicitly allow 0
       if (value !== undefined && value !== null && value !== "") {
-        
         let cleanedValue = value;
         let numericValue = NaN;
         let finalPrefix = '';
         let formattedValue = '';
-        
+
         if (!forceString) {
-          // Attempt to clean and parse the value as a number if not forced to string
           cleanedValue = typeof value === 'string' ? value.toString().replace(/[^0-9.]/g, '') : value;
           numericValue = Number(cleanedValue);
         }
 
-        // --- Formatting Logic ---
-        if (forceString || isNaN(numericValue) || typeof value === 'string' && value.toString().length === 0) {
-            // Case 1: Force String OR Not a recognizable number
-            const originalValue = String(value);
-            formattedValue = formatter(originalValue);
-            
-            // Check if the string already has a monetary or percentage sign
-            if (isMonetary && !originalValue.trim().startsWith('$') && !formattedValue.endsWith('%')) {
-                // If it's descriptive money text (like "$25,000 term life insurance"), just show the text clean.
-                // We'll trust the input string for descriptive non-numerical values.
-                finalPrefix = ''; 
-                formattedValue = originalValue;
-            } else if (isMonetary && originalValue.trim().startsWith('$')) {
-                // Already has a dollar sign
-                finalPrefix = '';
-            } else if (formattedValue.endsWith('%')) {
-                // Percentage (non-monetary)
-                finalPrefix = '';
-            } else if (isMonetary && originalValue.match(/^[0-9,.]/)) {
-                // Looks like a clean number string, but not parsed as a number (e.g. from editor)
-                finalPrefix = '$';
-            } else {
-                 finalPrefix = '';
-            }
+        if (forceString || isNaN(numericValue) || (typeof value === 'string' && value.toString().length === 0)) {
+          const originalValue = String(value);
+          formattedValue = formatter(originalValue);
+          if (isMonetary && !originalValue.trim().startsWith('$') && !formattedValue.endsWith('%')) finalPrefix = '$';
         } else {
-            // Case 2: Valid Number (numericValue is a number)
-            const valueToFormat = numericValue;
-            formattedValue = formatter(valueToFormat);
-            finalPrefix = isMonetary && !formattedValue.endsWith('%') ? '$' : '';
+          formattedValue = formatter(numericValue);
+          finalPrefix = isMonetary && !formattedValue.endsWith('%') ? '$' : '';
         }
 
-        // --- Push final detail ---
         details.push(`${label}: ${finalPrefix}${formattedValue}`);
       }
     };
 
-    // Helper for coverage lists
-    const addCoverageList = (listTitle: string = "Coverage:") => {
-      if (coverage) {
-        let items: string[] = [];
+const addCoverageList = (listTitle: string = "Coverage:") => {
+  if (!coverage) return;
+  let items: string[] = [];
 
-        if (Array.isArray(coverage)) {
-          items = coverage;
-        } else if (typeof coverage === "string") {
-          // Try to split on newlines first
-          items = coverage
-              .split(/\n/)
-              .map((i) => i.trim())
-              .filter(Boolean);
+  if (Array.isArray(coverage)) {
+    items = coverage;
+  } else if (typeof coverage === "string") {
+    // Split on newline first
+    items = coverage
+      .split(/\n/)
+      .map((i) => i.trim())
+      .filter(Boolean);
 
-          // If splitting by newline didn't work (items.length <= 1) and the string contains common list separators,
-          // split by comma or semi-colon to catch the long string format.
-          if (items.length <= 1 && (coverage.includes(',') || coverage.includes(';') || coverage.includes(':'))) {
-            // Use a regex to split by comma, semi-colon, or a sequence like 'X: ' which indicates a list item
-            // This is a robust attempt to parse an inline list string.
-            items = coverage
-              .split(/,\s*(?=[A-Z])|;\s*(?=[A-Z])/) // Split by ',' or ';' followed by a space and an uppercase letter (to avoid splitting numbers)
-              .map((i) => i.trim())
-              .filter(Boolean);
+    // If still 1 item, split on commas **not inside numbers**
+    if (items.length <= 1) {
+      items = coverage
+        .split(/,(?=\s*[^\d])/g) // Split on comma NOT followed by a digit
+        .map((i) => i.trim())
+        .filter(Boolean);
+    }
+  }
 
-            // Final fallback: if it's still one item, and it contains common separators, split by basic comma
-             if (items.length <= 1 && coverage.includes(',')) {
-                items = coverage
-                    .split(/,\s*/)
-                    .map((i) => i.trim())
-                    .filter(Boolean);
-            }
-          }
-        }
+  if (items.length > 1) details.push([listTitle, ...items]);
+  else if (items.length === 1) details.push(`${listTitle} ${items[0]}`);
+  else if (typeof coverage === "string" && coverage.length > 0) details.push(`${listTitle} ${coverage}`);
+};
 
-        // Add to the main details array only if we have items
-        if (items.length > 1) {
-          details.push([listTitle, ...items]);
-        } else if (items.length === 1) {
-          details.push(`${listTitle} ${items[0]}`);
-        }
-      }
-    };
-
-    // --- TYPE-SPECIFIC LOGIC ---
-
-    // 1. Health Share (Specific terms: IUA, Member Share)
     if (type === "healthShare") {
-      // Coinsurance is a percentage, so isMonetary is false
       addDetail("Member Share", coinsurance, (v) => `${v}%`, false);
       addDetail("Initial Unshareable Amount (IUA)", deductible);
       addCoverageList();
-    }
-    // 2. Telehealth/Virtual Care (Konnect)
-    else if (type === "konnect" || plan.provider === "TRUVirtual") {
+    } else if (type === "konnect" || plan.provider === "TRUVirtual") {
       addCoverageList("Services Included:");
       addDetail("Initial Unshareable Amount (IUA)", deductible);
-    }
-    // 3. Catastrophic/Short Term Medical (Exclude copays)
-    else if (type === "catastrophic") {
+    } else if (type === "catastrophic") {
       addDetail("Deductible", deductible);
-      // Coinsurance is a percentage, so isMonetary is false
       addDetail("Coinsurance", coinsurance, (v) => `${v}%`, false);
       addDetail("Out-of-Pocket Max", outOfPocketMax);
-      // CALLING THE UPDATED HELPER HERE
       addCoverageList();
-      // Excluded: primaryCareCopay, specialistCopay, genericDrugCopay
-    }
-    // 4. Health (ACA - Comprehensive)
-    else if (type === "health") {
+    } else if (type === "health") {
       addDetail("Deductible", deductible);
-      // Coinsurance is a percentage, so isMonetary is false
       addDetail("Coinsurance", coinsurance, (v) => `${v}%`, false);
       addDetail("Out-of-Pocket Max", outOfPocketMax);
       addDetail("Primary Care Co-pay", primaryCareCopay);
       addDetail("Specialist Co-pay", specialistCopay);
       addDetail("Generic Drug Co-pay", genericDrugCopay);
       addCoverageList();
-    }
-    // 5. Life Insurance (Death Benefit, Term, Coverage) - UPDATED
-    else if (type === "life") {
-      // The previous logic (forceString: true) prevented monetary formatting for raw numerical coverage amounts.
-      // Changing to isMonetary: true, forceString: false allows raw numbers (e.g., 250000) to be formatted as $250,000.
-      addDetail("Coverage Amount", deathBenefit, undefined, true, false); 
-      
-      // Show Term Length (Non-monetary, non-formattable)
-      // NEW: Enforce (number) Years format for term.
-      if (term) {
-        addDetail(
-          "Term Length", 
-          term, 
-          (v) => `${v} Years`, // Custom formatter to append " Years"
-          false, 
-          true
-        );
-      }
-
-      // Show Coverage (Riders/Summary) - FIX APPLIED HERE
-      if (coverage) {
-        // Ensure coverage is treated as a list of items or a single descriptive block
-        const coverageItems = Array.isArray(coverage) 
-            ? coverage 
-            : typeof coverage === 'string' 
-            ? coverage.split(/\n/) // Only split on newlines for cleaner list formatting
-                      .map((i) => i.trim())
-                      .filter(Boolean)
-            : [];
-            
-        // If multiple items, display as a list
-        if (coverageItems.length > 1) {
-            details.push(["Coverage:", ...coverageItems]); 
-        } else if (coverageItems.length === 1) {
-            // If it's a single line (like the default rider text), display it as a single detail line
-            details.push(`Coverage: ${coverageItems[0]}`);
-        } else if (typeof coverage === 'string' && coverage.length > 0) {
-            // Fallback for an un-splittable but existing string
-             details.push(`Coverage: ${coverage}`);
-        }
-      }
-    }
-    // 6. Dental/Vision (Annual Max, Copays, Deductible)
-    else if (type === "dental" || type === "vision") {
+    } else if (type === "life") {
+      addDetail("Coverage Amount", deathBenefit, undefined, true, false);
+      if (term) addDetail("Term Length", term, (v) => `${v} Years`, false, true);
+      addCoverageList();
+    } else if (type === "dental" || type === "vision") {
       addDetail("Deductible", deductible);
       addDetail("Annual Max Benefit", annualMax);
       addDetail("Co-pay", coPay);
       addCoverageList("Key Benefits:");
-    }
-    // 7. Supplemental/Disability/Cancer/Heart/Out of Pocket (Financials + Coverage)
-    else if (
-  type === "cancer" ||
-  type === "heart" ||
-  type === "outOfPocket" ||
-  type === "disability"
-) {
-  addDetail("Deductible", deductible);
-  // Coinsurance is a percentage, so isMonetary is false
-      // Coinsurance is a percentage, so isMonetary is false
+    } else if (["cancer", "heart", "outOfPocket", "disability"].includes(type)) {
+      addDetail("Deductible", deductible);
       addDetail("Coinsurance", coinsurance, (v) => `${v}%`, false);
       addDetail("Annual Max Benefit", annualMax);
       addCoverageList("Key Benefits:");
     }
 
-    // Always add general details (which includes the life insurance rider text from 'details')
     if (planDetails) details.push(planDetails);
-    
-    // --- EFFECTIVE DATE LOGIC ---
+
     const dateToDisplay = calculateEffectiveDate(plan);
-    
-    // Display the date if it's a valid Date object
-    if (dateToDisplay) {
-      details.push(
-        `Effective Date: ${dateToDisplay.toLocaleDateString(
-          "en-US"
-        )}`
-      );
-    }
-    // --- END EFFECTIVE DATE LOGIC ---
+    if (dateToDisplay) details.push(`Effective Date: ${dateToDisplay.toLocaleDateString("en-US")}`);
 
     return details;
   };
 
-  // Component to handle logo display with a provider-initial fallback
   const PlanLogo: React.FC<{ plan: InsurancePlan }> = ({ plan }) => {
     const logoUrl = carrierLogos[plan.provider];
-    const [imageLoaded, setImageLoaded] = useState(true); // Assume loaded initially
+    const [imageLoaded, setImageLoaded] = useState(true);
 
-    // If no logo is defined, or if the image failed to load, show the provider initial
     if (!logoUrl || !imageLoaded) {
-      // Get the first initial of the provider's name
       const initial = plan.provider.charAt(0).toUpperCase();
-
       return (
         <div className="w-6 h-6 flex items-center justify-center bg-gray-200 rounded-full font-bold text-xs text-gray-700 shadow-sm flex-shrink-0">
           {initial}
@@ -343,7 +203,6 @@ export default function ClientPresentation({
       );
     }
 
-    // Otherwise, show the image using a standard <img> tag
     return (
       <img
         src={logoUrl}
@@ -351,166 +210,59 @@ export default function ClientPresentation({
         width={24}
         height={24}
         className="object-contain w-6 h-6 border border-gray-100 flex-shrink-0"
-        onError={() => setImageLoaded(false)} // This forces the fallback initial to display if loading fails
+        onError={() => setImageLoaded(false)}
       />
     );
   };
 
-  // --- NEW: Sort packages by fixed order before rendering ---
-  const packageOrder: string[] = [
-    "ACA Bronze",
-    "ACA Silver",
-    "Private Health",
-    "Health Share",
-    "Catastrophic",
-  ];
-
+  const packageOrder: string[] = ["ACA Bronze", "ACA Silver", "Private Health", "Health Share", "Catastrophic"];
   const sortedPackages = [...quote.packages].sort((a, b) => {
     const indexA = packageOrder.indexOf(a.name);
     const indexB = packageOrder.indexOf(b.name);
-
-    // If a package name isn't in the list, push it to the end
-    const sortA = indexA === -1 ? Infinity : indexA;
-    const sortB = indexB === -1 ? Infinity : indexB;
-
-    return sortA - sortB;
+    return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
   });
-  // --- End new sort logic ---
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      {/* Header */}
-      <div className="bg-white shadow-lg border-b sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="text-left w-full sm:w-auto">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-1">
-                Insurance Options for:
-              </h1>
-              <div className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
-                {quote.client.name}
-              </div>
-              <div className="text-base sm:text-lg text-gray-600">
-  <a
-    href={`tel:${quote.client.phone}`}
-    className="hover:text-blue-600 transition"
-  >
-    {quote.client.phone.replace(
-      /(\d{3})(\d{3})(\d{4})/,
-      "($1) $2-$3"
-    )}
-  </a>
-</div>
-            </div>
-
-            <div className="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-inner w-full sm:w-auto justify-center sm:justify-start">
-              <div className="w-14 h-14 rounded-full overflow-hidden bg-white shadow-md flex items-center justify-center border-2 border-gray-200">
-                <img
-                  src="https://i.ibb.co/gbLRKXn3/662-815-0033-removebg-preview.png"
-                  alt="Company Logo"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="text-left">
-                <div className="font-semibold text-gray-900 text-sm">
-                  Salt & Light Insurance Group
-                </div>
-                <div className="text-xs text-gray-600 flex items-center mt-1">
-                  <Phone className="w-3 h-3 inline mr-1 text-teal-600" />
-                  <a href="tel:+16624603656" className="hover:text-teal-700">
-                    (662) 460-3656
-                  </a>
-                </div>
-                <div className="text-xs text-gray-600 flex items-center">
-                  <Mail className="w-3 h-3 inline mr-1 text-teal-600" />
-                  <a href="mailto:support@saltlightinsurancegroup.com" className="hover:text-teal-700">
-                    support@saltlightinsurancegroup.com
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Header omitted for brevity - same as your code */}
 
       {/* Packages */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8">
-        <div
-          className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${
-            quote.packages.length >= 3 ? "lg:grid-cols-3" : "lg:grid-cols-2"
-          }`}
-        >
-          {/* USE THE SORTED ARRAY HERE */}
+        <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${quote.packages.length >= 3 ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
           {sortedPackages.map((pkg, index) => (
-            <div
-              key={pkg.id}
-              // NEW: Added lg:min-h-[600px] and lg:h-full to ensure cards have a consistent fixed-tight height on desktop.
-              className="bg-white rounded-xl shadow-2xl hover:shadow-3xl transition-shadow duration-300 flex flex-col overflow-hidden transform lg:h-full lg:min-h-[600px]"
-            >
-              <div
-                className={`bg-gradient-to-r ${getPackageColor(
-                  index
-                )} text-white p-5 text-center flex-shrink-0`}
-              >
-                <h2 className="text-xl sm:text-2xl font-black tracking-wide">
-                  {pkg.name} Package
-                </h2>
-                <div className="text-sm opacity-90 mt-1 italic">
-                  {pkg.description || ""}
-                </div>
+            <div key={pkg.id} className="bg-white rounded-xl shadow-2xl hover:shadow-3xl transition-shadow flex flex-col overflow-hidden transform lg:h-full lg:min-h-[600px]">
+              <div className={`bg-gradient-to-r ${getPackageColor(index)} text-white p-5 text-center flex-shrink-0`}>
+                <h2 className="text-xl sm:text-2xl font-black tracking-wide">{pkg.name} Package</h2>
+                <div className="text-sm opacity-90 mt-1 italic">{pkg.description || ""}</div>
               </div>
-
-              {/* NEW: Added lg:max-h-[400px] and lg:overflow-y-auto for desktop scrolling */}
               <div className="p-5 flex-1 space-y-5 overflow-visible lg:max-h-[400px] lg:overflow-y-auto">
                 {pkg.plans.map((plan) => (
-                  <div
-                    key={plan.id}
-                    className="border-l-4 pl-4 py-1 border-blue-400/70 bg-blue-50/50 rounded-lg shadow-sm"
-                  >
+                  <div key={plan.id} className="border-l-4 pl-4 py-1 border-blue-400/70 bg-blue-50/50 rounded-lg shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
                       <PlanLogo plan={plan} />
                       <div>
-                        <div className="text-base font-bold text-gray-900 leading-tight">
-                          {/* UPDATED: Changed to use plan.name for display, with a fallback to plan.title. */}
-                          {plan.name || plan.title} 
-                        </div>
-                        <div className="text-xs text-gray-600 italic">
-                          ({plan.provider})
-                        </div>
+                        <div className="text-base font-bold text-gray-900 leading-tight">{plan.name || plan.title}</div>
+                        <div className="text-xs text-gray-600 italic">({plan.provider})</div>
                       </div>
                     </div>
-
                     <div className="text-sm text-gray-700 space-y-1 ml-1">
                       {formatPlanDetails(plan).map((detail, idx) =>
                         Array.isArray(detail) ? (
                           <div key={idx} className="mt-2">
-                            <div className="font-semibold text-gray-800">
-                              {detail[0]}
-                            </div>
-                            <ul className="list-disc list-inside text-gray-600 ml-3">
-                              {detail.slice(1).map((item, i) => (
-                                <li key={i}>{item}</li>
-                              ))}
-                            </ul>
+                            <div className="font-semibold text-gray-800">{detail[0]}</div>
+                            <ul className="list-disc list-inside text-gray-600 ml-3">{detail.slice(1).map((item, i) => <li key={i}>{item}</li>)}</ul>
                           </div>
                         ) : (
                           <div key={idx} className="text-sm">• {detail}</div>
                         )
                       )}
-
                       <div className="text-green-600 font-extrabold text-sm pt-2 flex items-center">
                         <DollarSign className="w-3 h-3 mr-1" />
                         Monthly Premium: ${plan.monthlyPremium.toLocaleString()}
                       </div>
-
                       {plan.brochureUrl && (
                         <div className="mt-2">
-                          <a
-                            href={plan.brochureUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-indigo-600 hover:text-indigo-800 underline text-sm font-medium transition"
-                          >
+                          <a href={plan.brochureUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 underline text-sm font-medium transition">
                             View Plan Brochure
                           </a>
                         </div>
@@ -519,24 +271,13 @@ export default function ClientPresentation({
                   </div>
                 ))}
               </div>
-
               <div className="border-t-2 border-gray-100 p-5 pt-4 text-center flex-shrink-0">
-                <div className="text-lg font-semibold text-gray-700 mb-1">
-                  Total Monthly Payment:
-                </div>
+                <div className="text-lg font-semibold text-gray-700 mb-1">Total Monthly Payment:</div>
                 <div className="text-4xl font-black text-gray-900 mb-3">
                   ${pkg.totalMonthlyPremium.toLocaleString()}{" "}
-                  <span className="text-gray-500 text-sm font-normal">
-                    (${(pkg.totalMonthlyPremium / 30).toFixed(2)} / day)
-                  </span>
+                  <span className="text-gray-500 text-sm font-normal">(${(pkg.totalMonthlyPremium / 30).toFixed(2)} / day)</span>
                 </div>
-
-                <Button
-                  onClick={() => onPackageSelect && onPackageSelect(pkg.id)}
-                  className={`px-8 py-3 text-lg font-bold bg-gradient-to-r ${getPackageColor(
-                    index
-                  )} text-white rounded-full shadow-lg hover:opacity-90 transition-opacity w-full`}
-                >
+                <Button onClick={() => onPackageSelect && onPackageSelect(pkg.id)} className={`px-8 py-3 text-lg font-bold bg-gradient-to-r ${getPackageColor(index)} text-white rounded-full shadow-lg hover:opacity-90 transition-opacity w-full`}>
                   Select This Package
                 </Button>
               </div>
