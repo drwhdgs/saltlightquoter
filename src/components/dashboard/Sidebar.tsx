@@ -1,5 +1,3 @@
-// ./src/components/dashboard/Sidebar.tsx
-
 'use client';
 
 import { useState } from 'react';
@@ -63,9 +61,7 @@ import {
 } from 'lucide-react';
 
 // CORRECTED MOCK TYPES:
-// The actual component should import from '@/lib/types', but for local runnability, we fix the status here.
 interface Agent { name: string; email: string; }
-// 🔥 FIX: Added 'accepted' status to align with the MainDashboard component's prop type.
 interface Quote { id: string; status: 'draft' | 'accepted' | 'completed' | 'presented'; } 
 
 // Define explicit Tailwind classes used for the theme
@@ -73,8 +69,6 @@ const SIDEBAR_BG_CLASS = 'bg-[#1d2333]';
 const ACTIVE_BG_CLASS = 'bg-gray-700/50';
 const ACTIVE_TEXT_COLOR = 'text-white';
 
-// FIX 3 (part 2): Define ViewType to match MainDashboard's DashboardView and include 'calendar'.
-// Changed 'help' to 'support' for consistency with MainDashboard's handler.
 type ViewType = 'dashboard' | 'new-quote' | 'quotes' | 'clients' | 'settings' | 'edit-quote' | 'view-quote' | 'analytics' | 'support' | 'calendar';
 
 
@@ -97,6 +91,8 @@ interface SidebarProps {
 
 export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect, onLogout }: SidebarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  // State to control the visibility of the Pro Features modal
+  const [isProModalOpen, setIsProModalOpen] = useState(false);
 
   // Count drafts for the badge
   const draftCount = quotes.filter(q => q.status === 'draft').length;
@@ -111,13 +107,57 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
 
   const secondaryItems: Array<{ name: string; icon: IconComponent; view: ViewType; badge?: number }> = [
     { name: 'Settings', icon: Settings, view: 'settings' },
-    // Changed 'help' to 'support' to align with MainDashboard.tsx's switch case
   ];
 
   const handleViewChange = (view: ViewType) => {
     onViewChange(view);
     setIsMobileOpen(false); // Close mobile sidebar on navigation
   };
+  
+  // Modal component definition
+  const ProFeaturesModal = () => (
+    <div 
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+        onClick={() => setIsProModalOpen(false)} // Close when clicking outside
+    >
+      <div 
+           className="relative w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl transform scale-100 transition-all duration-300"
+           onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+      >
+        <Button 
+            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 bg-transparent p-1 size-8"
+            onClick={() => setIsProModalOpen(false)}
+            title="Close"
+            size="icon"
+        >
+            <X className="w-5 h-5" />
+        </Button>
+
+        <div className="flex flex-col items-center text-center">
+            <div className="p-3 bg-yellow-100 rounded-full mb-4 shadow-lg">
+                <Zap className="w-8 h-8 text-yellow-500" />
+            </div>
+            
+            <h2 className="text-2xl font-extrabold text-gray-900 mb-2">
+                Pro Features Coming Soon!
+            </h2>
+            <p className="text-gray-600 mb-6 font-medium">
+                We're actively developing advanced features like <br/> AI-powered analytics and unlimited client management.
+            </p>
+            <p className="text-sm text-gray-500">
+                Check back soon for updates. We appreciate your patience and support!
+            </p>
+            <Button
+                className="mt-6 w-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-md"
+                onClick={() => setIsProModalOpen(false)}
+            >
+                Got it!
+            </Button>
+        </div>
+      </div>
+    </div>
+  );
+
 
   const SidebarContent = () => (
     <div className={`flex flex-col flex-1 p-4 ${SIDEBAR_BG_CLASS} h-full`}>
@@ -184,6 +224,8 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
         <h3 className="font-bold text-white text-sm">Unlock Pro Features</h3>
         <p className="text-xs text-gray-400 mt-1">Access advanced analytics and unlimited clients.</p>
         <Button 
+          // 2. Added onClick handler to open the modal
+          onClick={() => setIsProModalOpen(true)}
           className="mt-3 w-full bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold"
         >
           Upgrade Now
@@ -246,6 +288,9 @@ export function Sidebar({ agent, quotes, activeView, onViewChange, onQuoteSelect
           </div>
         </div>
       )}
+      
+      {/* 4. Conditionally Render the Modal */}
+      {isProModalOpen && <ProFeaturesModal />}
     </>
   );
 }

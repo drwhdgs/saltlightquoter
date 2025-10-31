@@ -16,7 +16,7 @@ export function ComingSoonPopup({ onClose }: ComingSoonPopupProps) {
   return (
     // Fixed container to center the modal over the main content area
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 sm:p-10 max-w-lg w-full transform transition-all duration-300 ease-out scale-100 opacity-100 border-4 border-indigo-500">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 sm:p-10 max-w-lg w-full transform transition-all duration-300 ease-out scale-100 opacity-100 border-4 border-blue-500">
         
         <div className="text-center space-y-4">
           
