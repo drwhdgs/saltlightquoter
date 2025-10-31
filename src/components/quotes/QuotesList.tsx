@@ -126,7 +126,7 @@ export function QuotesList({
 
   return (
     <div className="space-y-6 relative">
-      <h1 className="text-4xl font-extrabold text-gray-900">Client Quotes</h1>
+      <h1 className="text-3xl font-extrabold text-gray-900">Client Quotes</h1>
 
       {/* Header Bar: Search, Filter, New Quote Button */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-xl shadow-md">
