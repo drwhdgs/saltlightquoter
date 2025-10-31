@@ -81,7 +81,7 @@ export default function ClientPresentation({
 }: ClientPresentationProps) {
   // Map of provider names to their logo paths
   const carrierLogos: Record<string, string> = {
-    "Ameritas Primestar": "/logos/ameritas.png",
+    "Ameritas": "/logos/ameritas.png",
     "American Amicable": "/logos/AmericanAmicable.jpeg",
     "Manhattan Life": "/logos/manhattan-life.png",
     KonnectMD: "/logos/konnect.png",
