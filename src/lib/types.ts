@@ -253,7 +253,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         coinsurance: 70,
         outOfPocketMax: 4500,
         coverage:
-          "Continuous protection for 3 years, $2 Million lifetime benefit per person, Doctors visits: $50 copay for first 4 visits, Urgent care: $75 copay, Preventative care: $50 copay, Emergency room: 30% after deductible, Inpatient hospital services & outpatient surgery: 30% after deductible, Labs and X-rays: 30% after deductible",
+          "Continuous protection for 3 years, $2 Million lifetime benefit per person, Doctors visits: $50 copay for first 4 visits, Tier 1 Drugs: $25 copay, Urgent care: $75 copay, Preventative care: $50 copay, Emergency room: 30% after deductible, Inpatient hospital services & outpatient surgery: 30% after deductible, Labs and X-rays: 30% after deductible",
         details:
           "Covers major illnesses & accidents: hospitalization, ER, surgeries, cancer care.",
         brochureUrl:
