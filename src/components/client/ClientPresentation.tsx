@@ -390,11 +390,17 @@ export default function ClientPresentation({
               <div className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
                 {quote.client.name}
               </div>
-              <div className="text-base sm:text-lg text-gray-600 break-all">
-                <a href={`tel:${quote.client.phone}`} className="hover:text-blue-600 transition">
-                  {quote.client.phone}
-                </a>
-              </div>
+              <div className="text-base sm:text-lg text-gray-600">
+  <a
+    href={`tel:${quote.client.phone}`}
+    className="hover:text-blue-600 transition"
+  >
+    {quote.client.phone.replace(
+      /(\d{3})(\d{3})(\d{4})/,
+      "($1) $2-$3"
+    )}
+  </a>
+</div>
             </div>
 
             <div className="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-inner w-full sm:w-auto justify-center sm:justify-start">
