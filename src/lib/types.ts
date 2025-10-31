@@ -245,8 +245,8 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         title: "UHC TriTerm Co-Pay",
         provider: "United Healthcare",
         monthlyPremium: 0,
-        deductible: 12500,
-        coinsurance: 70,
+        deductible: 5000,
+        coinsurance: 30,
         outOfPocketMax: 4500,
         coverage:
           "Continuous protection for 3 years, $2 Million lifetime benefit per person, Doctors visits: $50 copay for first 4 visits, Urgent care: $75 copay, Preventative care: $50 copay, Emergency room: 30% after deductible, Inpatient hospital services & outpatient surgery: 30% after deductible, Labs and X-rays: 30% after deductible",
@@ -351,7 +351,7 @@ export const PACKAGE_TEMPLATES: PackageTemplate[] = [
         provider: "United Healthcare",
         monthlyPremium: 0,
         deductible: 15000,
-        coinsurance: 70,
+        coinsurance: 30,
         outOfPocketMax: 10000,
         coverage: "$2 Million lifetime benefit per person",
         details:
