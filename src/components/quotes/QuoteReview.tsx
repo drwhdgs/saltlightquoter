@@ -41,15 +41,16 @@ export function QuoteReview({
   const totalAnnualPremium = totalMonthlyPremium * 12;
 
   const carrierLogos: Record<string, string> = {
-    Ameritas: "/logos/ameritas.png",
-  "American Amicable": "/logos/AmericanAmicable.jpeg",
-  Transamerica: "/logos/transamerica.png",
-  KonnectMD: "/logos/konnect.png",
-  TRUVirtual: "/logos/virtual.png",
-  Breeze: "/logos/breeze.png",
-  ACA: "/logos/aca.png",
-  "United Healthcare": "/logos/uhc.png",
-  "Sedera Health": "/logos/sedera.jpg",
+    "Ameritas Primestar": "/logos/ameritas.png",
+    "American Amicable": "/logos/AmericanAmicable.jpeg",
+    "Manhattan Life": "/logos/manhattan-life.png",
+    KonnectMD: "/logos/konnect.png",
+    TRUVirtual: "/logos/virtual.png",
+    Breeze: "/logos/breeze.png",
+    "Ambetter - HMO": "/logos/aca.png",
+    "United Healthcare": "/logos/uhc.png",
+    "Health Share": "/logos/healthshare.png",
+    "Sedera Health": "/logos/sedera.jpg",
   };
 
   const getPlanIcon = (type: InsurancePlan['type']) => {

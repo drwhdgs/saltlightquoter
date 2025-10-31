@@ -40,18 +40,16 @@ const CARRIERS: Record<InsuranceType, string[]> = {
 
 // NEW: Define carrier logos, using placeholders for missing images
 const carrierLogos: Record<string, string> = {
-  Ameritas: "/logos/ameritas.png",
-  "American Amicable": "/logos/AmericanAmicable.jpeg",
-  Transamerica: "/logos/transamerica.png",
-  KonnectMD: "/logos/konnect.png",
-  TRUVirtual: "/logos/virtual.png",
-  Breeze: "/logos/breeze.png",
-  ACA: "/logos/aca.png",
-  health: "/logos/aca.png",
-  "United Healthcare": "/logos/uhc.png",
-  "Sedera Health": "/logos/sedera.jpg",
-  VSP: "https://placehold.co/75x20/F0F4F8/3B82F6?text=VSP",
-  EyeMed: "https://placehold.co/75x20/F0F4F8/10B981?text=EyeMed",
+    "Ameritas Primestar": "/logos/ameritas.png",
+    "American Amicable": "/logos/AmericanAmicable.jpeg",
+    "Manhattan Life": "/logos/manhattan-life.png",
+    KonnectMD: "/logos/konnect.png",
+    TRUVirtual: "/logos/virtual.png",
+    Breeze: "/logos/breeze.png",
+    "Ambetter - HMO": "/logos/aca.png",
+    "United Healthcare": "/logos/uhc.png",
+    "Health Share": "/logos/healthshare.png",
+    "Sedera Health": "/logos/sedera.jpg",
   
   // Placeholders for carriers listed in CARRIERS object but not in the known logo map
   "Blue Cross Blue Shield": "https://placehold.co/75x20/F0F4F8/005A9C?text=BCBS",

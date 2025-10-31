@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+// Removing Card imports, as the parent QuoteWizard provides the container
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; 
 import { Client } from '@/lib/types';
 
 interface ClientInfoFormProps {
@@ -29,6 +30,7 @@ export function ClientInfoForm({ initialData, onSubmit, onCancel }: ClientInfoFo
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
+    // --- Validation Logic (Unchanged, as it's correct) ---
     if (!formData.name.trim()) {
       newErrors.name = 'Client name is required';
     }
@@ -70,7 +72,6 @@ export function ClientInfoForm({ initialData, onSubmit, onCancel }: ClientInfoFo
     e.preventDefault();
 
     if (validateForm()) {
-      // Clean up the data
       const cleanedData: Client = {
         name: formData.name.trim(),
         zipCode: formData.zipCode.trim(),
@@ -86,7 +87,6 @@ export function ClientInfoForm({ initialData, onSubmit, onCancel }: ClientInfoFo
 
   const handleInputChange = (field: keyof Client, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -108,117 +108,129 @@ export function ClientInfoForm({ initialData, onSubmit, onCancel }: ClientInfoFo
   const age = calculateAge(formData.dateOfBirth);
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Client Information</CardTitle>
-        <p className="text-sm text-gray-600">
-          Enter the client's basic information to generate insurance quotes
-        </p>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    // Removed Card wrapper to use the parent QuoteWizard's container
+    <div className="w-full max-w-4xl mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        
+        {/* Contact Information Section */}
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Full Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name *</Label>
+              <Label htmlFor="name" className="text-gray-700 font-semibold">Full Name <span className="text-red-500">*</span></Label>
               <Input
                 id="name"
                 type="text"
                 placeholder="John Smith"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                className={errors.name ? 'border-red-500' : ''}
+                className={`h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${errors.name ? 'border-red-500' : ''}`}
               />
               {errors.name && (
                 <p className="text-sm text-red-600">{errors.name}</p>
               )}
             </div>
 
+            {/* Email Address */}
             <div className="space-y-2">
-              <Label htmlFor="zipCode">ZIP Code *</Label>
-              <Input
-                id="zipCode"
-                type="text"
-                placeholder="12345"
-                value={formData.zipCode}
-                onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                className={errors.zipCode ? 'border-red-500' : ''}
-              />
-              {errors.zipCode && (
-                <p className="text-sm text-red-600">{errors.zipCode}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="dateOfBirth">Date of Birth *</Label>
-            <Input
-              id="dateOfBirth"
-              type="date"
-              value={formData.dateOfBirth}
-              onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-              className={errors.dateOfBirth ? 'border-red-500' : ''}
-            />
-            {age !== null && (
-              <p className="text-sm text-gray-600">Age: {age} years old</p>
-            )}
-            {errors.dateOfBirth && (
-              <p className="text-sm text-red-600">{errors.dateOfBirth}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address *</Label>
+              <Label htmlFor="email" className="text-gray-700 font-semibold">Email Address <span className="text-red-500">*</span></Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="john@example.com"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className={errors.email ? 'border-red-500' : ''}
+                className={`h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''}`}
               />
               {errors.email && (
                 <p className="text-sm text-red-600">{errors.email}</p>
               )}
             </div>
 
+            {/* Phone Number */}
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number *</Label>
+              <Label htmlFor="phone" className="text-gray-700 font-semibold">Phone Number <span className="text-red-500">*</span></Label>
               <Input
                 id="phone"
                 type="tel"
                 placeholder="(555) 123-4567"
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
-                className={errors.phone ? 'border-red-500' : ''}
+                className={`h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : ''}`}
               />
               {errors.phone && (
                 <p className="text-sm text-red-600">{errors.phone}</p>
               )}
             </div>
+          
+            {/* ZIP Code */}
+            <div className="space-y-2">
+              <Label htmlFor="zipCode" className="text-gray-700 font-semibold">ZIP Code <span className="text-red-500">*</span></Label>
+              <Input
+                id="zipCode"
+                type="text"
+                placeholder="12345"
+                value={formData.zipCode}
+                onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                className={`h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${errors.zipCode ? 'border-red-500' : ''}`}
+              />
+              {errors.zipCode && (
+                <p className="text-sm text-red-600">{errors.zipCode}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Demographic & Notes Section */}
+        <div className="space-y-6 pt-6 border-t border-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Date of Birth */}
+            <div className="space-y-2">
+              <Label htmlFor="dateOfBirth" className="text-gray-700 font-semibold">Date of Birth <span className="text-red-500">*</span></Label>
+              <Input
+                id="dateOfBirth"
+                type="date"
+                value={formData.dateOfBirth}
+                onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                className={`h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${errors.dateOfBirth ? 'border-red-500' : ''}`}
+              />
+              {age !== null && formData.dateOfBirth && (
+                <p className="text-sm text-gray-600 mt-1 font-medium">Calculated Age: **{age} years old**</p>
+              )}
+              {errors.dateOfBirth && (
+                <p className="text-sm text-red-600">{errors.dateOfBirth}</p>
+              )}
+            </div>
+            {/* Placeholder to align grid */}
+            <div></div> 
           </div>
 
+          {/* Additional Information */}
           <div className="space-y-2">
-            <Label htmlFor="additionalInfo">Additional Information</Label>
+            <Label htmlFor="additionalInfo" className="text-gray-700 font-semibold">Additional Information (Optional)</Label>
             <Textarea
               id="additionalInfo"
               placeholder="Any additional notes about the client or their insurance needs..."
               value={formData.additionalInfo || ''}
               onChange={(e) => handleInputChange('additionalInfo', e.target.value)}
-              rows={3}
+              rows={4}
+              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
+        </div>
 
-          <div className="flex justify-end space-x-4 pt-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button type="submit">
-              Continue to Package Selection
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        {/* Action Buttons */}
+        <div className="flex justify-between md:justify-end space-x-4 pt-6 border-t border-gray-100">
+          <Button type="button" variant="outline" onClick={onCancel} className="text-gray-600 border-gray-300 hover:bg-gray-50">
+            Cancel
+          </Button>
+          <Button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-md">
+            Continue to Package Selection
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

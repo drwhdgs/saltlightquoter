@@ -183,10 +183,9 @@ export function QuotesList({
             <div className="hidden lg:grid grid-cols-10 gap-4 text-xs font-semibold uppercase text-gray-500 p-4 border-b border-gray-100">
               <div className="col-span-3">Client Name</div>
               <div className="col-span-1">ZIP</div>
-              <div className="col-span-2">Last Updated</div>
-              <div className="col-span-2">Status</div>
-              <div className="col-span-1 text-right">Premium (mo)</div>
-              <div className="col-span-1 text-right">Actions</div>
+              <div className="col-span-2 ml-[50px]">Last Updated</div>
+              <div className="col-span-2 ml-[100px]">Status</div>
+              <div className="col-span-1 text-right ml-[100px]">Actions</div>
             </div>
             
             {/* Quote Rows */}
@@ -210,25 +209,20 @@ export function QuotesList({
                   <div className="hidden lg:block col-span-1 text-sm text-gray-600">{quote.client.zipCode}</div>
 
                   {/* Last Updated (Col 3) */}
-                  <div className="col-span-5 sm:col-span-2 lg:col-span-2 text-sm text-gray-600">
+                  <div className="col-span-5 sm:col-span-2 lg:col-span-2 text-sm text-gray-600 ml-[60px]">
                     {new Date(quote.updatedAt).toLocaleDateString()}
                   </div>
 
                   {/* Status (Col 4) */}
                   <div className="col-span-5 sm:col-span-3 lg:col-span-2">
-                    <Badge className={`text-xs font-semibold px-3 py-1 rounded-full flex items-center justify-center ${status.className}`}>
+                    <Badge className={`text-xs font-semibold px-3 py-1 rounded-full flex items-center justify-center w-[250px] ${status.className}`}>
                       <status.icon className='w-3 h-3 mr-1'/>
                       {status.label}
                     </Badge>
                   </div>
 
-                  {/* Premium (Col 5) */}
-                  <div className="col-span-5 sm:col-span-3 lg:col-span-1 text-lg font-bold text-teal-600 text-right mr-5">
-                    ${totalPremium}
-                  </div>
-
                   {/* Actions (Col 6) - Prevent click propagation from the row onClick */}
-                  <div className="col-span-5 sm:col-span-4 lg:col-span-1 flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                  <div className="col-span-5 sm:col-span-4 lg:col-span-1 flex justify-end gap-2 mr-[-80px]" onClick={(e) => e.stopPropagation()}>
                     
                     {/* View Button */}
                     <Button
